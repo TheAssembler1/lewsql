@@ -4,3 +4,6 @@ build
 # libs
 *.a
 *.lib
+
+# cache files
+.cache
