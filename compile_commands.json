@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/home/ta1/src/lewsql/build/disk_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/disk_manager/src -I/home/ta1/src/lewsql/disk_manager/src/headers  -o CMakeFiles/disk_manager.dir/src/dmanager.cpp.o -c /home/ta1/src/lewsql/disk_manager/src/dmanager.cpp",
+  "file": "/home/ta1/src/lewsql/disk_manager/src/dmanager.cpp",
+  "output": "disk_manager/CMakeFiles/disk_manager.dir/src/dmanager.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/buffer_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/buffer_manager/src/headers -I/home/ta1/src/lewsql/disk_manager/src/headers  -o CMakeFiles/buffer_manager.dir/src/bmanager.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/bmanager.cpp",
+  "file": "/home/ta1/src/lewsql/buffer_manager/src/bmanager.cpp",
+  "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/bmanager.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/driver",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/driver/src -I/home/ta1/src/lewsql/buffer_manager/src/headers -I/home/ta1/src/lewsql/disk_manager/src/headers  -o CMakeFiles/driver.dir/src/run.cpp.o -c /home/ta1/src/lewsql/driver/src/run.cpp",
+  "file": "/home/ta1/src/lewsql/driver/src/run.cpp",
+  "output": "driver/CMakeFiles/driver.dir/src/run.cpp.o"
+}
+]
