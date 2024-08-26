@@ -19,6 +19,7 @@ class DManager {
     
   enum class Error {
     NONE = 0,
+    NOT_IMPLEMENTED,
     UNKOWN_ERROR,
     DISK_ALREADY_EXISTS,
     DISK_NOT_FOUND,
