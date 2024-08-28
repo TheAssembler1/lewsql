@@ -113,6 +113,47 @@ void PosixDManager::write_disk(DiskId disk_id, Cursor cursor, std::vector<std::b
 }
 
 std::vector<std::byte> PosixDManager::read_disk(DiskId disk_id, Cursor cursor) {
-  return std::vector<std::byte>{};
+  auto fname = disk_map.find(disk_id);
+
+  if(fname == disk_map.end()) {
+    throw DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
+  }
+
+  errno = 0;
+  int fd = open(get_disk_path(fname->second).c_str(), O_WRONLY);
+
+  if(fd == -1) {
+    std::cerr << "failed to open file, errno: " << errno << std::endl;
+    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  }
+
+  // FIXME: validation on this number
+  int foffset = (cursor * page_size) + page_size;
+
+  errno = 0;
+  int stat = lseek(fd, foffset, SEEK_SET);
+  if(stat == -1) {
+    std::cerr << "failed to lseek file, errno: " << errno << std::endl;
+    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  }
+
+  errno = 0;
+  std::vector<std::byte> bytes(page_size);
+  int num_bytes = read(fd, bytes.data(), page_size);
+
+  if(num_bytes != page_size) {
+      std::cerr << "failed to read num_bytes to file, errno: " << errno << std::endl;
+      throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  }
+
+  errno = 0;
+  stat = close(fd);
+
+  if(stat == -1) {
+    std::cerr << "failed to close file, errno: " << errno << std::endl;
+    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  }
+
+  return bytes;
 }
 
