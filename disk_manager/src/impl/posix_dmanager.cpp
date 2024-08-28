@@ -1,7 +1,4 @@
 #include "posix_dmanager.h"
-#include <asm-generic/errno.h>
-#include <cstdio>
-#include <string>
 
 std::variant<PosixDManager, PosixDManager::Error> PosixDManager::init(const std::string& dir_path, unsigned int page_size) {
   PosixDManager posix_d_manager{dir_path, page_size};
