@@ -127,7 +127,7 @@ void PosixDiskManager::destroy_disk(DiskId disk_id) {
   disk_map.erase(disk_id);
 }
 
-void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) {
+void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) {
   auto fname = disk_map.find(disk_id);
 
   if(fname == disk_map.end()) {
@@ -155,7 +155,7 @@ void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes)
   }
 
   errno = 0;
-  int num_bytes = write(fd, bytes, page_size);
+  int num_bytes = write(fd, bytes.get(), page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
@@ -171,7 +171,7 @@ void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes)
   }
 }
 
-void PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) {
+void PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) {
   auto fname_iter = disk_map.find(disk_id);
 
   if(fname_iter == disk_map.end()) {
@@ -209,7 +209,7 @@ void PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) 
 
   errno = 0;
   std::cout << "offset before read: " << foffset << std::endl;
-  int num_bytes = read(fd, bytes, page_size);
+  int num_bytes = read(fd, bytes.get(), page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to read num_bytes to file, errno: " << std::strerror(errno) << " num bytes: " << num_bytes << std::endl;

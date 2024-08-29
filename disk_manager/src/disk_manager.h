@@ -25,8 +25,8 @@ class DiskManager {
   virtual DiskId create_disk() = 0;
   virtual void destroy_disk(DiskId disk_id) = 0;
 
-  virtual void write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) = 0;
-  virtual void read_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) = 0;
+  virtual void write_disk(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) = 0;
+  virtual void read_disk(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) = 0;
 };
 
 #endif // DISK_MANAGER_H

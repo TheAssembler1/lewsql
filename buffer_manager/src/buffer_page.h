@@ -4,15 +4,11 @@
 #include <cstdint>
 #include <memory>
 
-static void bytes_deleter(uint8_t* bytes) {
-  delete[] bytes;
-}
-
 class BufferPage final {
   public:
-  BufferPage(unsigned int num_bytes): bytes{new uint8_t[num_bytes], bytes_deleter}  {}
+  BufferPage(unsigned int num_bytes): bytes{new uint8_t[num_bytes]}  {}
 
-  std::unique_ptr<uint8_t[], decltype(&bytes_deleter)> bytes;
+  std::unique_ptr<uint8_t[]> bytes;
   unsigned int pin_count{0};
   bool dirty{false};
 };

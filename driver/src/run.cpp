@@ -14,7 +14,7 @@ int main() {
   auto disk_id = posix_dmanager.create_disk();
   std::cout << "successfully created disk" << std::endl;
 
-  uint8_t* bytes = static_cast<uint8_t*>(malloc(512));
+  std::unique_ptr<uint8_t[]> bytes{new uint8_t[512]};
   for(int i = 0; i < 8; i++) {
     bytes[i] = i;
     std::cout << "write byte: " <<  static_cast<unsigned int>(bytes[i]) << std::endl;
@@ -22,7 +22,7 @@ int main() {
   posix_dmanager.write_disk(disk_id, 0, bytes);
   std::cout << "successfully wrote to disk" << std::endl;
 
-  uint8_t* read_bytes = static_cast<uint8_t*>(malloc(512));
+  std::unique_ptr<uint8_t[]> read_bytes{new uint8_t[512]};
   posix_dmanager.read_disk(disk_id, 0, read_bytes);
   std::cout << "successfully read from disk" << std::endl;
 
@@ -33,8 +33,5 @@ int main() {
   posix_dmanager.destroy_disk(disk_id);
   std::cout << "successfully destroyed disk" << std::endl;
 
-  delete bytes;
-  delete read_bytes;
-  
   return 0;
 }
