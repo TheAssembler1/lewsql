@@ -1,6 +1,6 @@
 #ifndef BUFFER_MANAGER_H
 #define BUFFER_MANAGER_H
 
-#include "../bmanager.h"
+void test();
 
 #endif // BUFFER_MANAGER_H

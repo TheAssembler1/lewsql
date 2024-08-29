@@ -1,5 +1,5 @@
-#ifndef DMANAGER_H
-#define DMANAGER_H
+#ifndef DISK_MANAGER_H
+#define DISK_MANAGER_H
 
 #include <variant>
 #include <cassert>
@@ -56,4 +56,4 @@ class DiskManager {
   virtual std::vector<std::byte> read_disk(DiskId disk_id, Cursor cursor) = 0;
 };
 
-#endif // DMANAGER_H
+#endif // DISK_MANAGER_H
