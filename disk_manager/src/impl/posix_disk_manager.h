@@ -30,8 +30,8 @@ class PosixDiskManager final: public DiskManager<PosixDiskManager> {
   
   virtual DiskId create_disk() override;
   virtual void destroy_disk(DiskId disk_id) override;
-  virtual void write_disk(DiskId disk_id, Cursor cursor, std::vector<std::byte>& bytes) override;
-  virtual std::vector<std::byte> read_disk(DiskId disk_id, Cursor cursor) override;
+  virtual void write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) override;
+  virtual void read_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) override;
 
   private:
   std::string get_disk_path(const std::string& f_name) { return dir_path + "/" + f_name; }

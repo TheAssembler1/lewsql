@@ -127,9 +127,7 @@ void PosixDiskManager::destroy_disk(DiskId disk_id) {
   disk_map.erase(disk_id);
 }
 
-void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, std::vector<std::byte>& bytes) {
-  assert(bytes.size() == page_size);
-
+void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) {
   auto fname = disk_map.find(disk_id);
 
   if(fname == disk_map.end()) {
@@ -157,7 +155,7 @@ void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, std::vector<std
   }
 
   errno = 0;
-  int num_bytes = write(fd, bytes.data(), page_size);
+  int num_bytes = write(fd, bytes, page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
@@ -173,7 +171,7 @@ void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, std::vector<std
   }
 }
 
-std::vector<std::byte> PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor) {
+void PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor, uint8_t* bytes) {
   auto fname_iter = disk_map.find(disk_id);
 
   if(fname_iter == disk_map.end()) {
@@ -193,7 +191,6 @@ std::vector<std::byte> PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor
 
   // FIXME: validation on this number
   int foffset = ((cursor + 1) * page_size);
-
   errno = 0;
   int stat = lseek(fd, foffset, SEEK_SET);
   if(stat == -1) {
@@ -202,18 +199,17 @@ std::vector<std::byte> PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor
   }
 
   // NOTE: reset file pointer
+  foffset -= page_size;
   errno = 0;
-  stat = lseek(fd, foffset - page_size, SEEK_SET);
+  stat = lseek(fd, foffset, SEEK_SET);
   if(stat == -1) {
     std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
     throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
   }
 
   errno = 0;
-  std::vector<std::byte> bytes(page_size);
-
   std::cout << "offset before read: " << foffset << std::endl;
-  int num_bytes = read(fd, bytes.data(), page_size);
+  int num_bytes = read(fd, bytes, page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to read num_bytes to file, errno: " << std::strerror(errno) << " num bytes: " << num_bytes << std::endl;
@@ -227,8 +223,6 @@ std::vector<std::byte> PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor
     std::cerr << "failed to close file, errno: " << std::strerror(errno) << std::endl;
     throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
   }
-
-  return bytes;
 }
 
 std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager) {
