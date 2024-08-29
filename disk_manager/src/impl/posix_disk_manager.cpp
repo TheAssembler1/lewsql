@@ -38,6 +38,26 @@ PosixDiskManager::PosixDiskManager(const std::string& dir_path, unsigned int pag
   }
 }
 
+// NOTE: returns std::nullopt if filename is not a disk
+std::optional<unsigned int> PosixDiskManager::get_disk_id_from_path(const std::string& fname) {
+  if(fname.size() <= file_prefix.size()) {
+    return std::nullopt;
+  } else if(fname.substr(0, file_prefix.size()) != file_prefix) {
+    return std::nullopt;
+  }
+  
+  std::string disk_id{};
+  auto num_suffix = [](auto& c){ try { std::stoi(&c); return true; } catch(std::exception& e) { return false; }};
+  std::copy_if(fname.begin(), fname.end(), std::back_inserter(disk_id), num_suffix);
+
+  if(!disk_id.length()) {
+    return std::nullopt;
+  }
+
+  // FIXME: maybe we throw here... who knows
+  return std::stoi(disk_id);
+}
+
 PosixDiskManager::DiskId PosixDiskManager::create_disk() {
   std::string fname = get_new_disk_path();
   std::string full_path_fname = get_disk_path(fname);

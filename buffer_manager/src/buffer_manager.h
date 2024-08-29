@@ -1,12 +1,25 @@
 #ifndef BUFFER_MANAGER_H
 #define BUFFER_MANAGER_H
 
-#include <unordered_map>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <functional>
 #include <vector>
 
-class BufferManager final {
+struct 
 
-  std::unordered_map<unsigned int, std::vector<std::byte>> buffer_map;
+class BufferManager final {
+  BufferManager() {
+      buffer_pool = std::vector<std::vector<std::byte>>{512};
+      buffer_queue = 
+  }
+
+  // NOTE: acts as a ordering stamp
+  unsigned int cur_page = 0;
+  std::vector<std::vector<std::byte>> buffer_pool;
+  std::priority_queue<unsigned int> buffer_queue;
+  std::unordered_map<unsigned int>
 };
 
 #endif // BUFFER_MANAGER_H
