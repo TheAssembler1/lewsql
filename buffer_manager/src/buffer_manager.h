@@ -2,6 +2,7 @@
 #define BUFFER_MANAGER_H
 
 #include "mem_pool.h"
+#include "buffer_manager_error.h"
 
 #include <disk_manager.h>
 #include <vector>
@@ -12,13 +13,13 @@
 #include <functional>
 #include <vector>
 #include <cassert>
+#include <cstring>
 
-// NOTE: responsible for holding cursor state for allocated pages
 template<typename T>
-struct BufferDiskHandler {
-  typename DiskManager<T>::DiskId disk_id;
-  typename DiskManager<T>::Cursor cursor;
-};
+using DiskId = typename DiskManager<T>::DiskId;
+
+template<typename T>
+using Cursor = typename DiskManager<T>::Cursor;
 
 template<typename T>
 class BufferManager final {
@@ -28,21 +29,21 @@ class BufferManager final {
     assert(num_pages > 0 && disk_manager.page_size > 0);
   }
 
-  void set_buffer_disk_handler(typename DiskManager<T>::DiskId disk_id, typename DiskManager<T>::Cursor cursor) {
-    buffer_disk_handler.disk_id = disk_id;
-    buffer_disk_handler.cursor = cursor;
-  }
-  void set_buffer_disk_handler_cursor(typename DiskManager<T>::Cursor cursor) { disk_manager.cursor = cursor; };
-  void set_buffer_disk_handler_disk_id(typename DiskManager<T>::DiskId disk_id) { disk_manager.disk_id = disk_id; };
+  void b_write(DiskId<T> disk_id, Cursor<T> cursor, std::unique_ptr<uint8_t[]>, unsigned int num_bytes);
+  std::unique_ptr<uint8_t[]> b_read(DiskId<T> disk_id, Cursor<T> cursor, unsigned int num_bytes);
 
-  const uint8_t& operator[](size_t index);
+  unsigned int get_next_free_page();
 
   private:
-  BufferDiskHandler<T> buffer_disk_handler{};
   unsigned int cur_page{0};
   const std::shared_ptr<DiskManager<T>> disk_manager;
+
   // FIXME: just using this for development speedfor now
-  std::vector<bool> mem_pool_bit_map;
+  std::vector<bool> mem_pool_bit_map{};
+
+  // NOTE: maps between disk pages and mem buffer pages
+  std::unordered_map<std::pair<DiskId<T>, unsigned int>, unsigned int> mem_pool_map{};
+
   MemPool mem_pool;
 };
 

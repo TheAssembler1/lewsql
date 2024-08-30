@@ -58,7 +58,7 @@ std::optional<unsigned int> PosixDiskManager::get_disk_id_from_path(const std::s
   return std::stoi(disk_id);
 }
 
-PosixDiskManager::DiskId PosixDiskManager::create_disk() {
+PosixDiskManager::DiskId PosixDiskManager::d_create() {
   std::string fname = get_new_disk_path();
   std::string full_path_fname = get_disk_path(fname);
 
@@ -106,7 +106,7 @@ PosixDiskManager::DiskId PosixDiskManager::create_disk() {
   return ret;
 }
 
-void PosixDiskManager::destroy_disk(DiskId disk_id) {
+void PosixDiskManager::d_destroy(DiskId disk_id) {
   auto fname_iter = disk_map.find(disk_id);
 
   if(fname_iter == disk_map.end()) {
@@ -127,7 +127,7 @@ void PosixDiskManager::destroy_disk(DiskId disk_id) {
   disk_map.erase(disk_id);
 }
 
-void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) {
+void PosixDiskManager::d_write(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) {
   auto fname = disk_map.find(disk_id);
 
   if(fname == disk_map.end()) {
@@ -171,7 +171,7 @@ void PosixDiskManager::write_disk(DiskId disk_id, Cursor cursor, const std::uniq
   }
 }
 
-void PosixDiskManager::read_disk(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) {
+void PosixDiskManager::d_read(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) {
   auto fname_iter = disk_map.find(disk_id);
 
   if(fname_iter == disk_map.end()) {
