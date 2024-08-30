@@ -20,9 +20,8 @@
 #include <cstring>
 #include <optional>
 #include <cstdlib>
-#include "../disk_manager_error.h"
 
-class PosixDiskManager final: public DiskManager<PosixDiskManager> {
+class PosixDiskManager final: public DiskManager {
   public:
   PosixDiskManager(const std::string& dir_path, unsigned int page_size);
   
@@ -30,8 +29,8 @@ class PosixDiskManager final: public DiskManager<PosixDiskManager> {
   
   virtual DiskId d_create() override;
   virtual void d_destroy(DiskId disk_id) override;
-  virtual void d_write(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) override;
-  virtual void d_read(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) override;
+  virtual void d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
+  virtual void d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
 
   private:
   std::string get_disk_path(const std::string& f_name) { return dir_path + "/" + f_name; }

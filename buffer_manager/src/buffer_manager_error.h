@@ -4,10 +4,12 @@
 #include <exception>
 
 enum class BufferManagerErrorCode {
-  // NOTE: general error
   UNKOWN_ERROR,
-
   OUT_OF_MEMORY,
+  PAGE_NOT_FOUND,
+  DISK_NOT_FOUND,
+  OUT_OF_PAGES,
+  NO_UNPINNED_PAGES,
 };
 
 class BufferManagerError : public std::exception {

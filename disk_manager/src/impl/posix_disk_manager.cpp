@@ -1,5 +1,6 @@
 #include "posix_disk_manager.h"
-#include <fcntl.h>
+#include "disk_manager_error.h"
+#include "disk_manager.h"
 
 PosixDiskManager::PosixDiskManager(const std::string& dir_path, unsigned int page_size) : DiskManager{dir_path, page_size} {
   std::cout << "dir path set to path: " << dir_path << std::endl;
@@ -58,7 +59,7 @@ std::optional<unsigned int> PosixDiskManager::get_disk_id_from_path(const std::s
   return std::stoi(disk_id);
 }
 
-PosixDiskManager::DiskId PosixDiskManager::d_create() {
+DiskId PosixDiskManager::d_create() {
   std::string fname = get_new_disk_path();
   std::string full_path_fname = get_disk_path(fname);
 
@@ -127,7 +128,7 @@ void PosixDiskManager::d_destroy(DiskId disk_id) {
   disk_map.erase(disk_id);
 }
 
-void PosixDiskManager::d_write(DiskId disk_id, Cursor cursor, const std::unique_ptr<uint8_t[]>& bytes) {
+void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
   auto fname = disk_map.find(disk_id);
 
   if(fname == disk_map.end()) {
@@ -144,7 +145,7 @@ void PosixDiskManager::d_write(DiskId disk_id, Cursor cursor, const std::unique_
   }
 
   // FIXME: validation on this number
-  int foffset = cursor * page_size;
+  int foffset = disk_page_cursor * page_size;
 
   errno = 0;
   int stat = lseek(fd, foffset, SEEK_SET);
@@ -155,7 +156,7 @@ void PosixDiskManager::d_write(DiskId disk_id, Cursor cursor, const std::unique_
   }
 
   errno = 0;
-  int num_bytes = write(fd, bytes.get(), page_size);
+  unsigned int num_bytes = write(fd, bytes, page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
@@ -171,7 +172,7 @@ void PosixDiskManager::d_write(DiskId disk_id, Cursor cursor, const std::unique_
   }
 }
 
-void PosixDiskManager::d_read(DiskId disk_id, Cursor cursor, std::unique_ptr<uint8_t[]>& bytes) {
+void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
   auto fname_iter = disk_map.find(disk_id);
 
   if(fname_iter == disk_map.end()) {
@@ -190,7 +191,7 @@ void PosixDiskManager::d_read(DiskId disk_id, Cursor cursor, std::unique_ptr<uin
   }
 
   // FIXME: validation on this number
-  int foffset = ((cursor + 1) * page_size);
+  int foffset = ((disk_page_cursor + 1) * page_size);
   errno = 0;
   int stat = lseek(fd, foffset, SEEK_SET);
   if(stat == -1) {
@@ -209,7 +210,7 @@ void PosixDiskManager::d_read(DiskId disk_id, Cursor cursor, std::unique_ptr<uin
 
   errno = 0;
   std::cout << "offset before read: " << foffset << std::endl;
-  int num_bytes = read(fd, bytes.get(), page_size);
+  int num_bytes = read(fd, bytes, page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to read num_bytes to file, errno: " << std::strerror(errno) << " num bytes: " << num_bytes << std::endl;

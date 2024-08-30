@@ -4,13 +4,11 @@
 #include <cstdint>
 #include <memory>
 
-class BufferPage final {
+struct BufferPage {
   public:
-  BufferPage(unsigned int num_bytes): bytes{new uint8_t[num_bytes]}  {}
-
-  std::unique_ptr<uint8_t[]> bytes;
   unsigned int pin_count{0};
   bool dirty{false};
+  uint8_t bytes[];
 };
 
 #endif // BUFFER_PAGE_H
