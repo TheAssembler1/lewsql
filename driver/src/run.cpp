@@ -17,12 +17,8 @@ int main() {
       std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg{512}};
       BufferManager buf_manager{posix_dmanager, replacment_alg, 512};
 
-      for(int i = 0; i < 512; i++) {
-        buf_manager.pin(disk_id, i);
-      }
-
       buf_manager.unpin(disk_id, 0);
-      buf_manager.free_avail_pages();
+      //buf_manager.unpin(disk_id, 0);
 
       BufferManager::print_bitmap(std::cout, buf_manager) << std::endl;
   } catch(std::exception& e) {

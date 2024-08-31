@@ -2,6 +2,7 @@
 #define BUFFER_MANAGER_ERROR
 
 #include <exception>
+#include <cassert>
 
 enum class BufferManagerErrorCode {
   UNKOWN_ERROR,
@@ -17,7 +18,26 @@ class BufferManagerError : public std::exception {
   explicit BufferManagerError(BufferManagerErrorCode error_code) : error_code{error_code} {}
   
   const char* what() const noexcept override {
-    return "buffer manager error";
+    switch(error_code) {
+        case BufferManagerErrorCode::UNKOWN_ERROR:
+            return "buffer manager unknown error";
+        break;
+        case BufferManagerErrorCode::OUT_OF_MEMORY:
+            return "buffer manager out of memory";
+        break;
+        case BufferManagerErrorCode::PAGE_NOT_FOUND:
+            return "buffer manager page not found";
+        break;
+        case BufferManagerErrorCode::DISK_NOT_FOUND:
+            return "buffer manager disk not found";
+        break;
+        case BufferManagerErrorCode::OUT_OF_PAGES:
+            return "buffer manager out of pages";
+        break;
+        default:
+            assert(1);
+            break;
+    }
   }
 };
 

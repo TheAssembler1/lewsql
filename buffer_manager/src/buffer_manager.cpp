@@ -51,6 +51,8 @@ void BufferManager::unpin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     BufferPageCursor buffer_page_cursor = get_page_cursor(disk_id, disk_page_cursor);
 
     BufferPage* buffer_page = reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor]);
+
+    assert(buffer_page->pin_count);
     buffer_page->pin_count--;
 
     std::cout << "unpin resulted in pin count: " << buffer_page->pin_count << std::endl;
@@ -65,6 +67,13 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     // NOTE: page is in cache
     try {
         buffer_page_cursor = get_page_cursor(disk_id, disk_page_cursor);
+
+        std::cout << "found page in cache" << std::endl;
+        buffer_page = reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor]);
+        buffer_page->pin_count++;
+        std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
+
+        return &mem_pool[buffer_page_cursor];
     // NOTE: page not in cache yet
     } catch(std::exception& e) {
         try {
@@ -89,21 +98,21 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
             buffer_page = reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor]);
         }
 
-        // NOTE: overwrite existing page
-        disk_manager->d_read(disk_id, disk_page_cursor, &mem_pool[buffer_page_cursor]);
-        buffer_page->disk_page_cursor = disk_page_cursor;
-        buffer_page->disk_id = disk_id;
-        buffer_page->pin_count = 0;
-        buffer_page->dirty = false;
+         disk_manager->d_read(disk_id, disk_page_cursor, &mem_pool[buffer_page_cursor]);
+
+
+         // NOTE: overwrite existing page
+         buffer_page->disk_page_cursor = disk_page_cursor;
+         buffer_page->disk_id = disk_id;
+         buffer_page->dirty = false;
+         buffer_page->pin_count = 1;
+
+         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
+
+         set_page_cursor(buffer_page_cursor, disk_id, disk_page_cursor);
+         mem_pool_bitmap[buffer_page_cursor] = true;
+         return &mem_pool[buffer_page_cursor];
     }
-
-    buffer_page->pin_count += 1;
-
-    std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
-
-    set_page_cursor(buffer_page_cursor, disk_id, disk_page_cursor);
-    mem_pool_bitmap[buffer_page_cursor] = true;
-    return &mem_pool[buffer_page_cursor];
 }
 
 void BufferManager::set_dirty(DiskId disk_id, DiskPageCursor disk_page_cursor) {
