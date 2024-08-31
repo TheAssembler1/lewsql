@@ -35,15 +35,15 @@ BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCu
 
     auto disk_iter = mem_pool_map.find(disk_id);
 
+    // NOTE: this is an expected error in some cases
     if(disk_iter == mem_pool_map.end()) {
-        std::cerr << "disk not found: " << disk_id << std::endl;
         throw BufferManagerError(BufferManagerErrorCode::DISK_NOT_FOUND);
     }
 
     auto disk_page_iter = disk_iter->second.find(disk_page_cursor);
 
+    // NOTE: this is an expected error in some cases
     if(disk_page_iter == disk_iter->second.end()) {
-        std::cerr << "disk page cursor not found: " << disk_page_cursor << std::endl;
         throw BufferManagerError(BufferManagerErrorCode::DISK_PAGE_CURSOR_NOT_FOUND);
     }
 
@@ -78,6 +78,8 @@ std::ostream& BufferManager::print_bitmap(std::ostream& os, const BufferManager&
 }
 
 void BufferManager::free_avail_pages() {
+    std::cout << "freeing all available pages" << std::endl;
+
     try {
         while(true) {
             auto victim = replacement_alg->get_victim(mem_pool_bitmap, mem_pool);
@@ -142,6 +144,7 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     } catch(std::exception& e) {
         try {
             buffer_page_cursor = get_next_free_page();
+            std::cout << "found free page in bitmap: " << buffer_page_cursor << std::endl;
             buffer_page = get_page_mem_pool(buffer_page_cursor);
             // NOTE: no pages available need to evict
         } catch(BufferManagerError& e) {

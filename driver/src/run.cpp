@@ -17,8 +17,11 @@ int main() {
         std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg{512}};
         BufferManager buf_manager{posix_dmanager, replacment_alg, 512};
 
+        std::cout << "pinning first time" << std::endl;
         buf_manager.pin(disk_id, 0);
+        std::cout << "pinning second time" << std::endl;
         buf_manager.pin(disk_id, 0);
+        std::cout << "unpinning first time" << std::endl;
         buf_manager.unpin(disk_id, 0);
 
         buf_manager.free_avail_pages();

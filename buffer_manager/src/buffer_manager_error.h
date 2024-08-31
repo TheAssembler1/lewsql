@@ -39,7 +39,7 @@ class BufferManagerError : public std::exception {
             return "buffer manager out of pages";
         break;
         default:
-            assert(1);
+            assert(0);
             break;
     }
   }

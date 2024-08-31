@@ -56,7 +56,7 @@ class DiskManagerError : public std::exception {
         return "disk manager unknown error";
         break;
     default:
-        assert(1);
+        assert(0);
         break;
     }
   }
