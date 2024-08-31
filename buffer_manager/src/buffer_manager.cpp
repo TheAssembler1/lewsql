@@ -82,8 +82,9 @@ std::ostream& BufferManager::print_mem_pool_map(std::ostream& os, const BufferMa
         if(buffer_manager.mem_pool_bitmap[cursor]) {
             BufferPage* page = buffer_manager.get_page_mem_pool(cursor);
 
+            std::cout << *page;
             if(cursor + 1 != buffer_manager.num_pages) {
-                std::cout << *page << std::endl;
+                std::cout << std::endl;
             }
         }
     }
