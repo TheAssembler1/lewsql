@@ -19,12 +19,14 @@ int main() {
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg{num_pages}};
     BufferManager buf_manager{posix_dmanager, replacment_alg, num_pages};
     try {
-        for(unsigned int i = 0; i < num_pages; i++) {
-            buf_manager.pin(disk_id, i);
-        }
+        std::cout << std::endl;
+        buf_manager.pin(0, 0);
+        std::cout << std::endl;
+        buf_manager.pin(0, 1);
+        std::cout << std::endl;
 
-        buf_manager.unpin(disk_id, 32);
-        buf_manager.free_avail_pages();
+        BufferManager::print_mem_pool_map(std::cout, buf_manager);
+        BufferManager::print_bitmap(std::cout, buf_manager) << std::endl;
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
 

@@ -30,7 +30,7 @@ void BufferManager::remove_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk
     }
 }
 
-BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor) {
+BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor) const {
     std::cout << "getting page cursor: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     auto disk_iter = mem_pool_map.find(disk_id);
@@ -52,7 +52,7 @@ BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCu
 
 BufferPage* BufferManager::get_page_mem_pool(BufferPageCursor buffer_page_cursor) const {
     assert(buffer_page_cursor <= num_pages);
-    return reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor]);
+    return reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor * disk_manager->page_size]);
 }
 
 std::ostream& BufferManager::print_bitmap(std::ostream& os, const BufferManager& buffer_manager) {
@@ -109,7 +109,7 @@ void BufferManager::free_avail_pages() {
     }
 }
 
-BufferPageCursor BufferManager::get_next_free_page() {
+BufferPageCursor BufferManager::get_next_free_page() const {
     std::cout << "getting next free page" << std::endl;
 
     BufferPageCursor cursor = 0;
@@ -186,7 +186,7 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
         add_page_mem_pool_map(disk_id, disk_page_cursor, buffer_page_cursor);
         mem_pool_bitmap[buffer_page_cursor] = true;
 
-        return &mem_pool[buffer_page_cursor];
+        return &(*get_page_mem_pool(buffer_page_cursor)->bytes);
     }
 }
 

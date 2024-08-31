@@ -43,7 +43,7 @@ class BufferManager final {
 
   void add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor, BufferPageCursor buffer_page_cursor);
   void remove_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor);
-  BufferPageCursor get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor);
+  BufferPageCursor get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor) const;
 
   static std::ostream& print_bitmap(std::ostream& os, const BufferManager& buffer_manager);
   static std::ostream& print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager);
@@ -51,7 +51,7 @@ class BufferManager final {
   void free_avail_pages();
 
   private:
-  BufferPageCursor get_next_free_page();
+  BufferPageCursor get_next_free_page() const;
 
   const std::shared_ptr<DiskManager> disk_manager;
   const std::shared_ptr<ReplacementAlg> replacement_alg;
