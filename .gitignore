@@ -4,6 +4,7 @@ build
 # qt files
 *.pro
 *.xml 
+*.autosave
 
 # libs
 *.a

@@ -9,6 +9,7 @@ enum class BufferManagerErrorCode {
   OUT_OF_MEMORY,
   PAGE_NOT_FOUND,
   DISK_NOT_FOUND,
+  DISK_PAGE_CURSOR_NOT_FOUND,
   OUT_OF_PAGES,
 };
 
@@ -30,6 +31,9 @@ class BufferManagerError : public std::exception {
         break;
         case BufferManagerErrorCode::DISK_NOT_FOUND:
             return "buffer manager disk not found";
+        break;
+        case BufferManagerErrorCode::DISK_PAGE_CURSOR_NOT_FOUND:
+            return "buffer manager disk page cursor not found";
         break;
         case BufferManagerErrorCode::OUT_OF_PAGES:
             return "buffer manager out of pages";
