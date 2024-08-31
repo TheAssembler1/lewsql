@@ -50,7 +50,7 @@ BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCu
     return disk_page_iter->second;
 }
 
-BufferPage* BufferManager::get_page_mem_pool(BufferPageCursor buffer_page_cursor) {
+BufferPage* BufferManager::get_page_mem_pool(BufferPageCursor buffer_page_cursor) const {
     assert(buffer_page_cursor <= num_pages);
     return reinterpret_cast<BufferPage*>(&mem_pool[buffer_page_cursor]);
 }
@@ -71,6 +71,20 @@ std::ostream& BufferManager::print_bitmap(std::ostream& os, const BufferManager&
             os << std::endl;
         } else {
             os << ":";
+        }
+    }
+
+    return os;
+}
+
+std::ostream& BufferManager::print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager) {
+    for(BufferPageCursor cursor = 0; cursor < buffer_manager.num_pages; cursor++) {
+        if(buffer_manager.mem_pool_bitmap[cursor]) {
+            BufferPage* page = buffer_manager.get_page_mem_pool(cursor);
+
+            if(cursor + 1 != buffer_manager.num_pages) {
+                std::cout << *page << std::endl;
+            }
         }
     }
 
@@ -154,7 +168,7 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
             std::cout << "found victim page: " << victim_page << std::endl;
             if(victim_page->dirty) {
                 std::cout << "victim page was dirty... flushing" << std::endl;
-                disk_manager->d_write(disk_id, disk_page_cursor, &mem_pool[buffer_page_cursor]);
+                disk_manager->d_write(disk_id, disk_page_cursor, victim_page->bytes);
             }
             // NOTE: remove victim page from map
             std::cout << "victim (disk_id, disk_page_cursor) = (" << victim_page->disk_id << ", "
@@ -164,8 +178,8 @@ uint8_t* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
             buffer_page = get_page_mem_pool(buffer_page_cursor);
         }
 
-        disk_manager->d_read(disk_id, disk_page_cursor, &mem_pool[buffer_page_cursor]);
-        buffer_page->init(disk_id, disk_page_cursor, 1, false);
+        buffer_page->init(disk_id, disk_page_cursor, buffer_page_cursor, 1, false);
+        disk_manager->d_read(disk_id, disk_page_cursor, buffer_page->bytes);
 
         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
 

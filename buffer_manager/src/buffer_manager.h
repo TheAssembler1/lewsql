@@ -39,13 +39,14 @@ class BufferManager final {
   void unpin(DiskId disk_id, DiskPageCursor disk_page_cursor);
   void set_dirty(DiskId disk_id, DiskPageCursor disk_page_cursor);
 
-  BufferPage* get_page_mem_pool(BufferPageCursor buffer_page_cursor);
+  BufferPage* get_page_mem_pool(BufferPageCursor buffer_page_cursor) const;
 
   void add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor, BufferPageCursor buffer_page_cursor);
   void remove_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor);
   BufferPageCursor get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor);
 
   static std::ostream& print_bitmap(std::ostream& os, const BufferManager& buffer_manager);
+  static std::ostream& print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager);
 
   void free_avail_pages();
 
