@@ -4,7 +4,7 @@ project(buffer_manager VERSION 1.0 LANGUAGES CXX)
 
 set(SOURCES
     src/buffer_manager.cpp
-    src/replacement/lru.cpp
+    src/replacement/dumb_alg.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
