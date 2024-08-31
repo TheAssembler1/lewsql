@@ -5,8 +5,14 @@ management system. This way the amount learned from the project is maximized.
 
 ## Component in Development
 
-- Buffer manager
+- Buffer Manager
+- Disk Manager
 
 ## TODO Components
 
-- Literally everything else
+- Lexer
+- Parser
+- Bytecode Generator
+- Virtual Machine
+- HashMap Index
+- B+Tree Index
