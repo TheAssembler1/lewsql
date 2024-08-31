@@ -49,16 +49,7 @@ class BufferManager final {
       return os;
   }
 
-  void free_avail_pages() {
-      try {
-          while(true) {
-            auto victim = replacement_alg->get_victim(mem_pool_bitmap, mem_pool);
-            std::cout << "freeing avail page: " << victim << std::endl;
-          }
-      } catch(BufferManagerError& e) {
-          std::cout << e.what() << std::endl;
-      }
-  }
+  void free_avail_pages();
 
   private:
   BufferPageCursor get_next_free_page();
