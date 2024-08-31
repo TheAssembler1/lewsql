@@ -49,6 +49,8 @@ class BufferManager final {
   static std::ostream& print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager);
 
   void free_avail_pages();
+  unsigned int get_num_free_pages() const;
+  unsigned int get_num_taken_pages() const;
 
   private:
   BufferPageCursor get_next_free_page() const;

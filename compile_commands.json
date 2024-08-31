@@ -12,6 +12,18 @@
   "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/buffer_manager.cpp.o"
 },
 {
+  "directory": "/home/ta1/src/lewsql/build/buffer_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager.dir/src/replacement/dumb_alg.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/replacement/dumb_alg.cpp",
+  "file": "/home/ta1/src/lewsql/buffer_manager/src/replacement/dumb_alg.cpp",
+  "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/replacement/dumb_alg.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/buffer_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager_test.cpp.dir/test/pinning_1.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/pinning_1.cpp",
+  "file": "/home/ta1/src/lewsql/buffer_manager/test/pinning_1.cpp",
+  "output": "buffer_manager/CMakeFiles/buffer_manager_test.cpp.dir/test/pinning_1.cpp.o"
+},
+{
   "directory": "/home/ta1/src/lewsql/build/driver",
   "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/driver/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/driver.dir/src/run.cpp.o -c /home/ta1/src/lewsql/driver/src/run.cpp",
   "file": "/home/ta1/src/lewsql/driver/src/run.cpp",

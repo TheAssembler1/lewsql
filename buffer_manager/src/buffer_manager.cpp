@@ -5,6 +5,21 @@
 #include "buffer_manager_error.h"
 #include "buffer_page.h"
 
+unsigned int BufferManager::get_num_free_pages() const {
+    int total_free = 0;
+    for(auto page: mem_pool_bitmap) {
+        if(!page) {
+            total_free++;
+        }
+    }
+
+    return total_free;
+}
+
+unsigned int BufferManager::get_num_taken_pages() const {
+    return num_pages - get_num_free_pages();
+}
+
 void BufferManager::add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor, BufferPageCursor buffer_page_cursor) {
     auto map_iter = mem_pool_map.find(disk_id);
 
