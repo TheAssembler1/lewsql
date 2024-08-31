@@ -9,7 +9,6 @@ enum class BufferManagerErrorCode {
   PAGE_NOT_FOUND,
   DISK_NOT_FOUND,
   OUT_OF_PAGES,
-  NO_UNPINNED_PAGES,
 };
 
 class BufferManagerError : public std::exception {

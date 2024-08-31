@@ -10,18 +10,18 @@ HEADERS = \
    $$PWD/buffer_manager/src/buffer_manager_error.h \
    $$PWD/buffer_manager/src/buffer_page.h \
    $$PWD/buffer_manager/src/replacement/replacement_alg.h \
-   $$PWD/buffer_manager/src/replacement/lru.h \
    $$PWD/disk_manager/src/impl/posix_disk_manager.h \
    $$PWD/disk_manager/src/disk_manager.h \
    $$PWD/disk_manager/src/disk_manager_error.h \
-   buffer_manager/src/buffer_manager_types.h \
-   disk_manager/src/disk_manager_types.h
+   $$PWD/buffer_manager/src/buffer_manager_types.h \
+   $$PWD/buffer_manager/src/replacement/dumb_alg.h \
+   $$PWD/disk_manager/src/disk_manager_types.h
 
 SOURCES = \
    $$PWD/buffer_manager/src/buffer_manager.cpp \
-   $$PWD/buffer_manager/src/replacement/lru.cpp \
    $$PWD/disk_manager/src/impl/posix_disk_manager.cpp \
-   $$PWD/driver/src/run.cpp
+   $$PWD/driver/src/run.cpp \
+   buffer_manager/src/replacement/dumb_alg.cpp
 
 INCLUDEPATH = \
     $$PWD/buffer_manager/src \

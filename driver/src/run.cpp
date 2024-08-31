@@ -1,7 +1,7 @@
 #include <disk_manager.h>
 #include <buffer_manager.h>
 #include <impl/posix_disk_manager.h>
-#include <replacement/lru.h>
+#include <replacement/dumb_alg.h>
 
 #include <iostream>
 #include <vector>
@@ -13,24 +13,21 @@ int main() {
   auto disk_id = posix_dmanager->d_create();
   std::cout << "successfully created disk" << std::endl;
 
-  uint8_t* bytes{new uint8_t[512]};
-  for(int i = 0; i < 8; i++) {
-    bytes[i] = i;
-    std::cout << "write byte: " <<  static_cast<unsigned int>(bytes[i]) << std::endl;
+  try {
+      std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg{512}};
+      BufferManager buf_manager{posix_dmanager, replacment_alg, 512};
+
+      for(int i = 0; i < 512; i++) {
+        buf_manager.pin(disk_id, i);
+      }
+
+      buf_manager.unpin(disk_id, 0);
+      buf_manager.free_avail_pages();
+
+      BufferManager::print_bitmap(std::cout, buf_manager) << std::endl;
+  } catch(std::exception& e) {
+      std::cerr << e.what() << std::endl;
   }
-  posix_dmanager->d_write(disk_id, 0, bytes);
-  std::cout << "successfully wrote to disk" << std::endl;
-
-  uint8_t* read_bytes{new uint8_t[512]};
-  posix_dmanager->d_read(disk_id, 0, read_bytes);
-  std::cout << "successfully read from disk" << std::endl;
-
-  for(int i = 0; i < 8; i++) {
-    std::cout << "read byte: " <<  static_cast<unsigned int>(read_bytes[i]) << std::endl;
-  }
-
-  std::shared_ptr<ReplacementAlg> replacment_alg{new LRU{}};
-  BufferManager buf_manager{posix_dmanager, replacment_alg, 512};
 
   posix_dmanager->d_destroy(disk_id);
   std::cout << "successfully destroyed disk" << std::endl;

@@ -148,9 +148,9 @@ void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, 
   int foffset = disk_page_cursor * page_size;
 
   errno = 0;
-  int stat = lseek(fd, foffset, SEEK_SET);
+  int res = lseek(fd, foffset, SEEK_SET);
 
-  if(stat == -1) {
+  if(res == -1) {
     std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
     throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
   }
@@ -164,9 +164,15 @@ void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, 
   }
 
   errno = 0;
-  stat = close(fd);
+  res = fsync(fd);
+  if(res == -1) {
+    std::cerr << "failed to fsync file, errno: " << std::strerror(errno) << std::endl;
+    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  }
 
-  if(stat == -1) {
+  errno = 0;
+  res = close(fd);
+  if(res == -1) {
     std::cerr << "failed to close file, errno: " << std::strerror(errno) << std::endl;
     throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
   }
@@ -182,52 +188,84 @@ void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, u
   auto fname = fname_iter->second;
   auto full_path_fname = get_disk_path(fname);
 
+  // FIXME: ensuring file is large enough
+  struct stat st;
   errno = 0;
-  int fd = open(full_path_fname.c_str(), O_RDONLY);
+  int res = stat(full_path_fname.c_str(), &st);
+
+  if(res == -1) {
+      std::cerr << "failed to stat file at errno: " << strerror(errno) << std::endl;
+      throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+  }
+
+  errno = 0;
+  int fd = open(full_path_fname.c_str(), O_RDWR);
 
   if(fd == -1) {
-    std::cerr << "failed to open file, errno: " << std::strerror(errno) << "file path: " << full_path_fname << std::endl;
-    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+    std::cerr << "failed to open file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
+    throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
   }
 
-  // FIXME: validation on this number
-  int foffset = ((disk_page_cursor + 1) * page_size);
+  // NOTE: set file pointer
+  unsigned int foffset = disk_page_cursor * page_size;
   errno = 0;
-  int stat = lseek(fd, foffset, SEEK_SET);
-  if(stat == -1) {
+  res = lseek(fd, foffset, SEEK_SET);
+  if(res == -1) {
     std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+    throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
   }
 
-  // NOTE: reset file pointer
-  foffset -= page_size;
-  errno = 0;
-  stat = lseek(fd, foffset, SEEK_SET);
-  if(stat == -1) {
-    std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+  if(foffset + page_size > st.st_size) {
+    std::cout << "foffset greater than file size... extending file" << std::endl;
+
+    errno = 0;
+    int byte = 0;
+
+    std::cout << "extending file to offset: " << foffset + page_size << std::endl;
+    res = write(fd, &byte, foffset + page_size);
+
+    if(res == -1) {
+        std::cerr << "failed to write file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
+        throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+    }
+
+    errno = 0;
+    res = fsync(fd);
+    if(res == -1) {
+      std::cerr << "failed to fsync file, errno: " << std::strerror(errno) << std::endl;
+      throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+    }
+
+    // NOTE: reset file pointer
+    errno = 0;
+    res = lseek(fd, foffset, SEEK_SET);
+    if(res == -1) {
+      std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
+      throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+    }
   }
 
   errno = 0;
-  std::cout << "offset before read: " << foffset << std::endl;
-  int num_bytes = read(fd, bytes, page_size);
+  std::cout << "reading (foffset, num_bytes) = " << "("
+            << foffset << ", " << page_size << ")" << std::endl;
+  unsigned int num_bytes = read(fd, bytes, page_size);
 
   if(num_bytes != page_size) {
       std::cerr << "failed to read num_bytes to file, errno: " << std::strerror(errno) << " num bytes: " << num_bytes << std::endl;
-      throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+      throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
   }
 
   errno = 0;
-  stat = close(fd);
+  res = close(fd);
 
-  if(stat == -1) {
+  if(res == -1) {
     std::cerr << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-    throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+    throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
   }
 }
 
 std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager) {
-  int cur_size = 1;
+  unsigned int cur_size = 1;
   for(const auto& [key, val]: posix_disk_manager.disk_map) {
     std::cout << "[" << key << ", " << val << "]";
 
