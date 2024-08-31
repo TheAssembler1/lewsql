@@ -1,6 +1,10 @@
 # cmake build files
 build
 
+# qt files
+*.pro
+*.xml 
+
 # libs
 *.a
 *.lib

@@ -2,6 +2,7 @@
 #define DISK_MANAGER_ERROR
 
 #include <exception>
+#include <cassert>
 
 enum class DiskManagerErrorCode {
   // NOTE: general error
@@ -26,7 +27,38 @@ class DiskManagerError : public std::exception {
   explicit DiskManagerError(DiskManagerErrorCode error_code) : error_code{error_code} {}
   
   const char* what() const noexcept override {
-    return "disk manager error";
+    switch(error_code) {
+        case DiskManagerErrorCode::UNKOWN_ERROR:
+            return "disk manager unknown error";
+            break;
+    case DiskManagerErrorCode::DISK_ALREADY_EXISTS:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::DISK_NOT_FOUND:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::INIT_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::DEINIT_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::CREATE_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::DESTROY_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::WRITE_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    case DiskManagerErrorCode::READ_DISK_ERROR:
+        return "disk manager unknown error";
+        break;
+    default:
+        assert(1);
+        break;
+    }
   }
 };
 
