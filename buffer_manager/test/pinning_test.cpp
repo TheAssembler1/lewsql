@@ -6,30 +6,25 @@
 #include <replacement/dumb_alg.h>
 #include <memory>
 #include <register_test.h>
-#include <buffer_page_tracker/bitmap_tracker.h>.h>
+#include <buffer_page_tracker/bitmap_tracker.h>
 
 #define PAGE_SIZE 512
 #define NUM_PAGES 8
-
-/*std::shared_ptr<DiskManager> disk_manager,
-std::unique_ptr<ReplacementAlg> replacement_alg,
-std::unique_ptr<BufferPageTracker> buffer_page_tracker,
-unsigned int num_pages):*/
-
-
+#define TEST_DISK_NAME "pinning_test.disk"
 
 void pinning_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp", PAGE_SIZE);
+    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->d_create();
+        disk_id = disk_manager->d_create(TEST_DISK_NAME);
 
         auto buf_manager = std::make_shared<BufferManager>(
             disk_manager,
             std::make_unique<DumbAlg>(),
             std::make_unique<BitmapTracker>(NUM_PAGES),
-            NUM_PAGES
+            NUM_PAGES,
+            PAGE_SIZE
         );
 
         ASSERT(buf_manager->buffer_page_tracker->get_num_free_pages() == NUM_PAGES);

@@ -7,26 +7,30 @@
 #include <iostream>
 #include <vector>
 
-int main() {
-    unsigned int page_size = 512;
-    unsigned int num_pages = 8;
+#define PAGE_SIZE 512
+#define NUM_PAGES 8
+#define DISK_CURSOR 0
+#define TEST_DISK_NAME "driver.disk"
 
-    std::shared_ptr<DiskManager> posix_dmanager{new PosixDiskManager("/home/ta1/src/test_dir", page_size)};
+int main() {
+
+    std::shared_ptr<DiskManager> posix_dmanager{new PosixDiskManager("/home/ta1/src/test_dir")};
     std::cout << "successfully created disk manager" << std::endl;
 
-    auto disk_id = posix_dmanager->d_create();
+    auto disk_id = posix_dmanager->d_create(TEST_DISK_NAME);
     std::cout << "successfully created disk" << std::endl;
 
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
     auto buf_manager = std::make_shared<BufferManager>(
         posix_dmanager,
         std::make_unique<DumbAlg>(),
-        std::make_unique<BitmapTracker>(512),
-        512
+        std::make_unique<BitmapTracker>(PAGE_SIZE),
+        NUM_PAGES,
+        PAGE_SIZE
     );
 
     try {
-        for(int i = 0; i < num_pages; i++) {
+        for(int i = 0; i < NUM_PAGES; i++) {
             buf_manager->pin(disk_id, i);
         }
 

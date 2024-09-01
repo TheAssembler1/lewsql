@@ -13,17 +13,18 @@
 
 class DiskManager {
   public:
-  DiskManager(const std::string& dir_path, unsigned int page_size) 
-    : page_size{page_size}, dir_path{dir_path} {}
+  DiskManager(const std::string& dir_path) : dir_path{dir_path} {}
 
-  const unsigned int page_size;
   const std::string dir_path;
 
-  virtual DiskId d_create() = 0;
+  virtual DiskId d_create(DiskName disk_name) = 0;
   virtual void d_destroy(DiskId disk_id) = 0;
 
-  virtual void d_write(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes) = 0;
-  virtual void d_read(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes) = 0;
+  virtual void d_write(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
+  virtual void d_read(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
+
+  virtual DiskName disk_exists(DiskId disk_id) = 0;
+  virtual unsigned int disk_size(DiskId disk_id) = 0;
 };
 
 #endif // DISK_MANAGER_H

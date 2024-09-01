@@ -21,27 +21,28 @@
 #include <optional>
 #include <cstdlib>
 
+#include "../disk_manager_error.h"
+
 class PosixDiskManager final: public DiskManager {
   public:
-  PosixDiskManager(const std::string& dir_path, unsigned int page_size);
+  PosixDiskManager(const std::string& dir_path);
   
   friend std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager);
   
-  virtual DiskId d_create() override;
+  virtual DiskId d_create(DiskName disk_name) override;
   virtual void d_destroy(DiskId disk_id) override;
-  virtual void d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
-  virtual void d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
+
+  virtual void d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
+  virtual void d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
+
+  virtual DiskName disk_exists(DiskId disk_id) override;
+  virtual unsigned int disk_size(DiskId disk_id) override;
 
   private:
-  std::string get_disk_path(const std::string& f_name) { return dir_path + "/" + f_name; }
-  std::string get_new_disk_path() { return file_prefix + std::to_string(cur_disk);}
-  // NOTE: returns std::nullopt if filename is not a disk
-  static std::optional<unsigned int> get_disk_id_from_path(const std::string& fname);
-   
-  static const inline std::string file_prefix{"posix_dmanager_disk_"};
-  unsigned int cur_disk{0};
-  // NOTE: maps disk ids to their associated filenames in the dir_path
-  std::unordered_map<DiskId, std::string> disk_map{}; 
+  std::string get_disk_path(DiskName& disk_name) { return dir_path + "/" + disk_name; }
+  DiskId cur_disk_id = 0;
+
+  std::unordered_map<DiskId, DiskName> disks{};
 };
 
 #endif // POSIX_DISK_MANAGER_H

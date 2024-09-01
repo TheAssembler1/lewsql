@@ -24,11 +24,12 @@
 class BufferManager final {
   public:
     BufferManager(std::shared_ptr<DiskManager> disk_manager, std::unique_ptr<ReplacementAlg> replacement_alg,
-      std::unique_ptr<BufferPageTracker> buffer_page_tracker, unsigned int num_pages):
+      std::unique_ptr<BufferPageTracker> buffer_page_tracker, unsigned int num_pages, unsigned int page_size):
+      page_size{page_size},
       disk_manager{disk_manager},
       replacement_alg{std::move(replacement_alg)},
       buffer_page_tracker{std::move(buffer_page_tracker)},
-      mem_pool{num_pages, disk_manager->page_size} {}
+      mem_pool{num_pages, page_size} {}
 
   BufferPage* pin(DiskId disk_id, DiskPageCursor disk_page_cursor);
   void unpin(DiskId disk_id, DiskPageCursor disk_page_cursor);
@@ -49,6 +50,9 @@ class BufferManager final {
   const std::shared_ptr<DiskManager> disk_manager;
   const std::unique_ptr<ReplacementAlg> replacement_alg;
   const std::unique_ptr<BufferPageTracker> buffer_page_tracker;
+
+private:
+    const unsigned int page_size;
 };
 
 #endif // BUFFER_MANAGER_H

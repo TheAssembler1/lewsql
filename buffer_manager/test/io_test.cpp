@@ -11,19 +11,21 @@
 #define PAGE_SIZE 512
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
+#define TEST_DISK_NAME "io_test.disk"
 
 void io_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp", PAGE_SIZE);
+    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
     auto alg = std::make_shared<DumbAlg>();
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->d_create();
+        disk_id = disk_manager->d_create(TEST_DISK_NAME);
         auto buf_manager = std::make_shared<BufferManager>(
             disk_manager,
             std::make_unique<DumbAlg>(),
             std::make_unique<BitmapTracker>(NUM_PAGES),
-            NUM_PAGES
+            NUM_PAGES,
+            PAGE_SIZE
         );
 
         // NOTE: pin page and write to first byte
