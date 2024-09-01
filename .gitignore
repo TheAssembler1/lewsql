@@ -1,3 +1,6 @@
+# tmp files
+*.tmp
+
 # cmake build files
 build
 
