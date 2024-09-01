@@ -21,8 +21,6 @@
 #include <optional>
 #include <cstdlib>
 
-#include "../disk_manager_error.h"
-
 class PosixDiskManager final: public DiskManager {
   public:
   PosixDiskManager(const std::string& dir_path);
@@ -39,7 +37,7 @@ class PosixDiskManager final: public DiskManager {
   virtual unsigned int disk_size(DiskId disk_id) override;
 
   private:
-  std::string get_disk_path(DiskName& disk_name) { return dir_path + "/" + disk_name; }
+  std::string get_disk_path(const DiskName& disk_name) { return dir_path + "/" + disk_name; }
   DiskId cur_disk_id = 0;
 
   std::unordered_map<DiskId, DiskName> disks{};

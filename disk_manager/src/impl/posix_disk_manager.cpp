@@ -55,8 +55,7 @@ DiskId PosixDiskManager::d_create(DiskName disk_name) {
 }
 
 void PosixDiskManager::d_destroy(DiskId disk_id) {
-    auto disk_name = disk_exists(disk_id);
-    auto full_path_fname = get_disk_path(disk_name);
+    auto full_path_fname = get_disk_path(disk_exists(disk_id));
 
     errno = 0;
     int stat = unlink(full_path_fname.c_str());
@@ -70,14 +69,13 @@ void PosixDiskManager::d_destroy(DiskId disk_id) {
 }
 
 void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) {
-    auto disk_name = disk_exists(disk_id);
+    std::string full_path_fname = get_disk_path(disk_exists(disk_id));
 
     errno = 0;
-    std::string abs_path = get_disk_path(disk_name);
-    int fd = open(abs_path.c_str(), O_WRONLY);
+    int fd = open(full_path_fname.c_str(), O_WRONLY);
 
     if(fd == -1) {
-        std::cerr << "failed to open file, errno: " << std::strerror(errno) << " file path: " << abs_path << std::endl;
+        std::cerr << "failed to open file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
         throw DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
     }
 
@@ -117,8 +115,7 @@ void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, 
 }
 
 void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) {
-    auto disk_name = disk_exists(disk_id);
-    auto full_path_fname = get_disk_path(disk_name);
+    auto full_path_fname = get_disk_path(disk_exists(disk_id));
 
     // FIXME: ensuring file is large enough
     struct stat st;
@@ -224,8 +221,7 @@ DiskName PosixDiskManager::disk_exists(DiskId disk_id) {
 };
 
 unsigned int PosixDiskManager::disk_size(DiskId disk_id) {
-    auto disk_name = disk_exists(disk_id);
-    auto full_path_fname = get_disk_path(disk_name);
+    auto full_path_fname = get_disk_path(disk_exists(disk_id));
 
     errno = 0;
     int fd = open(full_path_fname.c_str(), O_RDWR);
