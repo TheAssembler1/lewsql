@@ -27,13 +27,16 @@ class PosixDiskManager final: public DiskManager {
   
   friend std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager);
   
-  virtual DiskId d_create(DiskName disk_name) override;
+  virtual DiskId d_create(const DiskName& disk_name) override;
   virtual void d_destroy(DiskId disk_id) override;
+
+  virtual DiskId d_load(const DiskName& disk_name) override;
+  virtual void d_unload(DiskId disk_id) override;
 
   virtual void d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
   virtual void d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
 
-  virtual DiskName disk_exists(DiskId disk_id) override;
+  virtual DiskName disk_loaded(DiskId disk_id) override;
   virtual unsigned int disk_size(DiskId disk_id) override;
 
   private:
