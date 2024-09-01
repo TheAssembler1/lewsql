@@ -20,6 +20,8 @@ void io_test() {
         ASSERT(disk_id == 0);
 
         auto buf_manager = std::make_shared<BufferManager>(disk_manager, alg, NUM_PAGES);
+
+
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
         disk_manager->d_destroy(disk_id);
