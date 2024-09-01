@@ -5,17 +5,12 @@
 #include <impl/posix_disk_manager.h>
 #include <replacement/dumb_alg.h>
 #include <memory>
+#include <register_test.h>
 
 #define PAGE_SIZE 512
 #define NUM_PAGES 8
 
-#define ASSERT(test)                                  \
-{                                                     \
-    if(!(test)) { disk_manager->d_destroy(disk_id); } \
-    assert(test);                                     \
-}
-
-int main(int argc, char** argv) {
+void pinning_test() {
     auto disk_manager = std::make_shared<PosixDiskManager>("/tmp", PAGE_SIZE);
     auto alg = std::make_shared<DumbAlg>(NUM_PAGES);
 
@@ -47,12 +42,12 @@ int main(int argc, char** argv) {
 
         ASSERT(buf_manager->get_num_free_pages() == NUM_PAGES);
         ASSERT(buf_manager->get_num_taken_pages() == 0);
+
+        disk_manager->d_destroy(disk_id);
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
         disk_manager->d_destroy(disk_id);
         throw e;
     }
-
-    disk_manager->d_destroy(disk_id);
-    return 0;
 }
+REGISTER_TEST(pinning_test);

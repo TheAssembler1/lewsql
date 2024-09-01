@@ -15,21 +15,23 @@ HEADERS = \
    $$PWD/disk_manager/src/disk_manager_error.h \
    $$PWD/buffer_manager/src/buffer_manager_types.h \
    $$PWD/buffer_manager/src/replacement/dumb_alg.h \
-   $$PWD/disk_manager/src/disk_manager_types.h
+   $$PWD/disk_manager/src/disk_manager_types.h \
+   $$PWD/buffer_manager/test/register.h
 
 SOURCES = \
    $$PWD/buffer_manager/src/buffer_manager.cpp \
    $$PWD/disk_manager/src/impl/posix_disk_manager.cpp \
    $$PWD/driver/src/run.cpp \
-   buffer_manager/src/replacement/dumb_alg.cpp
+   $$PWD/buffer_manager/src/replacement/dumb_alg.cpp \
+   $$PWD/buffer_manager/test/buffer_manager_test.cpp \
+   $$PWD/buffer_manager/test/io_test.cpp \
+   $$PWD/test_helper/src/register_test.cpp
 
 INCLUDEPATH = \
     $$PWD/buffer_manager/src \
     $$PWD/disk_manager/src \
-    $$PWD/disk_manager/src/impl
+    $$PWD/disk_manager/src/impl \
+    $$PWD/test_helper/src
 
 #DEFINES = 
-
-DISTFILES += \
-    buffer_manager/src/replacment
 

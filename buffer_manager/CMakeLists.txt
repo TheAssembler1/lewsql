@@ -14,16 +14,14 @@ target_include_directories(
   PUBLIC src 
 )
 
-set(BUFFER_MANAGER_TEST_EXEC buffer_manager_test.cpp)
+set(BUFFER_MANAGER_TEST_EXEC buffer_manager_test)
 set(TEST_SOURCES
-    test/pinning_1.cpp
+    test/pinning_test.cpp
+    test/io_test.cpp
 )
 
-create_test_sourcelist(buffer_manager_test_sourcelist ${BUFFER_MANAGER_TEST_EXEC} ${TEST_SOURCES})
-add_executable(${BUFFER_MANAGER_TEST_EXEC} ${TEST_SOURCES})
-
-target_link_libraries(${BUFFER_MANAGER_TEST_EXEC} PRIVATE buffer_manager)
-target_link_libraries(${BUFFER_MANAGER_TEST_EXEC} PRIVATE disk_manager)
+add_executable(${BUFFER_MANAGER_TEST_EXEC} "test/buffer_manager_test.cpp" ${TEST_SOURCES})
+target_link_libraries(${BUFFER_MANAGER_TEST_EXEC} PRIVATE test_helper buffer_manager disk_manager)
 
 foreach(test ${TEST_SOURCES})
   get_filename_component(TName ${test} NAME_WE)
