@@ -5,6 +5,7 @@ build
 *.pro
 *.xml 
 *.autosave
+*.user
 
 # libs
 *.a
