@@ -8,8 +8,14 @@
 
 #include "buffer_manager_types.h"
 
-struct BufferPage {
-    void init(DiskId _disk_id, DiskPageCursor _disk_page_cursor, BufferPageCursor _buffer_page_cursor, unsigned int _pin_count, bool _dirty) {
+class BufferPage {
+public:
+    BufferPage() = delete;
+    ~BufferPage() = delete;
+
+    void init(DiskId _disk_id, DiskPageCursor _disk_page_cursor,
+              BufferPageCursor _buffer_page_cursor, unsigned int _pin_count,
+              bool _dirty) {
         disk_id = _disk_id;
         disk_page_cursor = _disk_page_cursor;
         buffer_page_cursor = _buffer_page_cursor;

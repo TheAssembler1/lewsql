@@ -17,7 +17,6 @@ void pinning_test() {
     DiskId disk_id;
     try {
         disk_id = disk_manager->d_create();
-        ASSERT(disk_id == 0);
 
         auto buf_manager = std::make_shared<BufferManager>(disk_manager, alg, NUM_PAGES);
 

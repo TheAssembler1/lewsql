@@ -18,6 +18,7 @@ set(BUFFER_MANAGER_TEST_EXEC buffer_manager_test)
 set(TEST_SOURCES
     test/pinning_test.cpp
     test/io_test.cpp
+    test/memory_pool_test.cpp
 )
 
 add_executable(${BUFFER_MANAGER_TEST_EXEC} "test/buffer_manager_test.cpp" ${TEST_SOURCES})

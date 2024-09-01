@@ -164,7 +164,8 @@ void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, 
     }
 
     errno = 0;
-    unsigned int num_bytes = write(fd, bytes, page_size);
+    std::cout << "writing (foffset, num_bytes) = "
+              << "(" << foffset << ", " << page_size << ")" << std::endl;    unsigned int num_bytes = write(fd, bytes, page_size);
 
     if(num_bytes != page_size) {
         std::cerr << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
@@ -215,22 +216,23 @@ void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, u
     }
 
     // NOTE: set file pointer
-    unsigned int foffset = disk_page_cursor * page_size;
-    errno = 0;
-    res = lseek(fd, foffset, SEEK_SET);
-    if(res == -1) {
-        std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-        throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
-
-    if(foffset + page_size > st.st_size) {
+    unsigned int foffset = (disk_page_cursor + 1) * page_size - 1;
+    std::cout << "file size found to be: " << st.st_size << std::endl;
+    if(foffset > st.st_size) {
         std::cout << "foffset greater than file size... extending file" << std::endl;
+
+        errno = 0;
+        res = lseek(fd, foffset, SEEK_SET);
+        if(res == -1) {
+            std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
+            throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+        }
 
         errno = 0;
         int byte = 0;
 
-        std::cout << "extending file to offset: " << foffset + page_size << std::endl;
-        res = write(fd, &byte, foffset + page_size);
+        std::cout << "extending file to offset: " << foffset << std::endl;
+        res = write(fd, &byte, 1);
 
         if(res == -1) {
             std::cerr << "failed to write file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
@@ -243,14 +245,15 @@ void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, u
             std::cerr << "failed to fsync file, errno: " << std::strerror(errno) << std::endl;
             throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
         }
+    }
 
-        // NOTE: reset file pointer
-        errno = 0;
-        res = lseek(fd, foffset, SEEK_SET);
-        if(res == -1) {
-            std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-            throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-        }
+    // NOTE: reset file pointer
+    foffset = disk_page_cursor * page_size;
+    errno = 0;
+    res = lseek(fd, foffset, SEEK_SET);
+    if(res == -1) {
+        std::cerr << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
+        throw DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
     }
 
     errno = 0;
