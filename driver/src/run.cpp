@@ -2,6 +2,7 @@
 #include <disk_manager.h>
 #include <impl/posix_disk_manager.h>
 #include <replacement/dumb_alg.h>
+#include <buffer_page_tracker/bitmap_tracker.h>
 
 #include <iostream>
 #include <vector>
@@ -16,21 +17,21 @@ int main() {
     auto disk_id = posix_dmanager->d_create();
     std::cout << "successfully created disk" << std::endl;
 
-    std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg{num_pages}};
-    BufferManager buf_manager{posix_dmanager, replacment_alg, num_pages};
+    std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
+    auto buf_manager = std::make_shared<BufferManager>(
+        posix_dmanager,
+        std::make_unique<DumbAlg>(),
+        std::make_unique<BitmapTracker>(512),
+        512
+    );
+
     try {
         for(int i = 0; i < num_pages; i++) {
-            buf_manager.pin(disk_id, i);
+            buf_manager->pin(disk_id, i);
         }
 
-        for(int i = 0; i < num_pages - 1; i++) {
-            buf_manager.unpin(disk_id, i);
-        }
-
-        buf_manager.free_avail_pages();
-
-        BufferManager::print_mem_pool_map(std::cout, buf_manager) << std::endl;
-        BufferManager::print_bitmap(std::cout, buf_manager) << std::endl;
+        buf_manager->print_mem_pool_map(std::cout, *buf_manager) << std::endl;
+        std::cout << *(dynamic_cast<BitmapTracker*>(buf_manager->buffer_page_tracker.get())) << std::endl;
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
     }

@@ -5,9 +5,12 @@ project(buffer_manager VERSION 1.0 LANGUAGES CXX)
 set(SOURCES
     src/buffer_manager.cpp
     src/replacement/dumb_alg.cpp
+    src/memory_pool.cpp
+    src/buffer_page_tracker/bitmap_tracker.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES}
+    src/buffer_page_tracker/bitmap_tracker.h src/buffer_page_tracker/bitmap_tracker.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE disk_manager)
 target_include_directories(
   ${PROJECT_NAME} 

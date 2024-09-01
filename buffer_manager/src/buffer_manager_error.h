@@ -17,7 +17,7 @@ class BufferManagerError : public std::exception {
   public:
   const BufferManagerErrorCode error_code;
   explicit BufferManagerError(BufferManagerErrorCode error_code) : error_code{error_code} {}
-  
+
   const char* what() const noexcept override {
     switch(error_code) {
         case BufferManagerErrorCode::UNKOWN_ERROR:

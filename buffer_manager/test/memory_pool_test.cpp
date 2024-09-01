@@ -6,17 +6,25 @@
 #include <replacement/dumb_alg.h>
 #include <memory>
 #include <register_test.h>
+#include <buffer_page_tracker/bitmap_tracker.h>
 
 #define PAGE_SIZE 512
 #define NUM_PAGES 8
 void memory_pool_test() {
     auto disk_manager = std::make_shared<PosixDiskManager>("/tmp", PAGE_SIZE);
-    auto alg = std::make_shared<DumbAlg>(NUM_PAGES);
+    auto alg = std::make_shared<DumbAlg>();
 
     DiskId disk_id;
     try {
         disk_id = disk_manager->d_create();
-        auto buf_manager = std::make_shared<BufferManager>(disk_manager, alg, NUM_PAGES);
+
+        auto buf_manager = std::make_shared<BufferManager>(
+            disk_manager,
+            std::make_unique<DumbAlg>(),
+            std::make_unique<BitmapTracker>(NUM_PAGES),
+            NUM_PAGES
+        );
+
 
         for(int i = 0; i < NUM_PAGES; i++) {
             BufferPage* page = buf_manager->pin(disk_id, i);

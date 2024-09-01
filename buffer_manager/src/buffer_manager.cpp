@@ -5,21 +5,6 @@
 #include "buffer_manager_error.h"
 #include "buffer_page.h"
 
-unsigned int BufferManager::get_num_free_pages() const {
-    int total_free = 0;
-    for(auto page: mem_pool_bitmap) {
-        if(!page) {
-            total_free++;
-        }
-    }
-
-    return total_free;
-}
-
-unsigned int BufferManager::get_num_taken_pages() const {
-    return num_pages - get_num_free_pages();
-}
-
 void BufferManager::add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor, BufferPageCursor buffer_page_cursor) {
     std::cout << "adding page to mem pool at: " << buffer_page_cursor << std::endl;
 
@@ -29,14 +14,14 @@ void BufferManager::add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_pa
         mem_pool_map[disk_id] = std::unordered_map<DiskId, DiskPageCursor>();
     }
 
-    mem_pool_bitmap[buffer_page_cursor] = true;
+    buffer_page_tracker->set_page_status(buffer_page_cursor, true);
     mem_pool_map[disk_id][disk_page_cursor] = buffer_page_cursor;
 }
 
 void BufferManager::remove_page_mem_pool_map(BufferPageCursor victim_page_cursor) {
     std::cout << "removing page from mem pool: " << victim_page_cursor << std::endl;
 
-    BufferPage* buffer_page = get_page_mem_pool(victim_page_cursor);
+    BufferPage* buffer_page = mem_pool.get_page(victim_page_cursor);
 
     assert(buffer_page->pin_count == 0);
 
@@ -56,7 +41,7 @@ void BufferManager::remove_page_mem_pool_map(BufferPageCursor victim_page_cursor
         disk_manager->d_write(disk_id, disk_page_cursor, bytes);
     }
 
-    mem_pool_bitmap[victim_page_cursor] = false;
+    buffer_page_tracker->set_page_status(victim_page_cursor, false);
     mem_pool_map[disk_id].erase(disk_page_cursor);
 
     // NOTE: only erase disk if there are no other disk page cursors
@@ -85,42 +70,13 @@ BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCu
     return disk_page_iter->second;
 }
 
-BufferPage* BufferManager::get_page_mem_pool(BufferPageCursor buffer_page_cursor) const {
-    std::cout << "getting mem pool page: " << buffer_page_cursor << std::endl;
-
-    assert(buffer_page_cursor < num_pages);
-    return reinterpret_cast<BufferPage*>(&mem_pool[(sizeof(BufferPage) + disk_manager->page_size) * buffer_page_cursor]);
-}
-
-std::ostream& BufferManager::print_bitmap(std::ostream& os, const BufferManager& buffer_manager) {
-    unsigned int index = 0;
-    while(index < buffer_manager.mem_pool_bitmap.size()) {
-        if(buffer_manager.mem_pool_bitmap[index]) {
-            os << "1";
-        } else {
-            os << "0";
-        }
-        index++;
-        if(index == buffer_manager.mem_pool_bitmap.size()) {
-            break;
-        }
-        if(index && index % 32 == 0) {
-            os << std::endl;
-        } else {
-            os << ":";
-        }
-    }
-
-    return os;
-}
-
 std::ostream& BufferManager::print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager) {
-    for(BufferPageCursor cursor = 0; cursor < buffer_manager.num_pages; cursor++) {
-        if(buffer_manager.mem_pool_bitmap[cursor]) {
-            BufferPage* page = buffer_manager.get_page_mem_pool(cursor);
+    for(BufferPageCursor cursor = 0; cursor < buffer_manager.mem_pool.num_pages; cursor++) {
+        if(buffer_manager.buffer_page_tracker->get_page_status(cursor)) {
+            BufferPage* page = buffer_manager.mem_pool.get_page(cursor);
 
             std::cout << *page;
-            if(cursor + 1 != buffer_manager.num_pages) {
+            if(cursor + 1 < buffer_manager.buffer_page_tracker->get_num_taken_pages()) {
                 std::cout << std::endl;
             }
         }
@@ -134,7 +90,7 @@ void BufferManager::free_avail_pages() {
 
     try {
         while(true) {
-            auto victim = replacement_alg->get_victim(mem_pool_bitmap, mem_pool, disk_manager->page_size);
+            auto victim = replacement_alg->get_victim(*buffer_page_tracker, mem_pool);
             remove_page_mem_pool_map(victim);
 
             std::cout << "freeing avail page: " << victim << std::endl;
@@ -144,32 +100,17 @@ void BufferManager::free_avail_pages() {
     }
 }
 
-BufferPageCursor BufferManager::get_next_free_page() const {
-    std::cout << "getting next free page" << std::endl;
-
-    BufferPageCursor cursor = 0;
-
-    while(mem_pool_bitmap[cursor]) {
-        cursor++;
-    }
-
-    if(cursor == mem_pool_bitmap.size()) {
-        throw BufferManagerError(BufferManagerErrorCode::OUT_OF_PAGES);
-    }
-
-    return cursor;
-}
-
 void BufferManager::unpin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     std::cout << "unpinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     BufferPageCursor buffer_page_cursor = get_page_mem_pool_map(disk_id, disk_page_cursor);
-    BufferPage* buffer_page = get_page_mem_pool(buffer_page_cursor);
+    BufferPage* buffer_page = mem_pool.get_page(buffer_page_cursor);
 
     assert(buffer_page->pin_count);
     buffer_page->pin_count--;
 
     std::cout << "unpin resulted in pin count: " << buffer_page->pin_count << std::endl;
+    replacement_alg->on_unpin(buffer_page_cursor);
 }
 
 BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
@@ -182,28 +123,28 @@ BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
         buffer_page_cursor = get_page_mem_pool_map(disk_id, disk_page_cursor);
         std::cout << "found page in cache" << std::endl;
 
-        buffer_page = get_page_mem_pool(buffer_page_cursor);
+        buffer_page = mem_pool.get_page(buffer_page_cursor);
         buffer_page->pin_count++;
 
         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
 
-        return get_page_mem_pool(buffer_page_cursor);
+        return mem_pool.get_page(buffer_page_cursor);
 
         // NOTE: page not in cache yet
     } catch(std::exception& e) {
         try {
-            buffer_page_cursor = get_next_free_page();
+            buffer_page_cursor = buffer_page_tracker->get_next_free_page();
             std::cout << "found free page in bitmap: " << buffer_page_cursor << std::endl;
-            buffer_page = get_page_mem_pool(buffer_page_cursor);
+            buffer_page = mem_pool.get_page(buffer_page_cursor);
             // NOTE: no pages available need to evict
         } catch(BufferManagerError& e) {
-            BufferPageCursor victim_page = replacement_alg->get_victim(mem_pool_bitmap, mem_pool, disk_manager->page_size);
+            BufferPageCursor victim_page = replacement_alg->get_victim(*buffer_page_tracker, mem_pool);
             std::cout << "found victim page: " << victim_page << std::endl;
 
             remove_page_mem_pool_map(victim_page);
 
             buffer_page_cursor = victim_page;
-            buffer_page = get_page_mem_pool(victim_page);
+            buffer_page = mem_pool.get_page(victim_page);
         }
 
         buffer_page->init(disk_id, disk_page_cursor, buffer_page_cursor, 1, false);
@@ -212,13 +153,16 @@ BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
 
         add_page_mem_pool_map(disk_id, disk_page_cursor, buffer_page_cursor);
-        return get_page_mem_pool(buffer_page_cursor);
+
+        replacement_alg->on_pin(buffer_page_cursor);
+        return buffer_page;
     }
 }
 
 void BufferManager::set_dirty(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     std::cout << "setting dirty page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
+
     BufferPageCursor buffer_page_cursor = get_page_mem_pool_map(disk_id, disk_page_cursor);
-    BufferPage* buffer_page = get_page_mem_pool(buffer_page_cursor);
+    BufferPage* buffer_page = mem_pool.get_page(buffer_page_cursor);
     buffer_page->dirty = true;
 }

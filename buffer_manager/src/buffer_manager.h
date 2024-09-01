@@ -13,60 +13,42 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <utility>
 
-#include "buffer_manager_error.h"
 #include "replacement/replacement_alg.h"
 #include "buffer_manager_types.h"
 #include "buffer_page.h"
+#include "memory_pool.h"
+#include "buffer_page_tracker/buffer_page_tracker.h"
 
 class BufferManager final {
   public:
-  BufferManager(std::shared_ptr<DiskManager> disk_manager,
-                std::shared_ptr<ReplacementAlg> replacement_alg,
-                unsigned int num_pages)
-    : disk_manager{disk_manager},
-      replacement_alg{replacement_alg},
-      num_pages{num_pages},
-      mem_pool_bitmap(num_pages),
-      // NOTE: allocates pages plus BufferPage memers into a mem pool
-      mem_pool{new uint8_t[((sizeof(BufferPage) + disk_manager->page_size) * num_pages)]}{
-    assert(num_pages > 0 && disk_manager->page_size > 0);
-    std::cout << "creating buffer manager with (num_pages, page_size) = ("
-              << num_pages << ", " << disk_manager->page_size << ")" << std::endl;
-    std::memset(static_cast<void*>(&mem_pool[0]), 0, (sizeof(BufferPage) + disk_manager->page_size) * num_pages);
-  }
+    BufferManager(std::shared_ptr<DiskManager> disk_manager, std::unique_ptr<ReplacementAlg> replacement_alg,
+      std::unique_ptr<BufferPageTracker> buffer_page_tracker, unsigned int num_pages):
+      disk_manager{disk_manager},
+      replacement_alg{std::move(replacement_alg)},
+      buffer_page_tracker{std::move(buffer_page_tracker)},
+      mem_pool{num_pages, disk_manager->page_size} {}
 
   BufferPage* pin(DiskId disk_id, DiskPageCursor disk_page_cursor);
   void unpin(DiskId disk_id, DiskPageCursor disk_page_cursor);
   void set_dirty(DiskId disk_id, DiskPageCursor disk_page_cursor);
 
-  BufferPage* get_page_mem_pool(BufferPageCursor buffer_page_cursor) const;
-
   void add_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor, BufferPageCursor buffer_page_cursor);
   void remove_page_mem_pool_map(BufferPageCursor victim_page_cursor);
   BufferPageCursor get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor) const;
 
-  static std::ostream& print_bitmap(std::ostream& os, const BufferManager& buffer_manager);
-  static std::ostream& print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager);
+  std::ostream& print_mem_pool_map(std::ostream& os, const BufferManager& buffer_manager);
 
   void free_avail_pages();
 
-  unsigned int get_num_free_pages() const;
-  unsigned int get_num_taken_pages() const;
-
-  private:
-  BufferPageCursor get_next_free_page() const;
-
-  const std::shared_ptr<DiskManager> disk_manager;
-  const std::shared_ptr<ReplacementAlg> replacement_alg;
-  const unsigned int num_pages;
-
-  // NOTE: tracks allocated pages
-  std::vector<bool> mem_pool_bitmap;
   // NOTE: maps disk pages to mem pool pages
   MemPoolMapType mem_pool_map;
-  // NOTE: mem pool with buffer pages
-  std::unique_ptr<uint8_t[]> mem_pool;
+  MemoryPool mem_pool;
+
+  const std::shared_ptr<DiskManager> disk_manager;
+  const std::unique_ptr<ReplacementAlg> replacement_alg;
+  const std::unique_ptr<BufferPageTracker> buffer_page_tracker;
 };
 
 #endif // BUFFER_MANAGER_H
