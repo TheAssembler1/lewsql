@@ -23,6 +23,8 @@ class DiskManager {
   virtual DiskId d_load(const DiskName& disk_name) = 0;
   virtual void d_unload(DiskId disk_id) = 0;
 
+  virtual unsigned int num_loaded_disk() const = 0;
+
   virtual void d_write(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
   virtual void d_read(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
 

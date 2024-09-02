@@ -33,6 +33,8 @@ class PosixDiskManager final: public DiskManager {
   virtual DiskId d_load(const DiskName& disk_name) override;
   virtual void d_unload(DiskId disk_id) override;
 
+  virtual unsigned int num_loaded_disk() const override;
+
   virtual void d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
   virtual void d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes, unsigned int page_size) override;
 

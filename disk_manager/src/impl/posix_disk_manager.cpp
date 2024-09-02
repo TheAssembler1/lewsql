@@ -5,6 +5,10 @@
 #include "disk_manager.h"
 #include "disk_manager_error.h"
 
+unsigned int PosixDiskManager::num_loaded_disk() const {
+    return disks.size();
+}
+
 PosixDiskManager::PosixDiskManager(const std::string& dir_path)
 : DiskManager{dir_path} {
     std::cout << "dir path set to path: " << dir_path << std::endl;

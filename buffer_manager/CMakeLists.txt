@@ -9,8 +9,7 @@ set(SOURCES
     src/buffer_page_tracker/bitmap_tracker.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES}
-    src/buffer_page_tracker/bitmap_tracker.h src/buffer_page_tracker/bitmap_tracker.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE disk_manager)
 target_include_directories(
   ${PROJECT_NAME} 

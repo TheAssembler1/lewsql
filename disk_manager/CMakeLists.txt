@@ -12,3 +12,16 @@ target_include_directories(
   ${PROJECT_NAME} 
   PUBLIC src 
 )
+
+set(DISK_MANAGER_TEST_EXEC disk_manager_manager_test)
+set(TEST_SOURCES
+    test/posix_disk_test.cpp
+)
+
+add_executable(${DISK_MANAGER_TEST_EXEC} "test/disk_manager_test.cpp" ${TEST_SOURCES})
+target_link_libraries(${DISK_MANAGER_TEST_EXEC} PRIVATE test_helper disk_manager)
+
+foreach(test ${TEST_SOURCES})
+  get_filename_component(TName ${test} NAME_WE)
+  add_test(NAME ${TName} COMMAND ${DISK_MANAGER_TEST_EXEC} ${TName})
+endforeach()
