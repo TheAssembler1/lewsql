@@ -6,7 +6,7 @@
 #include "type.h"
 
 class Uint8TType: Type {
-    Uint8TType(uint8_t val): val{val} {}
+    Uint8TType(void* src): val{*static_cast<uint8_t*>(src)} {}
 
     virtual const char* type_name() override;
 
