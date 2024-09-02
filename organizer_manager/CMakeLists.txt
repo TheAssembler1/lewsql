@@ -4,6 +4,8 @@ project(organizer_manager VERSION 1.0 LANGUAGES CXX)
 
 set(SOURCES
     src/heap.cpp
+    src/types/uint8_t_type.cpp
+    src/tuple.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

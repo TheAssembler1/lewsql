@@ -26,7 +26,7 @@ class DiskManagerError : public std::exception {
   const DiskManagerErrorCode error_code;
   explicit DiskManagerError(DiskManagerErrorCode error_code) : error_code{error_code} {}
   
-  const char* what() const noexcept override {
+  virtual const char* what() const noexcept override {
     switch(error_code) {
         case DiskManagerErrorCode::UNKOWN_ERROR:
             return "disk manager unknown error";
