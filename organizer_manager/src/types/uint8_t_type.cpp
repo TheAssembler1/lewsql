@@ -10,7 +10,7 @@ void Uint8TType::serialize(uint8_t* dest) {
 
 Type* Uint8TType::deserialize(void* src) {
     uint8_t* val = static_cast<uint8_t*>(src);
-    Uint8TType* instance = new Uint8TType(*val);
+    Uint8TType* instance = new Uint8TType(static_cast<uint8_t*>(val));
 
     return instance;
 };

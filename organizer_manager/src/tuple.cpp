@@ -8,6 +8,15 @@ void Tuple::serialize(uint8_t* dest) {
     }
 }
 
+unsigned int Tuple::size() {
+    unsigned int size = 0;
+    for(auto cell: cells) {
+        size += cell->size();
+    }
+
+    return size;
+}
+
 void Tuple::deserailize(uint8_t* src) {
 
 }
