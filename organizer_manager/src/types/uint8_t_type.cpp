@@ -1,7 +1,7 @@
 #include "uint8_t_type.h"
 
-const char* Uint8TType::type_name() {
-    return Type::get_type_name(TypeList::UINT8_T);
+TypeList Uint8TType::get_type() {
+    return TypeList::UINT8_T;
 };
 
 void Uint8TType::serialize(uint8_t* dest) {

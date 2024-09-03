@@ -21,7 +21,7 @@ class Type {
     virtual void serialize(uint8_t* dest) = 0;
     virtual Type* deserialize(void* src) = 0;
     virtual bool size() = 0;
-    virtual const char* type_name() = 0;
+    virtual TypeList get_type() = 0;
 };
 
 #endif // TYPE_H

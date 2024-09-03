@@ -18,6 +18,14 @@ class Tuple {
     void serialize(uint8_t* dest, bool last);
     void deserailize(uint8_t* src);
 
+    const char* get_cell_type(int index) {
+        return Type::get_type_name(cells[index]->get_type());
+    }
+
+    unsigned int num_cells() const {
+        return cells.size();
+    }
+
     private:
     TupleVals cells;
 };

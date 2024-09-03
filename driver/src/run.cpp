@@ -44,11 +44,6 @@ int main() {
 
     TupleVals tuple_vals{};
     tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(2));
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(3));
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(5));
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(6));
 
     Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
     heap.push_back_record(std::move(tuple));
