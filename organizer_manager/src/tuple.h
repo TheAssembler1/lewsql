@@ -6,21 +6,22 @@
 #include <cassert>
 
 #include "types/type.h"
+#include "types/tuple_types.h"
 
 class Tuple {
 public:
-    Tuple(std::vector<TypeList> cols, std::vector<void*> params, unsigned int page_size): cols{cols} {
-        assert(params.size() == cols.size());
+    Tuple(TupleCols cols, TupleVals vals, unsigned int page_size): cols{cols} {
+        assert(vals.size() == cols.size());
 
-        for(int i = 0; i < params.size(); i++) {
-            cells.push_back(Type::get_instance(cols[i], params[i]));
+        for(int i = 0; i < vals.size(); i++) {
+            cells.push_back(Type::get_instance(cols[i], vals[i]));
         }
 
-        assert(page_size < size());
+        assert(page_size > size());
     }
 
     unsigned int size();
-    void serialize(uint8_t* dest);
+    void serialize(uint8_t* dest, bool last);
     void deserailize(uint8_t* src);
 
 private:

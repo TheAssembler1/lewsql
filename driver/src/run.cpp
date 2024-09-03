@@ -4,6 +4,8 @@
 #include <replacement/dumb_alg.h>
 #include <buffer_page_tracker/bitmap_tracker.h>
 #include <disk_manager_error.h>
+#include <organizer.h>
+#include <heap.h>
 
 #include <iostream>
 #include <vector>
@@ -12,6 +14,7 @@
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
 #define TEST_DISK_NAME "driver.disk"
+#define TEST_TABLE_NAME "test.table"
 
 int main() {
 
@@ -38,20 +41,21 @@ int main() {
         PAGE_SIZE
     );
 
-    try {
-        for(int i = 0; i < NUM_PAGES; i++) {
-            buf_manager->pin(disk_id, i);
-        }
+    uint8_t test_val = 69;
+    TupleCols cols = TupleCols{TypeList::UINT8_T};
+    TupleVals vals = TupleVals{&test_val};
 
-        std::cout << "printing buffer manager mem pool map" << std::endl;
-        buf_manager->print_mem_pool_map(std::cout, *buf_manager) << std::endl;
-        std::cout << "printing buffer manager bitmap map" << std::endl;
-        std::cout << *(dynamic_cast<BitmapTracker*>(buf_manager->buffer_page_tracker.get())) << std::endl;
-    } catch(std::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
+    Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
-    std::cout << "printing disk manager state" << std::endl;
+    std::cout << "writing tuple" << std::endl;
+    heap.push_back_record(Tuple(cols, vals, PAGE_SIZE));
+
+    // NOTE flushing all pages
+    std::cout << "flushing pages which should have tuple" << std::endl;
+    buf_manager->free_avail_pages();
+
+    // FIXME: maybe this should happen in the heap class itself
+    std::cout << "unloading disk" << std::endl;
     posix_dmanager->d_unload(disk_id);
 
     std::cout << *(dynamic_cast<PosixDiskManager*>(posix_dmanager.get())) << std::endl;

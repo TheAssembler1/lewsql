@@ -1,6 +1,7 @@
 #ifndef ORGANIZER_H
 #define ORGANIZER_H
 
+#include "tuple.h"
 #include "organizer_error.h"
 
 class Organizer {
@@ -16,11 +17,19 @@ class Organizer {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void append_record() {
+    virtual void push_front_record() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void prepend_record() {
+    virtual void pop_front_record() {
+        throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
+    };
+
+    virtual void push_back_record(Tuple tuple) {
+        throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
+    };
+
+    virtual void pop_back_record() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 };
