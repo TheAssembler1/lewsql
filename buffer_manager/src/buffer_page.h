@@ -1,21 +1,19 @@
 #ifndef BUFFER_PAGE_H
 #define BUFFER_PAGE_H
 
-#include <disk_manager.h>
 #include <cstdint>
-#include <memory>
+#include <disk_manager.h>
 #include <iostream>
+#include <memory>
 
 #include "buffer_manager_types.h"
 
 class BufferPage {
-public:
+    public:
     BufferPage() = delete;
     ~BufferPage() = delete;
 
-    void init(DiskId _disk_id, DiskPageCursor _disk_page_cursor,
-              BufferPageCursor _buffer_page_cursor, unsigned int _pin_count,
-              bool _dirty) {
+    void init(DiskId _disk_id, DiskPageCursor _disk_page_cursor, BufferPageCursor _buffer_page_cursor, unsigned int _pin_count, bool _dirty) {
         disk_id = _disk_id;
         disk_page_cursor = _disk_page_cursor;
         buffer_page_cursor = _buffer_page_cursor;

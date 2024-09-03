@@ -1,8 +1,8 @@
 #ifndef ORGANIZER_H
 #define ORGANIZER_H
 
-#include "tuple.h"
 #include "organizer_error.h"
+#include "tuple.h"
 
 class Organizer {
     virtual void search_record() {

@@ -5,9 +5,10 @@
 
 #include "type.h"
 
-class Uint8TType: public Type {
-public:
-    Uint8TType(void* src): val{*static_cast<uint8_t*>(src)} {}
+class Uint8TType : public Type {
+    public:
+    Uint8TType(void* src) : val{*static_cast<uint8_t*>(src)} {
+    }
 
     virtual const char* type_name() override;
 
@@ -17,7 +18,7 @@ public:
     virtual bool is_uint8_t() override;
     virtual bool size() override;
 
-private:
+    private:
     uint8_t val;
 };
 

@@ -1,9 +1,9 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include <stdint.h>
-#include <memory>
 #include <cassert>
+#include <memory>
+#include <stdint.h>
 
 enum class TypeList {
     BOOL,
@@ -14,7 +14,7 @@ enum class TypeList {
 };
 
 class Type {
-public:
+    public:
     static const char* get_type_name(TypeList type_list);
     static Type* get_instance(TypeList type_list, void* param);
 

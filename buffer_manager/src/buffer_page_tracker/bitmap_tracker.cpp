@@ -2,7 +2,7 @@
 
 unsigned int BitmapTracker::get_num_free_pages() const {
     int total_free = 0;
-    for(auto page: bitmap) {
+    for(auto page : bitmap) {
         if(!page) {
             total_free++;
         }

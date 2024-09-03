@@ -6,7 +6,7 @@ void RegisterTest::register_test(const std::string& name, TestFunction func) {
 
 void RegisterTest::run_test(const std::string& name) const {
     auto it = tests.find(name);
-    if (it != tests.end()) {
+    if(it != tests.end()) {
         std::cout << "Running test: " << name << std::endl;
         it->second();
     } else {
@@ -16,7 +16,7 @@ void RegisterTest::run_test(const std::string& name) const {
 
 void RegisterTest::list_tests() const {
     std::cout << "Available tests:" << std::endl;
-    for (const auto& test : tests) {
+    for(const auto& test : tests) {
         std::cout << "  - " << test.first << std::endl;
     }
 }

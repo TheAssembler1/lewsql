@@ -1,22 +1,24 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <buffer_manager.h>
 #include <disk_manager.h>
 #include <disk_manager_error.h>
-#include <buffer_manager.h>
 #include <memory>
+#include <organizer.h>
 #include <tuple.h>
 #include <types/tuple_types.h>
-#include <organizer.h>
 
 // NOTE: (DiskId, DiskCursor) = (0, 0) byte 0 is heap stage stamp
 //       each tuple starts with whether it is the last in the heap
-class Heap: Organizer {
-public:
-    Heap(std::shared_ptr<DiskManager> disk_manager, std::shared_ptr<BufferManager> buffer_manager,
-         std::string table_name, TupleCols cols, unsigned int page_size)
-        : disk_manager{disk_manager}, buffer_manager{buffer_manager},
-          table_name{table_name}, cols{cols}, page_size{page_size} {
+class Heap : Organizer {
+    public:
+    Heap(std::shared_ptr<DiskManager> disk_manager,
+    std::shared_ptr<BufferManager> buffer_manager,
+    std::string table_name,
+    TupleCols cols,
+    unsigned int page_size)
+    : disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
 
         try {
             disk_id = disk_manager->d_create(table_name);
@@ -33,7 +35,7 @@ public:
 
     virtual void push_back_record(Tuple tuple) override;
 
-private:
+    private:
     std::shared_ptr<DiskManager> disk_manager;
     std::shared_ptr<BufferManager> buffer_manager;
     TupleCols cols;

@@ -1,14 +1,15 @@
 #ifndef BUFFER_PAGE_TRACKER
 #define BUFFER_PAGE_TRACKER
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
 #include "buffer_manager_types.h"
 
 class BufferPageTracker {
-public:
-    BufferPageTracker(unsigned int num_pages): num_pages(num_pages) {}
+    public:
+    BufferPageTracker(unsigned int num_pages) : num_pages(num_pages) {
+    }
 
     virtual BufferPageCursor get_next_free_page() const = 0;
 
@@ -17,7 +18,8 @@ public:
 
     virtual unsigned int get_num_free_pages() const = 0;
     virtual unsigned int get_num_taken_pages() const = 0;
-protected:
+
+    protected:
     unsigned int num_pages;
 };
 

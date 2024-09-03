@@ -7,9 +7,9 @@ void Heap::push_back_record(Tuple tuple) {
     BufferPageCursor cur_page_cursor = 0;
     BufferPageByteCursor cur_page_byte_cursor = 0;
 
-    BufferPage* page = buffer_manager->pin(disk_id, cur_page_cursor);
+    BufferPage& page = buffer_manager->pin(disk_id, cur_page_cursor);
 
-    uint8_t* page_bytes = page->bytes;
+    uint8_t* page_bytes = page.bytes;
     tuple.serialize(page_bytes, false);
 
     buffer_manager->set_dirty(disk_id, cur_page_cursor);

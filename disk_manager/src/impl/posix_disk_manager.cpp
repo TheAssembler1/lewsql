@@ -9,8 +9,7 @@ unsigned int PosixDiskManager::num_loaded_disk() const {
     return disks.size();
 }
 
-PosixDiskManager::PosixDiskManager(const std::string& dir_path)
-: DiskManager{dir_path} {
+PosixDiskManager::PosixDiskManager(const std::string& dir_path) : DiskManager{dir_path} {
     std::cout << "dir path set to path: " << dir_path << std::endl;
 }
 
@@ -117,7 +116,8 @@ void PosixDiskManager::d_write(DiskId disk_id, DiskPageCursor disk_page_cursor, 
 
     errno = 0;
     std::cout << "writing (foffset, num_bytes) = "
-              << "(" << foffset << ", " << page_size << ")" << std::endl;    unsigned int num_bytes = write(fd, bytes, page_size);
+              << "(" << foffset << ", " << page_size << ")" << std::endl;
+    unsigned int num_bytes = write(fd, bytes, page_size);
 
     if(num_bytes != page_size) {
         std::cerr << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
@@ -229,7 +229,7 @@ std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_ma
     }
 
     int cur = 0;
-    for(const auto [disk_id, disk_name]: posix_disk_manager.disks) {
+    for(const auto [disk_id, disk_name] : posix_disk_manager.disks) {
         os << "(disk_id, disk_name) = (" << disk_id << ", " << disk_name << ")";
         cur++;
 

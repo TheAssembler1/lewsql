@@ -1,8 +1,8 @@
 #ifndef TUPLE_TYPES_H
 #define TUPLE_TYPES_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "type.h"
 

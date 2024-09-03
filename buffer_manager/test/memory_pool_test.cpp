@@ -1,12 +1,12 @@
-#include <iostream>
 #include <buffer_manager.h>
+#include <buffer_page_tracker/bitmap_tracker.h>
 #include <disk_manager.h>
 #include <disk_manager_types.h>
 #include <impl/posix_disk_manager.h>
-#include <replacement/dumb_alg.h>
+#include <iostream>
 #include <memory>
 #include <register_test.h>
-#include <buffer_page_tracker/bitmap_tracker.h>
+#include <replacement/dumb_alg.h>
 
 #define PAGE_SIZE 512
 #define NUM_PAGES 8
@@ -21,19 +21,14 @@ void memory_pool_test() {
         disk_id = disk_manager->d_create(TEST_DISK_NAME);
 
         auto buf_manager = std::make_shared<BufferManager>(
-            disk_manager,
-            std::make_unique<DumbAlg>(),
-            std::make_unique<BitmapTracker>(NUM_PAGES),
-            NUM_PAGES,
-            PAGE_SIZE
-        );
+        disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_PAGES), NUM_PAGES, PAGE_SIZE);
 
 
         for(int i = 0; i < NUM_PAGES; i++) {
-            BufferPage* page = buf_manager->pin(disk_id, i);
+            BufferPage& page = buf_manager->pin(disk_id, i);
             for(int j = 0; j < PAGE_SIZE; j++) {
                 std::cout << "testing (page, byte) = (" << i << ", " << j << ")" << std::endl;
-                assert(page->bytes[j] == 0);
+                assert(page.bytes[j] == 0);
             }
         }
     } catch(std::exception& e) {

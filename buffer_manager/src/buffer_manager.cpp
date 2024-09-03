@@ -25,7 +25,7 @@ void BufferManager::remove_page_mem_pool_map(BufferPageCursor victim_page_cursor
 
     assert(buffer_page->pin_count == 0);
 
-    DiskId disk_id =buffer_page->disk_id;
+    DiskId disk_id = buffer_page->disk_id;
     DiskPageCursor disk_page_cursor = buffer_page->disk_page_cursor;
     bool dirty = buffer_page->dirty;
     uint8_t* bytes = buffer_page->bytes;
@@ -113,7 +113,7 @@ void BufferManager::unpin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     replacement_alg->on_unpin(buffer_page_cursor);
 }
 
-BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
+BufferPage& BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
     std::cout << "pinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     BufferPageCursor buffer_page_cursor;
@@ -128,7 +128,7 @@ BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
 
         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
 
-        return mem_pool.get_page(buffer_page_cursor);
+        return *mem_pool.get_page(buffer_page_cursor);
 
         // NOTE: page not in cache yet
     } catch(std::exception& e) {
@@ -155,7 +155,7 @@ BufferPage* BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
         add_page_mem_pool_map(disk_id, disk_page_cursor, buffer_page_cursor);
 
         replacement_alg->on_pin(buffer_page_cursor);
-        return buffer_page;
+        return *buffer_page;
     }
 }
 

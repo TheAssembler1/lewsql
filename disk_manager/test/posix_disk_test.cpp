@@ -1,7 +1,7 @@
-#include <iostream>
 #include <disk_manager.h>
 #include <disk_manager_types.h>
 #include <impl/posix_disk_manager.h>
+#include <iostream>
 #include <memory>
 #include <register_test.h>
 

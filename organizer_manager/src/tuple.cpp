@@ -13,7 +13,7 @@ void Tuple::serialize(uint8_t* dest, bool last) {
 
     cursor += sizeof(LAST_TUPLE_SIZE);
 
-    for(auto cell: cells) {
+    for(auto cell : cells) {
         cell->serialize(cursor);
         cursor += cell->size();
     }
@@ -23,7 +23,7 @@ unsigned int Tuple::size() {
     unsigned int size = 0;
     size += sizeof(LAST_TUPLE_SIZE);
 
-    for(auto cell: cells) {
+    for(auto cell : cells) {
         size += cell->size();
     }
 
@@ -31,5 +31,4 @@ unsigned int Tuple::size() {
 }
 
 void Tuple::deserailize(uint8_t* src) {
-
 }

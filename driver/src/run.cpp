@@ -1,11 +1,11 @@
 #include <buffer_manager.h>
-#include <disk_manager.h>
-#include <impl/posix_disk_manager.h>
-#include <replacement/dumb_alg.h>
 #include <buffer_page_tracker/bitmap_tracker.h>
+#include <disk_manager.h>
 #include <disk_manager_error.h>
-#include <organizer.h>
 #include <heap.h>
+#include <impl/posix_disk_manager.h>
+#include <organizer.h>
+#include <replacement/dumb_alg.h>
 
 #include <iostream>
 #include <vector>
@@ -34,14 +34,12 @@ int main() {
 
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
     auto buf_manager = std::make_shared<BufferManager>(
-        posix_dmanager,
-        std::make_unique<DumbAlg>(),
-        std::make_unique<BitmapTracker>(PAGE_SIZE),
-        NUM_PAGES,
-        PAGE_SIZE
-    );
+    posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
-    uint8_t test_val1 = 1; uint8_t test_val2 = 2; uint8_t test_val3 = 3; uint8_t test_val4 = 4;
+    uint8_t test_val1 = 1;
+    uint8_t test_val2 = 2;
+    uint8_t test_val3 = 3;
+    uint8_t test_val4 = 4;
     TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
     TupleVals vals = TupleVals{&test_val1, &test_val2, &test_val3, &test_val4};
 

@@ -1,8 +1,8 @@
 #ifndef BUFFER_MANAGER_TYPES_H
 #define BUFFER_MANAGER_TYPES_H
 
-#include <unordered_map>
 #include <stdint.h>
+#include <unordered_map>
 
 using BufferPageCursor = unsigned int;
 using BufferPageByteCursor = uint8_t*;
