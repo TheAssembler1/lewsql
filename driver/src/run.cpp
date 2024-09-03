@@ -41,9 +41,9 @@ int main() {
         PAGE_SIZE
     );
 
-    uint8_t test_val = 69;
-    TupleCols cols = TupleCols{TypeList::UINT8_T};
-    TupleVals vals = TupleVals{&test_val};
+    uint8_t test_val1 = 1; uint8_t test_val2 = 2; uint8_t test_val3 = 3; uint8_t test_val4 = 4;
+    TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
+    TupleVals vals = TupleVals{&test_val1, &test_val2, &test_val3, &test_val4};
 
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
