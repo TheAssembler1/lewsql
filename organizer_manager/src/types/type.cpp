@@ -15,7 +15,7 @@ const char* Type::get_type_name(TypeList type_list) {
 
 Type* Type::get_instance(TypeList type_list, void* param) {
     switch(type_list) {
-    case(TypeList::UINT8_T): return new Uint8TType(param); break;
+    case(TypeList::UINT8_T): return new Uint8TType(*static_cast<uint8_t*>(param)); break;
     default: assert(0); break;
     }
 }

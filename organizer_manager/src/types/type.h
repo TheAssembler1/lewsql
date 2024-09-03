@@ -20,35 +20,8 @@ class Type {
 
     virtual void serialize(uint8_t* dest) = 0;
     virtual Type* deserialize(void* src) = 0;
-
-    virtual const char* type_name() = 0;
-
-    virtual bool is_bool() {
-        return false;
-    };
-
-    virtual bool is_uint8_t() {
-        return false;
-    };
-
-    virtual bool is_uint16_t() {
-        return false;
-    };
-
-    virtual bool is_uint32_t() {
-        return false;
-    };
-
-    virtual bool is_uint64_t() {
-        return false;
-    };
-
-    virtual bool is_array() {
-        return false;
-    };
-
-
     virtual bool size() = 0;
+    virtual const char* type_name() = 0;
 };
 
 #endif // TYPE_H

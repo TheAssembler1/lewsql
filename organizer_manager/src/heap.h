@@ -34,14 +34,18 @@ class Heap : Organizer {
     };
 
     virtual void push_back_record(Tuple tuple) override;
+    virtual bool valid_record() const override;
 
     private:
-    std::shared_ptr<DiskManager> disk_manager;
-    std::shared_ptr<BufferManager> buffer_manager;
-    TupleCols cols;
+    // NOTE: this is the disk name on fs
     std::string table_name;
     DiskId disk_id;
-    std::vector<Tuple> tuples;
+
+    std::shared_ptr<DiskManager> disk_manager;
+    std::shared_ptr<BufferManager> buffer_manager;
+
+    // NOTE: specifies the types stored by the table
+    TupleCols cols;
     unsigned int page_size;
 };
 

@@ -32,6 +32,8 @@ class Organizer {
     virtual void pop_back_record() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
+
+    virtual bool valid_record() const = 0;
 };
 
 #endif // ORGANIZER_H

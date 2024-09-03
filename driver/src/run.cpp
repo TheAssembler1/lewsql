@@ -6,6 +6,7 @@
 #include <impl/posix_disk_manager.h>
 #include <organizer.h>
 #include <replacement/dumb_alg.h>
+#include <types/uint8_t_type.h>
 
 #include <iostream>
 #include <vector>
@@ -36,17 +37,21 @@ int main() {
     auto buf_manager = std::make_shared<BufferManager>(
     posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
-    uint8_t test_val1 = 1;
-    uint8_t test_val2 = 2;
-    uint8_t test_val3 = 3;
-    uint8_t test_val4 = 4;
-    TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
-    TupleVals vals = TupleVals{&test_val1, &test_val2, &test_val3, &test_val4};
-
+    TupleCols cols = TupleCols{TypeList::UINT8_T};
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
     std::cout << "writing tuple" << std::endl;
-    heap.push_back_record(Tuple(cols, vals, PAGE_SIZE));
+
+    TupleVals tuple_vals{};
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(2));
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(3));
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(5));
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(6));
+
+    Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
+    heap.push_back_record(std::move(tuple));
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;

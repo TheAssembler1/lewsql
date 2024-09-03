@@ -5,18 +5,12 @@
 #include <memory>
 #include <vector>
 
-#include "types/tuple_types.h"
 #include "types/type.h"
+#include "types/tuple_types.h"
 
 class Tuple {
     public:
-    Tuple(TupleCols cols, TupleVals vals, unsigned int page_size) : cols{cols} {
-        assert(vals.size() == cols.size());
-
-        for(int i = 0; i < vals.size(); i++) {
-            cells.push_back(Type::get_instance(cols[i], vals[i]));
-        }
-
+    Tuple(TupleVals cells, unsigned int page_size): cells{std::move(cells)} {
         assert(page_size > size());
     }
 
@@ -25,8 +19,7 @@ class Tuple {
     void deserailize(uint8_t* src);
 
     private:
-    std::vector<TypeList> cols;
-    std::vector<Type*> cells;
+    TupleVals cells;
 };
 
 #endif // RECORD_H

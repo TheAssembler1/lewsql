@@ -6,10 +6,7 @@
 
 #include "type.h"
 
-// NOTE: void pointer to the actuall value to be interpreted by each type
-using Cell = void*;
-
-using TupleVals = std::vector<Cell>;
 using TupleCols = std::vector<TypeList>;
+using TupleVals = std::vector<std::unique_ptr<Type>>;
 
 #endif // TUPLE_TYPES_H

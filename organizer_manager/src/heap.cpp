@@ -15,3 +15,6 @@ void Heap::push_back_record(Tuple tuple) {
     buffer_manager->set_dirty(disk_id, cur_page_cursor);
     buffer_manager->unpin(disk_id, cur_page_cursor);
 };
+
+bool Heap::valid_record() const {
+}
