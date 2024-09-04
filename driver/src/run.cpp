@@ -49,7 +49,7 @@ int main() {
     tuple_vals.emplace_back(std::make_unique<Uint32TType>(256));
 
     Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
-    heap.push_back_record(std::move(tuple));
+    heap.push_back_tuple(std::move(tuple));
 
     tuple_vals.clear();
     //}

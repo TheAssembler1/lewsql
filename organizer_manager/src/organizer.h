@@ -5,35 +5,35 @@
 #include "tuple.h"
 
 class Organizer {
-    virtual void search_record() const {
+    virtual void search_tuple() const {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void insert_record() {
+    virtual void insert_tuple() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void delete_record() {
+    virtual void delete_tuple() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void push_front_record() {
+    virtual void push_front_tuple() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void pop_front_record() {
+    virtual void pop_front_tuple() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void push_back_record(Tuple tuple) {
+    virtual void push_back_tuple(Tuple tuple) {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual void pop_back_record() {
+    virtual void pop_back_tuple() {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual bool valid_record(const Tuple& tuple) const = 0;
+    virtual bool is_valid_tuple(const Tuple& tuple) const = 0;
 };
 
 #endif // ORGANIZER_H

@@ -25,8 +25,8 @@ unsigned int page_size)
     }
 };
 
-void Heap::push_back_record(Tuple tuple) {
-    valid_record(tuple);
+void Heap::push_back_tuple(Tuple tuple) {
+    is_valid_tuple(tuple);
 
     // NOTE: find last record
     BufferPage* page = nullptr;
@@ -83,7 +83,7 @@ void Heap::push_back_record(Tuple tuple) {
 };
 
 // FIXME: throw instead of assertting the error here
-bool Heap::valid_record(const Tuple& tuple) const {
+bool Heap::is_valid_tuple(const Tuple& tuple) const {
     // NOTE: validating record
     assert(cols.size() == tuple.num_cells());
     int cur = 0;

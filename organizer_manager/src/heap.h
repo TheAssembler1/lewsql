@@ -19,9 +19,8 @@ class Heap : Organizer {
     TupleCols cols,
     unsigned int page_size);
 
-    virtual void push_back_record(Tuple tuple) override;
-
-    virtual bool valid_record(const Tuple& tuple) const override;
+    virtual void push_back_tuple(Tuple tuple) override;
+    virtual bool is_valid_tuple(const Tuple& tuple) const override;
 
     private:
     // NOTE: this is the disk name on fs
