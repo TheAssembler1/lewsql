@@ -37,16 +37,23 @@ int main() {
     auto buf_manager = std::make_shared<BufferManager>(
     posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
-    TupleCols cols = TupleCols{TypeList::UINT8_T};
+    TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
     std::cout << "writing tuple" << std::endl;
 
-    TupleVals tuple_vals{};
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
+    for(int i = 0; i < 4; i++) {
+        TupleVals tuple_vals{};
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
 
-    Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
-    heap.push_back_record(std::move(tuple));
+        Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
+        heap.push_back_record(std::move(tuple));
+
+        tuple_vals.clear();
+    }
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;

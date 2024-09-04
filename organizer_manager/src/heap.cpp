@@ -1,7 +1,9 @@
 #include "heap.h"
+#include "constants.h"
 
 #include <buffer_manager_types.h>
 #include <cassert>
+#include <optional>
 
 void Heap::push_back_record(Tuple tuple) {
     // NOTE: validating record
@@ -12,16 +14,49 @@ void Heap::push_back_record(Tuple tuple) {
     }
 
     // NOTE: find last record
+    BufferPage* page = nullptr;
     BufferPageCursor cur_page_cursor = 0;
-    BufferPageByteCursor cur_page_byte_cursor = 0;
+    unsigned int abs_byte_cursor = 0;
+    bool was_last = false;
 
-    BufferPage& page = buffer_manager->pin(disk_id, cur_page_cursor);
+    for(;;) {
+        // NOTE: skip past the first page heap stamp
+        if(!abs_byte_cursor) {
+            std::cout << "skipping heap page start stamp" << std::endl;
+            abs_byte_cursor += sizeof(HEAP_PAGE_START_STAMP);
+            page = &buffer_manager->pin(disk_id, cur_page_cursor);
+        } else {
+            std::cout << "not the starting byte" << std::endl;
+        }
 
-    uint8_t* page_bytes = page.bytes;
-    tuple.serialize(page_bytes, false);
+        // NOTE: load the next page
+        if(cur_page_cursor != abs_byte_cursor / page_size) {
+            buffer_manager->unpin(disk_id, cur_page_cursor);
+            cur_page_cursor = abs_byte_cursor / page_size;
+            page = &buffer_manager->pin(disk_id, cur_page_cursor);
+        }
 
-    buffer_manager->set_dirty(disk_id, cur_page_cursor);
-    buffer_manager->unpin(disk_id, cur_page_cursor);
+        assert(page);
+
+        if(!page->bytes[abs_byte_cursor % page_size]) {
+            // NOTE: mark new last entry
+            page->bytes[abs_byte_cursor % page_size] = TUPLE_EXISTS_STAMP;
+            abs_byte_cursor += sizeof(TUPLE_EXISTS_STAMP);
+
+            // NOTE: write new tuple after the last tuple byte
+            std::cout << "writing tuple at abs_cursor: " << (abs_byte_cursor % page_size) << std::endl;
+            tuple.serialize(&(page->bytes[(abs_byte_cursor % page_size)]));
+
+            buffer_manager->set_dirty(disk_id, cur_page_cursor);
+            buffer_manager->unpin(disk_id, cur_page_cursor);
+
+            break;
+        } else {
+            std::cout << "found previous last entry abs_cursor: " << abs_byte_cursor % page_size << std::endl;
+        }
+
+        abs_byte_cursor += tuple.size() + sizeof(TUPLE_EXISTS_STAMP);
+    }
 };
 
 bool Heap::valid_record() const {

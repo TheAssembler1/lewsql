@@ -12,6 +12,8 @@ class BufferPage {
     public:
     BufferPage() = delete;
     ~BufferPage() = delete;
+    BufferPage (const BufferPage&) = delete;
+    BufferPage& operator=(const BufferPage&) = delete;
 
     void init(DiskId _disk_id, DiskPageCursor _disk_page_cursor, BufferPageCursor _buffer_page_cursor, unsigned int _pin_count, bool _dirty) {
         disk_id = _disk_id;

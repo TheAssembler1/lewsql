@@ -24,35 +24,35 @@ void io_test() {
         disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_PAGES), NUM_PAGES, PAGE_SIZE);
 
         // NOTE: pin page and write to first byte
-        BufferPage& page = buf_manager->pin(disk_id, DISK_CURSOR);
+        BufferPage* page = &buf_manager->pin(disk_id, DISK_CURSOR);
 
         for(int i = 0; i < PAGE_SIZE; i++) {
             std::cout << "byte index: " << i << std::endl;
             std::cout << "writing byte to page: " << static_cast<int>(i % 255) << std::endl;
-            page.bytes[i] = i % 255;
-            std::cout << "check writing byte to page: " << static_cast<int>(page.bytes[i]) << std::endl;
-            ASSERT(page.bytes[i] == i % 255);
+            page->bytes[i] = i % 255;
+            std::cout << "check writing byte to page: " << static_cast<int>(page->bytes[i]) << std::endl;
+            ASSERT(page->bytes[i] == i % 255);
         }
 
         for(int i = 0; i < PAGE_SIZE; i++) {
             std::cout << "byte index: " << i << std::endl;
-            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page.bytes[i]) << ")" << std::endl;
-            ASSERT(page.bytes[i] == i % 255);
+            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            ASSERT(page->bytes[i] == i % 255);
         }
 
         buf_manager->set_dirty(disk_id, DISK_CURSOR);
 
         // NOTE: unpin page and hopefully it flushes
         buf_manager->unpin(disk_id, DISK_CURSOR);
-        buf_manager->remove_page_mem_pool_map(page.buffer_page_cursor);
+        buf_manager->remove_page_mem_pool_map(page->buffer_page_cursor);
 
         // NOTE: repin page and assert first byte was written to
-        page = buf_manager->pin(disk_id, DISK_CURSOR);
+        page = &buf_manager->pin(disk_id, DISK_CURSOR);
 
         for(int i = 0; i < PAGE_SIZE; i++) {
             std::cout << "byte index: " << i << std::endl;
-            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page.bytes[i]) << ")" << std::endl;
-            ASSERT(page.bytes[i] == i % 255);
+            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            ASSERT(page->bytes[i] == i % 255);
         }
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;

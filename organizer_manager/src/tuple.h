@@ -15,7 +15,7 @@ class Tuple {
     }
 
     unsigned int size();
-    void serialize(uint8_t* dest, bool last);
+    void serialize(uint8_t* dest);
     void deserailize(uint8_t* src);
 
     const char* get_cell_type(int index) {
