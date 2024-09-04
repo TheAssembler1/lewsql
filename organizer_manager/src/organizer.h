@@ -5,7 +5,7 @@
 #include "tuple.h"
 
 class Organizer {
-    virtual void search_record() {
+    virtual void search_record() const {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
@@ -33,7 +33,7 @@ class Organizer {
         throw OrganizerError(OrganizerErrorCode::MethodNotImplemented);
     };
 
-    virtual bool valid_record() const = 0;
+    virtual bool valid_record(const Tuple& tuple) const = 0;
 };
 
 #endif // ORGANIZER_H

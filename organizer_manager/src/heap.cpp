@@ -5,13 +5,28 @@
 #include <cassert>
 #include <optional>
 
-void Heap::push_back_record(Tuple tuple) {
-    // NOTE: validating record
-    assert(cols.size() == tuple.num_cells());
-    int cur = 0;
-    for(auto& col: cols) {
-        assert(Type::get_type_name(col) == tuple.get_cell_type(cur++));
+Heap::Heap(std::shared_ptr<DiskManager> disk_manager,
+std::shared_ptr<BufferManager> buffer_manager,
+std::string table_name,
+TupleCols cols,
+unsigned int page_size)
+: disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
+
+    try {
+        disk_id = disk_manager->d_create(table_name);
+
+        std::cout << "created table with name: " << table_name << std::endl;
+    } catch(DiskManagerError& e) {
+        assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+
+        disk_id = disk_manager->d_load(table_name);
+
+        std::cout << "table already existed loading table with name: " << table_name << std::endl;
     }
+};
+
+void Heap::push_back_record(Tuple tuple) {
+    valid_record(tuple);
 
     // NOTE: find last record
     BufferPage* page = nullptr;
@@ -67,5 +82,12 @@ void Heap::push_back_record(Tuple tuple) {
     }
 };
 
-bool Heap::valid_record() const {
+// FIXME: throw instead of assertting the error here
+bool Heap::valid_record(const Tuple& tuple) const {
+    // NOTE: validating record
+    assert(cols.size() == tuple.num_cells());
+    int cur = 0;
+    for(auto& col : cols) {
+        assert(Type::get_type_name(col) == tuple.get_cell_type(cur++));
+    }
 }

@@ -9,7 +9,7 @@
 #include <tuple.h>
 #include <types/tuple_types.h>
 
-// NOTE: (DiskId, DiskCursor) = (0, 0) byte 0 is heap stage stamp
+// NOTE: (DiskId, DiskCursor) = (0, 0) bytes 0-3 are heap stage stamp
 //       each tuple starts with whether it is the last in the heap
 class Heap : Organizer {
     public:
@@ -17,32 +17,19 @@ class Heap : Organizer {
     std::shared_ptr<BufferManager> buffer_manager,
     std::string table_name,
     TupleCols cols,
-    unsigned int page_size)
-    : disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
-
-        try {
-            disk_id = disk_manager->d_create(table_name);
-
-            std::cout << "created table with name: " << table_name << std::endl;
-        } catch(DiskManagerError& e) {
-            assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
-
-            disk_id = disk_manager->d_load(table_name);
-
-            std::cout << "table already existed loading table with name: " << table_name << std::endl;
-        }
-    };
+    unsigned int page_size);
 
     virtual void push_back_record(Tuple tuple) override;
-    virtual bool valid_record() const override;
+
+    virtual bool valid_record(const Tuple& tuple) const override;
 
     private:
     // NOTE: this is the disk name on fs
-    std::string table_name;
+    const std::string table_name;
     DiskId disk_id;
 
-    std::shared_ptr<DiskManager> disk_manager;
-    std::shared_ptr<BufferManager> buffer_manager;
+    const std::shared_ptr<DiskManager> disk_manager;
+    const std::shared_ptr<BufferManager> buffer_manager;
 
     // NOTE: specifies the types stored by the table
     TupleCols cols;

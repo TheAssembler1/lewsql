@@ -7,7 +7,8 @@
 
 class Uint32TType final : public Type {
     public:
-    Uint32TType(uint32_t src) : val{src} {}
+    Uint32TType(uint32_t src) : val{src} {
+    }
 
     virtual TypeList get_type() override;
     virtual void serialize(void* dest) override;

@@ -3,13 +3,13 @@
 void Tuple::serialize(uint8_t* dest) {
     uint8_t* cursor = dest;
 
-    for(auto& cell: cells) {
+    for(auto& cell : cells) {
         cell->serialize(cursor);
         cursor += cell->size();
     }
 }
 
-unsigned int Tuple::size() {
+unsigned int Tuple::size() const {
     unsigned int size = 0;
 
     for(const auto& cell : cells) {

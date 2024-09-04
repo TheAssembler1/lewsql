@@ -7,7 +7,8 @@
 
 class Uint16TType final : public Type {
     public:
-    Uint16TType(uint16_t src) : val{src} {}
+    Uint16TType(uint16_t src) : val{src} {
+    }
 
     virtual TypeList get_type() override;
     virtual void serialize(void* dest) override;

@@ -5,20 +5,20 @@
 #include <memory>
 #include <vector>
 
-#include "types/type.h"
 #include "types/tuple_types.h"
+#include "types/type.h"
 
 class Tuple {
     public:
-    Tuple(TupleVals cells, unsigned int page_size): cells{std::move(cells)} {
+    Tuple(TupleVals cells, unsigned int page_size) : cells{std::move(cells)} {
         assert(page_size > size());
     }
 
-    unsigned int size();
+    unsigned int size() const;
     void serialize(uint8_t* dest);
     void deserailize(uint8_t* src);
 
-    const char* get_cell_type(int index) {
+    const char* get_cell_type(int index) const {
         return Type::get_type_name(cells[index]->get_type());
     }
 

@@ -6,9 +6,9 @@
 #include <impl/posix_disk_manager.h>
 #include <organizer.h>
 #include <replacement/dumb_alg.h>
-#include <types/uint8_t_type.h>
 #include <types/uint16_t_type.h>
 #include <types/uint32_t_type.h>
+#include <types/uint8_t_type.h>
 
 #include <iostream>
 #include <vector>
@@ -44,14 +44,14 @@ int main() {
 
     std::cout << "writing tuple" << std::endl;
 
-    //for(int i = 0; i < 4; i++) {
-        TupleVals tuple_vals{};
-        tuple_vals.emplace_back(std::make_unique<Uint32TType>(256));
+    // for(int i = 0; i < 4; i++) {
+    TupleVals tuple_vals{};
+    tuple_vals.emplace_back(std::make_unique<Uint32TType>(256));
 
-        Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
-        heap.push_back_record(std::move(tuple));
+    Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
+    heap.push_back_record(std::move(tuple));
 
-        tuple_vals.clear();
+    tuple_vals.clear();
     //}
 
     // NOTE flushing all pages

@@ -1,8 +1,8 @@
 #include "type.h"
 
-#include "uint8_t_type.h"
 #include "uint16_t_type.h"
 #include "uint32_t_type.h"
+#include "uint8_t_type.h"
 
 const char* Type::get_type_name(TypeList type_list) {
     switch(type_list) {
