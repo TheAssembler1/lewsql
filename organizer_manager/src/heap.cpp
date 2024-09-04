@@ -29,6 +29,14 @@ void Heap::push_back_record(Tuple tuple) {
             std::cout << "not the starting byte" << std::endl;
         }
 
+        // NOTE: check that tuple fits on page
+        if((abs_byte_cursor % page_size) + (tuple.size() + sizeof(TUPLE_EXISTS_STAMP)) > page_size) {
+            std::cout << "cross boundary tuple skipping bytes" << std::endl;
+
+            // NOTE: skips to the beginning of the next page
+            abs_byte_cursor += page_size - (abs_byte_cursor % page_size);
+        }
+
         // NOTE: load the next page
         if(cur_page_cursor != abs_byte_cursor / page_size) {
             buffer_manager->unpin(disk_id, cur_page_cursor);
