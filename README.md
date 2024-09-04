@@ -7,6 +7,7 @@ management system. This way the amount learned from the project is maximized.
 
 - Buffer Manager
 - Disk Manager
+- Heap Index
 
 ## TODO Components
 
