@@ -9,7 +9,9 @@ set(SOURCES
     src/types/type.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES}
+    src/types/uint16_t_type.cpp
+    src/types/uint32_t_type.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE test_helper buffer_manager disk_manager)
 
 target_include_directories(${PROJECT_NAME}

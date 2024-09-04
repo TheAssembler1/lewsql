@@ -4,8 +4,8 @@ TypeList Uint8TType::get_type() {
     return TypeList::UINT8_T;
 };
 
-void Uint8TType::serialize(uint8_t* dest) {
-    *dest = val;
+void Uint8TType::serialize(void* dest) {
+    *static_cast<uint8_t*>(dest) = val;
 };
 
 Type* Uint8TType::deserialize(void* src) {
@@ -16,5 +16,5 @@ Type* Uint8TType::deserialize(void* src) {
 };
 
 bool Uint8TType::size() {
-    return sizeof(Uint8TType);
+    return sizeof(uint8_t);
 };

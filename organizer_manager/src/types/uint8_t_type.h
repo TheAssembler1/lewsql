@@ -10,7 +10,7 @@ class Uint8TType final : public Type {
     Uint8TType(uint8_t src) : val{src} {}
 
     virtual TypeList get_type() override;
-    virtual void serialize(uint8_t* dest) override;
+    virtual void serialize(void* dest) override;
     virtual Type* deserialize(void* src) override;
     virtual bool size() override;
 

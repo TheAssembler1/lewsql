@@ -18,8 +18,9 @@ class Type {
     static const char* get_type_name(TypeList type_list);
     static Type* get_instance(TypeList type_list, void* param);
 
-    virtual void serialize(uint8_t* dest) = 0;
+    virtual void serialize(void* dest) = 0;
     virtual Type* deserialize(void* src) = 0;
+
     virtual bool size() = 0;
     virtual TypeList get_type() = 0;
 };

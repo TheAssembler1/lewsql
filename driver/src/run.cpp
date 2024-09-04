@@ -7,6 +7,8 @@
 #include <organizer.h>
 #include <replacement/dumb_alg.h>
 #include <types/uint8_t_type.h>
+#include <types/uint16_t_type.h>
+#include <types/uint32_t_type.h>
 
 #include <iostream>
 #include <vector>
@@ -37,23 +39,20 @@ int main() {
     auto buf_manager = std::make_shared<BufferManager>(
     posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
-    TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
+    TupleCols cols = TupleCols{TypeList::UINT32_T};
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
     std::cout << "writing tuple" << std::endl;
 
-    for(int i = 0; i < 4; i++) {
+    //for(int i = 0; i < 4; i++) {
         TupleVals tuple_vals{};
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(i + 1));
+        tuple_vals.emplace_back(std::make_unique<Uint32TType>(256));
 
         Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
         heap.push_back_record(std::move(tuple));
 
         tuple_vals.clear();
-    }
+    //}
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;
