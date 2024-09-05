@@ -1,6 +1,6 @@
 #include "tuple.h"
 
-void Tuple::serialize(uint8_t* dest) {
+void Tuple::serialize(uint8_t* dest) const {
     uint8_t* cursor = dest;
 
     for(auto& cell : cells) {

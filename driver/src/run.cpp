@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#define PAGE_SIZE 512
+#define PAGE_SIZE 16
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
 #define TEST_DISK_NAME "driver.disk"
@@ -39,20 +39,23 @@ int main() {
     auto buf_manager = std::make_shared<BufferManager>(
     posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
-    TupleCols cols = TupleCols{TypeList::UINT32_T};
+    TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
-    std::cout << "writing tuple" << std::endl;
+    for(int i = 0; i < 16; i++) {
+        std::cout << "writing tuple" << std::endl;
 
-    // for(int i = 0; i < 4; i++) {
-    TupleVals tuple_vals{};
-    tuple_vals.emplace_back(std::make_unique<Uint32TType>(256));
+        TupleVals tuple_vals{};
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(2));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(3));
+        tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
 
-    Tuple tuple{std::move(tuple_vals), PAGE_SIZE};
-    heap.push_back_tuple(std::move(tuple));
+        Tuple tuple{std::move(tuple_vals)};
+        heap.insert_tuple(std::move(tuple));
 
-    tuple_vals.clear();
-    //}
+        tuple_vals.clear();
+    }
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;

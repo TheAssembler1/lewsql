@@ -10,12 +10,10 @@
 
 class Tuple {
     public:
-    Tuple(TupleVals cells, unsigned int page_size) : cells{std::move(cells)} {
-        assert(page_size > size());
-    }
+    Tuple(TupleVals cells) : cells{std::move(cells)} {}
 
     unsigned int size() const;
-    void serialize(uint8_t* dest);
+    void serialize(uint8_t* dest) const;
     void deserailize(uint8_t* src);
 
     const char* get_cell_type(int index) const {
