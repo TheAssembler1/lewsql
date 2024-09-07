@@ -1,3 +1,6 @@
+# fleet files
+.fleet
+
 # tmp files
 *.tmp
 

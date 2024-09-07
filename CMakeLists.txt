@@ -10,6 +10,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(test_helper)
+add_subdirectory(library)
 add_subdirectory(disk_manager)
 add_subdirectory(buffer_manager)
 add_subdirectory(organizers)
