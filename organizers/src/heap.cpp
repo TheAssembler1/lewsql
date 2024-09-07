@@ -5,6 +5,7 @@
 #include <cassert>
 #include <optional>
 
+// NOTE: page 0 has
 Heap::Heap(std::shared_ptr<DiskManager> disk_manager,
 std::shared_ptr<BufferManager> buffer_manager,
 std::string table_name,
@@ -24,7 +25,6 @@ unsigned int page_size)
         std::cout << "table already existed loading table with name: " << table_name << std::endl;
     }
 };
-
 void Heap::get_next_tuple() const {
 
 }

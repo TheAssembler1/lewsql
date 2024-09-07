@@ -21,6 +21,11 @@ public:
 
     bool is_bit_set(unsigned int bit) const;
     void set_bit_val(unsigned int bit, bool val);
+
+    unsigned int get_num_bits() const { return num_bits; }
+    unsigned int get_num_bytes() const { return num_bytes; }
+
+    void clear_bits() { std::fill_n(bitmap.get(), num_bytes, 0); }
 private:
     const unsigned int num_bits;
     unsigned int num_bytes;
