@@ -5,6 +5,19 @@
 #include <cassert>
 #include <optional>
 
+#define FIRST_PAGE_HEAP_PAGE_STAMP_OFFSET (0)
+#define FIRST_PAGE_FREE_LIST_OFFSET (sizeof(HEAP_PAGE_START_STAMP))
+#define FIRST_PAGE_FULL_LIST_OFFSET (sizeof(HEAP_PAGE_START_STAMP) + sizeof(int32_t))
+
+#define FREE_LIST_OFFSET (0)
+#define FULL_LIST_OFFSET (sizeof(int32_t))
+
+// FIMXE: move to buffer manager
+template<typename T>
+static T* to_ptr(uint8_t* from) {
+    return reinterpret_cast<T*>(from);
+}
+
 // NOTE: page 0 has
 Heap::Heap(std::shared_ptr<DiskManager> disk_manager,
 std::shared_ptr<BufferManager> buffer_manager,
@@ -12,7 +25,6 @@ std::string table_name,
 TupleCols cols,
 unsigned int page_size)
 : disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
-
     try {
         disk_id = disk_manager->d_create(table_name);
 
@@ -24,90 +36,66 @@ unsigned int page_size)
 
         std::cout << "table already existed loading table with name: " << table_name << std::endl;
     }
+
+    BufferPage& root_page = buffer_manager->pin(disk_id, 0);
+
+    to_ptr<uint32_t>(root_page.bytes)[FIRST_PAGE_HEAP_PAGE_STAMP_OFFSET] = HEAP_PAGE_START_STAMP;
+    to_ptr<int32_t>(root_page.bytes)[FIRST_PAGE_FREE_LIST_OFFSET] = -1;
+    to_ptr<int32_t>(root_page.bytes)[FIRST_PAGE_FULL_LIST_OFFSET] = -1;
+
+    buffer_manager->set_dirty(disk_id, 0);
+    buffer_manager->unpin(disk_id, 0);
 };
+
+// FIXME: currently just pulling the first free page this won't be scalable
+//        when needing to add large amounts of tuples
+std::optional<unsigned int> Heap::find_free_page() {
+    BufferPage* root_page = &buffer_manager->pin(disk_id, 0);
+    int32_t free_list = to_ptr<int32_t>(root_page->bytes)[FIRST_PAGE_FREE_LIST_OFFSET];
+    buffer_manager->unpin(disk_id, 0);
+
+    if(free_list == -1) {
+        return std::nullopt;
+    }
+
+    return free_list;
+}
+
 void Heap::get_next_tuple() const {
 
 }
 
 void Heap::insert_tuple(const Tuple& tuple) {
-    DiskPageCursor cur_page;
-    bool in_free_list = false;
+    auto free_page_opt = find_free_page();
 
-    // NOTE: get a page with free space
-    if(free_pages.empty() && full_pages.empty()) {
-        std::cout << "first page in heap" << std::endl;
-        cur_page = 0;
-    } else if(free_pages.empty()) {
-        std::cout << "not free pages searching for slot in full pages" << std::endl;
+    // NOTE: no free pages need to append to free list
+    if(!free_page_opt.has_value()) {
 
-        // NOTE: search for empty page slot in full list
-        //       assumes the list is sorted
-        for(int i = 0; i < full_pages.size(); i++) {
-            if(i != full_pages[i]) {
-                cur_page = i;
-                break;
-            }
-        }
-
-        // NOTE: grab next page, no gaps in free list
-        std::cout << "not slot in full pages, getting next page" << std::endl;
-        cur_page = full_pages.size();
-    } else {
-        std::cout << "found page in free pages" << std::endl;
-        in_free_list = true;
-        cur_page = free_pages[0];
     }
-
-    BufferPage& page = buffer_manager->pin(disk_id, cur_page);
-    unsigned int page_cursor = 0;
-
-    if(cur_page == 0) {
-        std::cout << "on page zero, moving foward by heap page stamp" << std::endl;
-        uint32_t* heap_stamp = reinterpret_cast<uint32_t*>(&page.bytes[page_cursor]);
-        *heap_stamp = HEAP_PAGE_START_STAMP;
-        page_cursor += sizeof(HEAP_PAGE_START_STAMP);
-    }
-
-    uint32_t* next_free_tuple = reinterpret_cast<uint32_t*>(&page.bytes[page_cursor]);
-    page_cursor += sizeof(uint32_t);
-
-    std::cout << "serializing tuple at abs position: " << page_cursor + *next_free_tuple << std::endl;
-    tuple.serialize(&page.bytes[page_cursor + *next_free_tuple]);
-
-    *next_free_tuple += tuple.size();
-    page_cursor += tuple.size();
-
-    std::cout << "next free tuple set to: " << *next_free_tuple << std::endl;
-
-    // NOTE: check if we have space for another tuple
-    if(page_cursor + tuple.size() < page_size) {
-        std::cout << "page still has more space" << std::endl;
-        auto it = std::find(free_pages.begin(), free_pages.end(), cur_page);
-
-        if(it != free_pages.end()) {
-            std::cout << "page already in free list" << std::endl;
-        } else {
-            std::cout << "page not in free list, pushing to free list" << std::endl;
-        }
-    } else {
-        std::cout << "no more space on page, erasing from free pages and pushing to full pages" << std::endl;
-        auto it = std::find(free_pages.begin(), free_pages.end(), cur_page);
-        assert(cur_page == 0 || it != free_pages.end());
-
-        free_pages.erase(it);
-
-        full_pages.push_back(cur_page);
-    }
-
-    // NOTE: set dirty and release page
-    std::cout << "setting dirty and unpinning" << std::endl;
-    buffer_manager->set_dirty(disk_id, cur_page);
-    buffer_manager->unpin(disk_id, cur_page);
-
-    std::cout << "sorting full pages pages" << std::endl;
-    std::sort(full_pages.begin(), full_pages.end());
 }
 
 void Heap::delete_tuple() {
 
 }
+
+/*
+ * std::optional<unsigned int> Heap::find_free_page() {
+    BufferPageCursor cur_page = 0;
+    BufferPage* root_page = &buffer_manager->pin(disk_id, cur_page);
+    int32_t free_list = to_ptr<int32_t>(root_page->bytes)[FIRST_PAGE_FREE_LIST_OFFSET];
+    buffer_manager->unpin(disk_id, cur_page);
+
+    if(free_list == -1) {
+        return std::nullopt;
+    }
+
+    for(;;) {
+        root_page = &buffer_manager->pin(disk_id, cur_page);
+        cur_page = to_ptr<int32_t>(root_page->bytes)[FREE_LIST_OFFSET];
+        buffer_manager->unpin(disk_id, cur_page);
+
+        if(free_list == -1) {
+            return std::nullopt;
+        }
+    }
+}*/
