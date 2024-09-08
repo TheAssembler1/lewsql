@@ -31,13 +31,13 @@ TupleCols cols,
 unsigned int page_size)
 : disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
     try {
-        disk_id = disk_manager->d_create(table_name);
+        disk_id = disk_manager->create(table_name);
 
         std::cout << "created table with name: " << table_name << std::endl;
     } catch(DiskManagerError& e) {
         assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
 
-        disk_id = disk_manager->d_load(table_name);
+        disk_id = disk_manager->load(table_name);
 
         std::cout << "table already existed loading table with name: " << table_name << std::endl;
     }
@@ -114,7 +114,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
 
     // NOTE: no free pages need to append to free list
     if(!free_page_opt.has_value()) {
-        free_disk_page = disk_manager->d_extend(disk_id, page_size);
+        free_disk_page = disk_manager->extend(disk_id);
         BufferPage& root_page = buffer_manager->pin(disk_id, ROOT_PAGE);
 
         to_ptr<uint32_t>(root_page.bytes)[FIRST_PAGE_FREE_LIST_OFFSET] = disk_id;

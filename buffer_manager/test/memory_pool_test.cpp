@@ -8,23 +8,23 @@
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
 
-#define PAGE_SIZE 512
-#define NUM_PAGES 8
+#include "constants.h"
+
 #define TEST_DISK_NAME "memory_pool_test.disk"
 
 void memory_pool_test() {
-    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp");
+    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp", PAGE_SIZE, MAX_DISK_SIZE);
     auto alg = std::make_shared<DumbAlg>();
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->d_create(TEST_DISK_NAME);
+        disk_id = disk_manager->create(TEST_DISK_NAME);
 
         auto buf_manager = std::make_shared<BufferManager>(
-        disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_PAGES), NUM_PAGES, PAGE_SIZE);
+        disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
 
 
-        for(int i = 0; i < NUM_PAGES; i++) {
+        for(int i = 0; i < NUM_BUFFER_PAGES; i++) {
             BufferPage& page = buf_manager->pin(disk_id, i);
             for(int j = 0; j < PAGE_SIZE; j++) {
                 std::cout << "testing (page, byte) = (" << i << ", " << j << ")" << std::endl;
@@ -33,10 +33,10 @@ void memory_pool_test() {
         }
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
-        disk_manager->d_destroy(disk_id);
+        disk_manager->destroy(disk_id);
         throw e;
     }
 
-    disk_manager->d_destroy(disk_id);
+    disk_manager->destroy(disk_id);
 }
 REGISTER_TEST(memory_pool_test);

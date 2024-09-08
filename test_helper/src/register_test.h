@@ -9,7 +9,7 @@
 #define ASSERT(test)                          \
     {                                         \
         if(!(test)) {                         \
-            disk_manager->d_destroy(disk_id); \
+            disk_manager->destroy(disk_id); \
         }                                     \
         assert(test);                         \
     }

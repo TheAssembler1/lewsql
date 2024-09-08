@@ -13,7 +13,8 @@
 #include <iostream>
 #include <vector>
 
-#define PAGE_SIZE 512
+#define PAGE_SIZE (512)
+#define MAX_PAGE_SIZE (PAGE_SIZE * 12)
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
 #define TEST_DISK_NAME "driver.disk"
@@ -21,16 +22,16 @@
 
 int main() {
 
-    std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir")};
+    std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
     std::cout << "successfully created disk manager" << std::endl;
     DiskId disk_id;
 
     try {
-        disk_id = posix_dmanager->d_create(TEST_DISK_NAME);
+        disk_id = posix_dmanager->create(TEST_DISK_NAME);
     } catch(DiskManagerError& err) {
         assert(err.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
         std::cout << "disk already exists" << std::endl;
-        disk_id = posix_dmanager->d_load(TEST_DISK_NAME);
+        disk_id = posix_dmanager->load(TEST_DISK_NAME);
     }
 
     std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
@@ -71,7 +72,7 @@ int main() {
 
     // FIXME: maybe this should happen in the heap class itself
     std::cout << "unloading disk" << std::endl;
-    posix_dmanager->d_unload(disk_id);
+    posix_dmanager->unload(disk_id);
 
     std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 

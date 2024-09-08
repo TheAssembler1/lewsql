@@ -38,7 +38,7 @@ void BufferManager::remove_page_mem_pool_map(BufferPageCursor victim_page_cursor
 
     if(dirty) {
         std::cout << "victim was dirty" << std::endl;
-        disk_manager->d_write(disk_id, disk_page_cursor, bytes, page_size);
+        disk_manager->write(disk_id, disk_page_cursor, bytes);
     }
 
     buffer_page_tracker->set_page_status(victim_page_cursor, false);
@@ -148,7 +148,7 @@ BufferPage& BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
         }
 
         buffer_page->init(disk_id, disk_page_cursor, buffer_page_cursor, 1, false);
-        disk_manager->d_read(disk_id, disk_page_cursor, buffer_page->bytes, page_size);
+        disk_manager->read(disk_id, disk_page_cursor, buffer_page->bytes);
 
         std::cout << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;
 
