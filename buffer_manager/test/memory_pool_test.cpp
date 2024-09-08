@@ -13,7 +13,7 @@
 #define TEST_DISK_NAME "memory_pool_test.disk"
 
 void memory_pool_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
+    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp");
     auto alg = std::make_shared<DumbAlg>();
 
     DiskId disk_id;

@@ -21,6 +21,8 @@
 #include <string>
 #include <unordered_map>
 
+namespace DiskManager {
+
 class PosixDiskManager final : public DiskManager {
     public:
     PosixDiskManager(const std::string& dir_path);
@@ -50,5 +52,7 @@ class PosixDiskManager final : public DiskManager {
 
     std::unordered_map<DiskId, DiskName> disks{};
 };
+
+}
 
 #endif // POSIX_DISK_MANAGER_H

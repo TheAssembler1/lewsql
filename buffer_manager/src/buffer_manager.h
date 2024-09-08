@@ -21,7 +21,7 @@
 
 class BufferManager final {
     public:
-    BufferManager(std::shared_ptr<DiskManager> disk_manager,
+    BufferManager(std::shared_ptr<DiskManager::DiskManager> disk_manager,
     std::unique_ptr<ReplacementAlg> replacement_alg,
     std::unique_ptr<BufferPageTracker> buffer_page_tracker,
     unsigned int num_pages,
@@ -46,7 +46,7 @@ class BufferManager final {
     MemPoolMapType mem_pool_map;
     MemoryPool mem_pool;
 
-    const std::shared_ptr<DiskManager> disk_manager;
+    const std::shared_ptr<DiskManager::DiskManager> disk_manager;
     const std::unique_ptr<ReplacementAlg> replacement_alg;
     const std::unique_ptr<BufferPageTracker> buffer_page_tracker;
 

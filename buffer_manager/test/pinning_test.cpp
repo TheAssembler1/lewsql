@@ -13,7 +13,7 @@
 #define TEST_DISK_NAME "pinning_test.disk"
 
 void pinning_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
+    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp");
 
     DiskId disk_id;
     try {

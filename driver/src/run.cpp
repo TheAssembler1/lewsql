@@ -21,7 +21,7 @@
 
 int main() {
 
-    std::shared_ptr<DiskManager> posix_dmanager{new PosixDiskManager("/home/ta1/src/test_dir")};
+    std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir")};
     std::cout << "successfully created disk manager" << std::endl;
     DiskId disk_id;
 
@@ -33,7 +33,7 @@ int main() {
         disk_id = posix_dmanager->d_load(TEST_DISK_NAME);
     }
 
-    std::cout << *(dynamic_cast<PosixDiskManager*>(posix_dmanager.get())) << std::endl;
+    std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
     auto buf_manager = std::make_shared<BufferManager>(
@@ -57,13 +57,13 @@ int main() {
         tuple_vals.clear();
     }*/
 
-    TupleVals tuple_vals{};
+    /*TupleVals tuple_vals{};
     tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
 
     Tuple tuple{std::move(tuple_vals)};
     heap.insert_tuple(std::move(tuple));
 
-    tuple_vals.clear();
+    tuple_vals.clear();*/
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;
@@ -73,7 +73,7 @@ int main() {
     std::cout << "unloading disk" << std::endl;
     posix_dmanager->d_unload(disk_id);
 
-    std::cout << *(dynamic_cast<PosixDiskManager*>(posix_dmanager.get())) << std::endl;
+    std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 
     return 0;
 }

@@ -5,6 +5,8 @@
 #include "disk_manager.h"
 #include "disk_manager_error.h"
 
+namespace DiskManager {
+
 unsigned int PosixDiskManager::num_loaded_disk() const {
     return disks.size();
 }
@@ -285,4 +287,6 @@ unsigned int PosixDiskManager::disk_size(DiskId disk_id) {
     }
 
     return st.st_size;
+}
+
 }

@@ -16,7 +16,7 @@
 //       each tuple starts with whether it is the last in the heap
 class Heap final: Organizer {
     public:
-    Heap(std::shared_ptr<DiskManager> disk_manager,
+    Heap(std::shared_ptr<DiskManager::DiskManager> disk_manager,
     std::shared_ptr<BufferManager> buffer_manager,
     std::string table_name,
     TupleCols cols,
@@ -39,7 +39,7 @@ class Heap final: Organizer {
     const std::string table_name;
     DiskId disk_id;
 
-    const std::shared_ptr<DiskManager> disk_manager;
+    const std::shared_ptr<DiskManager::DiskManager> disk_manager;
     const std::shared_ptr<BufferManager> buffer_manager;
 
     // NOTE: specifies the types stored by the table

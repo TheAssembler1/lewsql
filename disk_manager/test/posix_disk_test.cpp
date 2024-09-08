@@ -12,7 +12,7 @@
 #define NUM_DISKS_TO_TEST 32
 
 void disk_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
+    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp");
 
     DiskId disk_id = disk_manager->d_create(TEST_DISK_NAME);
     ASSERT(disk_manager->num_loaded_disk() == 1);

@@ -11,6 +11,8 @@
 
 #include "disk_manager_types.h"
 
+namespace DiskManager {
+
 class DiskManager {
     public:
     DiskManager(const std::string& dir_path) : dir_path{dir_path} {
@@ -33,5 +35,7 @@ class DiskManager {
     virtual DiskName disk_loaded(DiskId disk_id) = 0;
     virtual unsigned int disk_size(DiskId disk_id) = 0;
 };
+
+}
 
 #endif // DISK_MANAGER_H

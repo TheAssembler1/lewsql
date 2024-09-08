@@ -24,7 +24,7 @@ static T* to_ptr(uint8_t* from) {
 }
 
 // NOTE: page 0 has
-Heap::Heap(std::shared_ptr<DiskManager> disk_manager,
+Heap::Heap(std::shared_ptr<DiskManager::DiskManager> disk_manager,
 std::shared_ptr<BufferManager> buffer_manager,
 std::string table_name,
 TupleCols cols,

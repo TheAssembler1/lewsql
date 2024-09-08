@@ -14,7 +14,7 @@
 #define TEST_DISK_NAME "io_test.disk"
 
 void io_test() {
-    auto disk_manager = std::make_shared<PosixDiskManager>("/tmp");
+    auto disk_manager = std::make_shared<DiskManager::PosixDiskManager>("/tmp");
     auto alg = std::make_shared<DumbAlg>();
 
     DiskId disk_id;
