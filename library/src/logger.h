@@ -65,9 +65,17 @@ public:
 
         const char* last_slash = nullptr;
         while(*file != static_cast<char>(NULL)) {
-            if(*file == '/' || *file == '\\') {
+#ifdef __unix__
+            if(*file == '/') {
                 last_slash = file + 1;
             }
+#elif __win32__
+            if(*file == '\\') {
+                last_slash = file + 1;
+            }
+#else
+#error "system not recognized as __win32 or __unix"
+#endif
 
             file++;
         }
