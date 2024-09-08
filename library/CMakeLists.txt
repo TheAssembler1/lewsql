@@ -6,7 +6,8 @@ set(SOURCES
     src/bitmap.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES}
+    src/logger.h )
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC src

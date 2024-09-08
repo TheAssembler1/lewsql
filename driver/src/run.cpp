@@ -9,6 +9,7 @@
 #include <types/uint16_t_type.h>
 #include <types/uint32_t_type.h>
 #include <types/uint8_t_type.h>
+#include <logger.h>
 
 #include <iostream>
 #include <vector>
@@ -21,6 +22,13 @@
 #define TEST_TABLE_NAME "test.table"
 
 int main() {
+    LOG(LogLevel::TRACE) << "test trace message" << std::endl;
+    LOG(LogLevel::INFO) << "test info message" << std::endl;
+    LOG(LogLevel::WARNING) << "test warning message" << std::endl;
+    LOG(LogLevel::ERROR) << "test error message" << std::endl;
+    LOG(LogLevel::FATAL) << "test fatal message" << std::endl;
+
+    return 0;
 
     std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
     std::cout << "successfully created disk manager" << std::endl;
