@@ -7,6 +7,7 @@
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
+#include <logger.h>
 
 #include "constants.h"
 
@@ -26,16 +27,16 @@ void io_test() {
         BufferPage* page = &buf_manager->pin(disk_id, 0);
 
         for(int i = 0; i < PAGE_SIZE; i++) {
-            std::cout << "byte index: " << i << std::endl;
-            std::cout << "writing byte to page: " << static_cast<int>(i % 255) << std::endl;
+            LOG(LogLevel::INFO) << "byte index: " << i << std::endl;
+            LOG(LogLevel::INFO) << "writing byte to page: " << static_cast<int>(i % 255) << std::endl;
             page->bytes[i] = i % 255;
-            std::cout << "check writing byte to page: " << static_cast<int>(page->bytes[i]) << std::endl;
+            LOG(LogLevel::INFO) << "check writing byte to page: " << static_cast<int>(page->bytes[i]) << std::endl;
             ASSERT(page->bytes[i] == i % 255);
         }
 
         for(int i = 0; i < PAGE_SIZE; i++) {
-            std::cout << "byte index: " << i << std::endl;
-            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            LOG(LogLevel::INFO) << "byte index: " << i << std::endl;
+            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
             ASSERT(page->bytes[i] == i % 255);
         }
 
@@ -49,12 +50,12 @@ void io_test() {
         page = &buf_manager->pin(disk_id, 0);
 
         for(int i = 0; i < PAGE_SIZE; i++) {
-            std::cout << "byte index: " << i << std::endl;
-            std::cout << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            LOG(LogLevel::INFO) << "byte index: " << i << std::endl;
+            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
             ASSERT(page->bytes[i] == i % 255);
         }
     } catch(std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        LOG(LogLevel::ERROR) << e.what() << std::endl;
         disk_manager->destroy(disk_id);
         throw e;
     }

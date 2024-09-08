@@ -1,5 +1,7 @@
 #include "bitmap_tracker.h"
 
+#include <logger.h>
+
 unsigned int BitmapTracker::get_num_free_pages() const {
     int total_free = 0;
     for(auto page : bitmap) {
@@ -17,7 +19,7 @@ unsigned int BitmapTracker::get_num_taken_pages() const {
 
 
 BufferPageCursor BitmapTracker::get_next_free_page() const {
-    std::cout << "getting next free page" << std::endl;
+    LOG(LogLevel::INFO) << "getting next free page" << std::endl;
 
     BufferPageCursor cursor = 0;
 

@@ -1,10 +1,11 @@
 #include <iostream>
 #include <register_test.h>
 #include <string>
+#include <logger.h>
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <test_name>\n";
+        LOG(LogLevel::ERROR) << "Usage: " << argv[0] << " <test_name>\n";
         RegisterTest::instance().list_tests();
         return 1;
     }

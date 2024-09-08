@@ -7,6 +7,7 @@
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
+#include <logger.h>
 
 #include "constants.h"
 
@@ -27,12 +28,12 @@ void memory_pool_test() {
         for(int i = 0; i < NUM_BUFFER_PAGES; i++) {
             BufferPage& page = buf_manager->pin(disk_id, i);
             for(int j = 0; j < PAGE_SIZE; j++) {
-                std::cout << "testing (page, byte) = (" << i << ", " << j << ")" << std::endl;
+                LOG(LogLevel::INFO) << "testing (page, byte) = (" << i << ", " << j << ")" << std::endl;
                 assert(page.bytes[j] == 0);
             }
         }
     } catch(std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        LOG(LogLevel::ERROR) << e.what() << std::endl;
         disk_manager->destroy(disk_id);
         throw e;
     }

@@ -22,27 +22,19 @@
 #define TEST_TABLE_NAME "test.table"
 
 int main() {
-    LOG(LogLevel::TRACE) << "test trace message" << std::endl;
-    LOG(LogLevel::INFO) << "test info message" << std::endl;
-    LOG(LogLevel::WARNING) << "test warning message" << std::endl;
-    LOG(LogLevel::ERROR) << "test error message" << std::endl;
-    LOG(LogLevel::FATAL) << "test fatal message" << std::endl;
-
-    return 0;
-
     std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
-    std::cout << "successfully created disk manager" << std::endl;
+    LOG(LogLevel::INFO) << "successfully created disk manager" << std::endl;
     DiskId disk_id;
 
     try {
         disk_id = posix_dmanager->create(TEST_DISK_NAME);
     } catch(DiskManagerError& err) {
         assert(err.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
-        std::cout << "disk already exists" << std::endl;
+        LOG(LogLevel::INFO) << "disk already exists" << std::endl;
         disk_id = posix_dmanager->load(TEST_DISK_NAME);
     }
 
-    std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
+    LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
     auto buf_manager = std::make_shared<BufferManager>(
@@ -52,7 +44,7 @@ int main() {
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
     /*for(int i = 0; i < 16; i++) {
-        std::cout << "writing tuple" << std::endl;
+        LOG(LogLevel::INFO) << "writing tuple" << std::endl;
 
         TupleVals tuple_vals{};
         tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
@@ -75,14 +67,14 @@ int main() {
     tuple_vals.clear();*/
 
     // NOTE flushing all pages
-    std::cout << "flushing pages which should have tuple" << std::endl;
+    LOG(LogLevel::INFO) << "flushing pages which should have tuple" << std::endl;
     buf_manager->free_avail_pages();
 
     // FIXME: maybe this should happen in the heap class itself
-    std::cout << "unloading disk" << std::endl;
+    LOG(LogLevel::INFO) << "unloading disk" << std::endl;
     posix_dmanager->unload(disk_id);
 
-    std::cout << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
+    LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 
     return 0;
 }

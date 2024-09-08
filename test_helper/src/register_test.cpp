@@ -1,5 +1,7 @@
 #include "register_test.h"
 
+#include <logger.h>
+
 void RegisterTest::register_test(const std::string& name, TestFunction func) {
     tests[name] = func;
 }
@@ -7,16 +9,16 @@ void RegisterTest::register_test(const std::string& name, TestFunction func) {
 void RegisterTest::run_test(const std::string& name) const {
     auto it = tests.find(name);
     if(it != tests.end()) {
-        std::cout << "Running test: " << name << std::endl;
+        LOG(LogLevel::INFO) << "Running test: " << name << std::endl;
         it->second();
     } else {
-        std::cerr << "Unknown test: " << name << std::endl;
+        LOG(LogLevel::ERROR) << "Unknown test: " << name << std::endl;
     }
 }
 
 void RegisterTest::list_tests() const {
-    std::cout << "Available tests:" << std::endl;
+    LOG(LogLevel::INFO) << "Available tests:" << std::endl;
     for(const auto& test : tests) {
-        std::cout << "  - " << test.first << std::endl;
+        LOG(LogLevel::INFO) << "  - " << test.first << std::endl;
     }
 }

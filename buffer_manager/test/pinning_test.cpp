@@ -7,6 +7,7 @@
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
+#include <logger.h>
 
 #define PAGE_SIZE (512)
 #define MAX_DISK_SIZE (PAGE_SIZE * 12)
@@ -47,7 +48,7 @@ void pinning_test() {
 
         disk_manager->destroy(disk_id);
     } catch(std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        LOG(LogLevel::ERROR) << e.what() << std::endl;
         disk_manager->destroy(disk_id);
         throw e;
     }

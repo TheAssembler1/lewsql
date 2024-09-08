@@ -5,6 +5,7 @@
 #include <cassert>
 #include <optional>
 #include <bitmap.h>
+#include <logger.h>
 
 #define ROOT_PAGE (0)
 
@@ -33,13 +34,13 @@ unsigned int page_size)
     try {
         disk_id = disk_manager->create(table_name);
 
-        std::cout << "created table with name: " << table_name << std::endl;
+        LOG(LogLevel::INFO) << "created table with name: " << table_name << std::endl;
     } catch(DiskManagerError& e) {
         assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
 
         disk_id = disk_manager->load(table_name);
 
-        std::cout << "table already existed loading table with name: " << table_name << std::endl;
+        LOG(LogLevel::INFO) << "table already existed loading table with name: " << table_name << std::endl;
     }
 
     BufferPage& root_page = buffer_manager->pin(disk_id, ROOT_PAGE);
@@ -107,7 +108,7 @@ void Heap::get_next_tuple() const {
 }
 
 void Heap::insert_tuple(const Tuple& tuple) {
-    std::cout << "starting insertion for tuple" << std::endl;
+    LOG(LogLevel::INFO) << "starting insertion for tuple" << std::endl;
 
     auto free_page_opt = find_free_page();
     DiskPageCursor free_disk_page;
@@ -130,7 +131,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
 
     // NOTE: get free tuple offset from bitmap and set bit and serialize to buffer page
     unsigned int bitmap_size = page_size - (sizeof(int32_t) + sizeof(int32_t)) + (sizeof(uint8_t) * 57);
-    std::cout << "setting bitmap size to: " << bitmap_size << std::endl;
+    LOG(LogLevel::INFO) << "setting bitmap size to: " << bitmap_size << std::endl;
 
     Bitmap bitmap{bitmap_size};
     bitmap.deserialize(&free_page.bytes[BITMAP_OFFSET]);
@@ -140,23 +141,23 @@ void Heap::insert_tuple(const Tuple& tuple) {
     bitmap.set_bit_val(tuple_offset_opt.value(), true);
     bitmap.serialize(&free_page.bytes[BITMAP_OFFSET]);
 
-    std::cout << "found free bit at: " << tuple_offset_opt.value() << std::endl;
+    LOG(LogLevel::INFO) << "found free bit at: " << tuple_offset_opt.value() << std::endl;
 
     // NOTE: write tuple at found available offset
     unsigned int tuple_offset_within_page = FIRST_TUPLE_OFFSET(bitmap.get_num_bytes()) + (tuple_offset_opt.value() * tuple.size());
-    std::cout << "writing tuple to offset within page: " << tuple_offset_within_page << std::endl;
+    LOG(LogLevel::INFO) << "writing tuple to offset within page: " << tuple_offset_within_page << std::endl;
     tuple.serialize(&free_page.bytes[tuple_offset_within_page]);
 
     // NOTE: checking if this is no longer a free page
     if(bitmap.num_free_bits() == 0) {
-        std::cout << "no free bits in bitmap adding to full list" << std::endl;
+        LOG(LogLevel::INFO) << "no free bits in bitmap adding to full list" << std::endl;
         append_to_full_pages(free_disk_page);
     }
 
     buffer_manager->set_dirty(disk_id, free_disk_page);
     buffer_manager->unpin(disk_id, free_disk_page);
 
-    std::cout << "done inserting tuple" << std::endl;
+    LOG(LogLevel::INFO) << "done inserting tuple" << std::endl;
 }
 
 void Heap::delete_tuple() {

@@ -11,7 +11,7 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES}
     test/constants.h)
-target_link_libraries(${PROJECT_NAME} PRIVATE disk_manager)
+target_link_libraries(${PROJECT_NAME} PRIVATE library disk_manager)
 target_include_directories(
   ${PROJECT_NAME} 
   PUBLIC src 
@@ -25,7 +25,7 @@ set(TEST_SOURCES
 )
 
 add_executable(${BUFFER_MANAGER_TEST_EXEC} "test/buffer_manager_test.cpp" ${TEST_SOURCES})
-target_link_libraries(${BUFFER_MANAGER_TEST_EXEC} PRIVATE test_helper buffer_manager disk_manager)
+target_link_libraries(${BUFFER_MANAGER_TEST_EXEC} PRIVATE library test_helper buffer_manager disk_manager)
 
 foreach(test ${TEST_SOURCES})
   get_filename_component(TName ${test} NAME_WE)

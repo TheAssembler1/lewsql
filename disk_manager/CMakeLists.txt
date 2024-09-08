@@ -7,6 +7,7 @@ set(SOURCES
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE library)
 
 target_include_directories(
   ${PROJECT_NAME} 
@@ -19,7 +20,7 @@ set(TEST_SOURCES
 )
 
 add_executable(${DISK_MANAGER_TEST_EXEC} "test/disk_manager_test.cpp" ${TEST_SOURCES})
-target_link_libraries(${DISK_MANAGER_TEST_EXEC} PRIVATE test_helper disk_manager)
+target_link_libraries(${DISK_MANAGER_TEST_EXEC} PRIVATE library test_helper disk_manager)
 
 foreach(test ${TEST_SOURCES})
   get_filename_component(TName ${test} NAME_WE)

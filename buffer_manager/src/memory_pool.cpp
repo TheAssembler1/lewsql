@@ -1,7 +1,9 @@
 #include "memory_pool.h"
 
+#include <logger.h>
+
 BufferPage* MemoryPool::get_page(BufferPageCursor buffer_page_cursor) const {
-    std::cout << "getting mem pool page: " << buffer_page_cursor << std::endl;
+    LOG(LogLevel::INFO) << "getting mem pool page: " << buffer_page_cursor << std::endl;
     assert(buffer_page_cursor < num_pages);
     assert(pool);
 
