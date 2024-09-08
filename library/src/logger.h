@@ -5,6 +5,8 @@
 #include <ostream>
 #include <iostream>
 #include <sstream>
+#include <cstring>
+#include <cassert>
 
 #define LOG(level) Logger::log(level, __FILE__, __func__, __LINE__, __DATE__, __TIME__)
 
@@ -38,30 +40,40 @@ public:
     ~LoggerStream() {
         switch(log_level) {
             case LogLevel::TRACE:
-                std::cerr << "[TRACE]-[";
+                std::cerr << "[TRACE]-";
                 break;
             case LogLevel::INFO:
-                std::cerr << "[INFO]--[";
+                std::cerr << "[INFO]--";
                 break;
             case LogLevel::WARNING:
-                std::cerr << "[WARN]--[";
+                std::cerr << "[WARN]--";
                 break;
             case LogLevel::ERROR:
-                std::cerr << "[ERROR]-[";
+                std::cerr << "[ERROR]-";
                 break;
             case LogLevel::FATAL:
-                std::cerr << "[FATAL]-[";
+                std::cerr << "[FATAL]-";
                 break;
             default:
                 assert(0);
                 break;
         }
 
-        std::cerr << file << "+";
-        std::cerr << func << "+";
-        std::cerr << line << "]> ";
 
-        std::cerr << stream_buffer.str();
+        // FIXME: make these configurable
+        std::cerr << "[" << time << "]-" << "[";
+
+        const char* last_slash = nullptr;
+        while(*file != static_cast<char>(NULL)) {
+            if(*file == '/' || *file == '\\') {
+                last_slash = file + 1;
+            }
+
+            file++;
+        }
+
+        assert(last_slash != nullptr);
+        std::cerr << last_slash << "+" << func << "+" << line << "]" << "> " << stream_buffer.str();
     }
 
 private:
@@ -80,6 +92,9 @@ public:
             const char* file, const char* func, int line, const char* date, const char* time) {
         return LoggerStream(log_level, file, func, line, date, time);
     }
+
+private:
+
 };
 
 #endif // LOGGER_H
