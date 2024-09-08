@@ -33,6 +33,7 @@ class Heap final: Organizer {
 
     private:
     std::optional<unsigned int> find_free_page();
+    void append_to_full_pages(DiskPageCursor disk_page_cursor);
 
     // NOTE: this is the disk name on fs
     const std::string table_name;

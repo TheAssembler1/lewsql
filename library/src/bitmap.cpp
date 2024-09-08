@@ -38,7 +38,7 @@ unsigned int Bitmap::num_taken_bits() const {
 
 std::optional<unsigned int> Bitmap::get_first_free_bit() const {
     for(int i = 0; i < num_bits; i++) {
-        if(IS_BIT_SET(bitmap[i / 8], i % 8)) {
+        if(!IS_BIT_SET(bitmap[i / 8], i % 8)) {
             return i;
         }
     }

@@ -161,6 +161,8 @@ void PosixDiskManager::d_read(DiskId disk_id, DiskPageCursor disk_page_cursor, u
     }
 
     // NOTE: set file pointer
+    assert(st.st_size % page_size == 0);
+
     unsigned int foffset = (disk_page_cursor + 1) * page_size - 1;
     std::cout << "file size found to be: " << st.st_size << std::endl;
     if(foffset > st.st_size) {
@@ -250,6 +252,13 @@ DiskName PosixDiskManager::disk_loaded(DiskId disk_id) {
 
     return it->second;
 };
+
+DiskPageCursor PosixDiskManager::d_extend(DiskId disk_id, unsigned int page_size) {
+    unsigned int size = disk_size(disk_id);
+    assert(size % page_size == 0);
+    return (size / page_size) + 1;
+
+}
 
 unsigned int PosixDiskManager::disk_size(DiskId disk_id) {
     auto full_path_fname = get_disk_path(disk_loaded(disk_id));

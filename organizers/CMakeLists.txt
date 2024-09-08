@@ -7,12 +7,12 @@ set(SOURCES
     src/types/uint8_t_type.cpp
     src/tuple.cpp
     src/types/type.cpp
+    src/types/uint16_t_type.cpp
+    src/types/uint32_t_type.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES}
-    src/types/uint16_t_type.cpp
-    src/types/uint32_t_type.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE test_helper buffer_manager disk_manager)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE library test_helper buffer_manager disk_manager)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC src

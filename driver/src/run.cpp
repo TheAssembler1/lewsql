@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#define PAGE_SIZE 16
+#define PAGE_SIZE 512
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
 #define TEST_DISK_NAME "driver.disk"
@@ -42,7 +42,7 @@ int main() {
     TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
     Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
 
-    for(int i = 0; i < 16; i++) {
+    /*for(int i = 0; i < 16; i++) {
         std::cout << "writing tuple" << std::endl;
 
         TupleVals tuple_vals{};
@@ -55,7 +55,15 @@ int main() {
         heap.insert_tuple(std::move(tuple));
 
         tuple_vals.clear();
-    }
+    }*/
+
+    TupleVals tuple_vals{};
+    tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
+
+    Tuple tuple{std::move(tuple_vals)};
+    heap.insert_tuple(std::move(tuple));
+
+    tuple_vals.clear();
 
     // NOTE flushing all pages
     std::cout << "flushing pages which should have tuple" << std::endl;

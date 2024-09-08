@@ -28,6 +28,7 @@ class DiskManager {
 
     virtual void d_write(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
     virtual void d_read(DiskId disk_id, DiskPageCursor page_cursor, uint8_t* bytes, unsigned int page_size) = 0;
+    virtual DiskPageCursor d_extend(DiskId disk_id, unsigned int page_size) = 0;
 
     virtual DiskName disk_loaded(DiskId disk_id) = 0;
     virtual unsigned int disk_size(DiskId disk_id) = 0;
