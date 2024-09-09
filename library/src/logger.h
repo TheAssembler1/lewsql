@@ -8,7 +8,7 @@
 #include <cstring>
 #include <cassert>
 
-#define LOG(level) Logger::log(level, __FILE__, __func__, __LINE__, __DATE__, __TIME__)
+#define LOG(level) Logger::log({level, __FILE__, __func__, __LINE__, __DATE__, __TIME__ })
 
 enum class LogLevel {
     TRACE = 0,
@@ -18,11 +18,19 @@ enum class LogLevel {
     FATAL,
 };
 
+struct LoggerStreamPrintOpts {
+    LogLevel log_level;
+    const char* file;
+    const char* func;
+    const int line;
+    const char* date;
+    const char* time;
+};
+
 class LoggerStream {
 public:
-    LoggerStream(LogLevel log_level,
-                 const char* file, const char* func, int line, const char* date, const char* time)
-                : log_level{log_level}, file{file}, func{func}, line{line}, date{date}, time{time} {}
+    LoggerStream(LoggerStreamPrintOpts&& logger_stream_print_opts)
+                : logger_stream_print_opts{std::move(logger_stream_print_opts)} {}
     std::ostringstream stream_buffer;
 
     template<typename T>
@@ -38,7 +46,7 @@ public:
     }
 
     ~LoggerStream() {
-        switch(log_level) {
+        switch(logger_stream_print_opts.log_level) {
             case LogLevel::TRACE:
                 std::cerr << "[TRACE]-";
                 break;
@@ -61,13 +69,13 @@ public:
 
 
         // FIXME: make these configurable
-        std::cerr << "[" << time << "]-" << "[";
+        std::cerr << "[" << logger_stream_print_opts.time << "]-" << "[";
 
         const char* last_slash = nullptr;
-        while(*file != static_cast<char>(NULL)) {
+        while(*logger_stream_print_opts.file != static_cast<char>(NULL)) {
 #ifdef __unix__
-            if(*file == '/') {
-                last_slash = file + 1;
+            if(*logger_stream_print_opts.file == '/') {
+                last_slash = logger_stream_print_opts.file + 1;
             }
 #elif __win32__
             if(*file == '\\') {
@@ -77,32 +85,24 @@ public:
 #error "system not recognized as __win32 or __unix"
 #endif
 
-            file++;
+            logger_stream_print_opts.file++;
         }
 
         assert(last_slash != nullptr);
-        std::cerr << last_slash << "+" << func << "+" << line << "]" << "> " << stream_buffer.str();
+        std::cerr << last_slash << "+" << logger_stream_print_opts.func << "+" << logger_stream_print_opts.line << "]" << "> " << stream_buffer.str();
     }
 
 private:
-    const char* file;
-    const char* func;
-    const int line;
-    const char* date;
-    const char* time;
-
-    const LogLevel log_level;
+    LoggerStreamPrintOpts logger_stream_print_opts;
 };
 
 class Logger {
 public:
-    static LoggerStream log(LogLevel log_level,
-            const char* file, const char* func, int line, const char* date, const char* time) {
-        return LoggerStream(log_level, file, func, line, date, time);
+    static void init();
+
+    static LoggerStream log(LoggerStreamPrintOpts&& logger_stream_print_opts) {
+        return LoggerStream(std::move(logger_stream_print_opts));
     }
-
-private:
-
 };
 
 #endif // LOGGER_H
