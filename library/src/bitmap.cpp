@@ -1,5 +1,7 @@
 #include "bitmap.h"
 
+namespace Library::Bitmap {
+
 #define IS_BIT_SET(byte, bit) ((byte) & (1 << (bit)))
 #define SET_BIT(byte, bit) ((byte) |= (1 << (bit)))
 #define UNSET_BIT(byte, bit) ((byte) &= ~(1 << (bit)))
@@ -56,4 +58,6 @@ void Bitmap::set_bit_val(unsigned int bit, bool val) {
     } else {
         UNSET_BIT(bitmap[bit / 8], bit % 8);
     }
+}
+
 }

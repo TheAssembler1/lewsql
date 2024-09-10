@@ -6,6 +6,8 @@
 #include <cstring>
 #include <optional>
 
+namespace Library::Bitmap {
+
 class Bitmap
 {
 public:
@@ -31,5 +33,9 @@ private:
     unsigned int num_bytes;
     std::unique_ptr<uint8_t[]> bitmap;
 };
+
+}
+
+using Bitmap = Library::Bitmap::Bitmap;
 
 #endif // BITMAP_H

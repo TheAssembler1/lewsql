@@ -22,6 +22,9 @@
 #define TEST_TABLE_NAME "test.table"
 
 int main() {
+    Logger::init(OsStreams{&std::cerr});
+    LOG(LogLevel::INFO) << "successfully initialized logger" << std::endl;
+
     std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
     LOG(LogLevel::INFO) << "successfully created disk manager" << std::endl;
     DiskId disk_id;
