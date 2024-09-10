@@ -1,67 +1,133 @@
 [
 {
   "directory": "/home/ta1/src/lewsql/build/test_helper",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/test_helper.dir/src/register_test.cpp.o -c /home/ta1/src/lewsql/test_helper/src/register_test.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/library/src -std=gnu++17 -o CMakeFiles/test_helper.dir/src/register_test.cpp.o -c /home/ta1/src/lewsql/test_helper/src/register_test.cpp",
   "file": "/home/ta1/src/lewsql/test_helper/src/register_test.cpp",
   "output": "test_helper/CMakeFiles/test_helper.dir/src/register_test.cpp.o"
 },
 {
+  "directory": "/home/ta1/src/lewsql/build/library",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -std=gnu++17 -o CMakeFiles/library.dir/src/bitmap.cpp.o -c /home/ta1/src/lewsql/library/src/bitmap.cpp",
+  "file": "/home/ta1/src/lewsql/library/src/bitmap.cpp",
+  "output": "library/CMakeFiles/library.dir/src/bitmap.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/library",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/library/src -std=gnu++17 -o CMakeFiles/library_test.dir/test/library_test.cpp.o -c /home/ta1/src/lewsql/library/test/library_test.cpp",
+  "file": "/home/ta1/src/lewsql/library/test/library_test.cpp",
+  "output": "library/CMakeFiles/library_test.dir/test/library_test.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/library",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/library/src -std=gnu++17 -o CMakeFiles/library_test.dir/test/bitmap_test.cpp.o -c /home/ta1/src/lewsql/library/test/bitmap_test.cpp",
+  "file": "/home/ta1/src/lewsql/library/test/bitmap_test.cpp",
+  "output": "library/CMakeFiles/library_test.dir/test/bitmap_test.cpp.o"
+},
+{
   "directory": "/home/ta1/src/lewsql/build/disk_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/disk_manager.dir/src/impl/posix_disk_manager.cpp.o -c /home/ta1/src/lewsql/disk_manager/src/impl/posix_disk_manager.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/disk_manager/src -I/home/ta1/src/lewsql/library/src -std=gnu++17 -o CMakeFiles/disk_manager.dir/src/impl/posix_disk_manager.cpp.o -c /home/ta1/src/lewsql/disk_manager/src/impl/posix_disk_manager.cpp",
   "file": "/home/ta1/src/lewsql/disk_manager/src/impl/posix_disk_manager.cpp",
   "output": "disk_manager/CMakeFiles/disk_manager.dir/src/impl/posix_disk_manager.cpp.o"
 },
 {
+  "directory": "/home/ta1/src/lewsql/build/disk_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/disk_manager_manager_test.dir/test/disk_manager_test.cpp.o -c /home/ta1/src/lewsql/disk_manager/test/disk_manager_test.cpp",
+  "file": "/home/ta1/src/lewsql/disk_manager/test/disk_manager_test.cpp",
+  "output": "disk_manager/CMakeFiles/disk_manager_manager_test.dir/test/disk_manager_test.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/disk_manager",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/disk_manager_manager_test.dir/test/posix_disk_test.cpp.o -c /home/ta1/src/lewsql/disk_manager/test/posix_disk_test.cpp",
+  "file": "/home/ta1/src/lewsql/disk_manager/test/posix_disk_test.cpp",
+  "output": "disk_manager/CMakeFiles/disk_manager_manager_test.dir/test/posix_disk_test.cpp.o"
+},
+{
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager.dir/src/buffer_manager.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/buffer_manager.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager.dir/src/buffer_manager.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/buffer_manager.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/src/buffer_manager.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/buffer_manager.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager.dir/src/replacement/dumb_alg.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/replacement/dumb_alg.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager.dir/src/replacement/dumb_alg.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/replacement/dumb_alg.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/src/replacement/dumb_alg.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/replacement/dumb_alg.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager.dir/src/memory_pool.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/memory_pool.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager.dir/src/memory_pool.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/memory_pool.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/src/memory_pool.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/memory_pool.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager.dir/src/buffer_page_tracker/bitmap_tracker.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/buffer_page_tracker/bitmap_tracker.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager.dir/src/buffer_page_tracker/bitmap_tracker.cpp.o -c /home/ta1/src/lewsql/buffer_manager/src/buffer_page_tracker/bitmap_tracker.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/src/buffer_page_tracker/bitmap_tracker.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager.dir/src/buffer_page_tracker/bitmap_tracker.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager_test.dir/test/buffer_manager_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/buffer_manager_test.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager_test.dir/test/buffer_manager_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/buffer_manager_test.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/test/buffer_manager_test.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager_test.dir/test/buffer_manager_test.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager_test.dir/test/pinning_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/pinning_test.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager_test.dir/test/pinning_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/pinning_test.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/test/pinning_test.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager_test.dir/test/pinning_test.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager_test.dir/test/io_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/io_test.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager_test.dir/test/io_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/io_test.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/test/io_test.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager_test.dir/test/io_test.cpp.o"
 },
 {
   "directory": "/home/ta1/src/lewsql/build/buffer_manager",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/buffer_manager_test.dir/test/memory_pool_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/memory_pool_test.cpp",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/buffer_manager_test.dir/test/memory_pool_test.cpp.o -c /home/ta1/src/lewsql/buffer_manager/test/memory_pool_test.cpp",
   "file": "/home/ta1/src/lewsql/buffer_manager/test/memory_pool_test.cpp",
   "output": "buffer_manager/CMakeFiles/buffer_manager_test.dir/test/memory_pool_test.cpp.o"
 },
 {
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/heap.cpp.o -c /home/ta1/src/lewsql/organizers/src/heap.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/heap.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/heap.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/types/uint8_t_type.cpp.o -c /home/ta1/src/lewsql/organizers/src/types/uint8_t_type.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/types/uint8_t_type.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/types/uint8_t_type.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/tuple.cpp.o -c /home/ta1/src/lewsql/organizers/src/tuple.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/tuple.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/tuple.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/types/type.cpp.o -c /home/ta1/src/lewsql/organizers/src/types/type.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/types/type.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/types/type.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/types/uint16_t_type.cpp.o -c /home/ta1/src/lewsql/organizers/src/types/uint16_t_type.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/types/uint16_t_type.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/types/uint16_t_type.cpp.o"
+},
+{
+  "directory": "/home/ta1/src/lewsql/build/organizers",
+  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/test_helper/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/organizers.dir/src/types/uint32_t_type.cpp.o -c /home/ta1/src/lewsql/organizers/src/types/uint32_t_type.cpp",
+  "file": "/home/ta1/src/lewsql/organizers/src/types/uint32_t_type.cpp",
+  "output": "organizers/CMakeFiles/organizers.dir/src/types/uint32_t_type.cpp.o"
+},
+{
   "directory": "/home/ta1/src/lewsql/build/driver",
-  "command": "/usr/bin/c++  -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles/driver.dir/src/run.cpp.o -c /home/ta1/src/lewsql/driver/src/run.cpp",
+  "command": "/usr/bin/c++ -DPROJECT_DIR=\\\"/home/ta1/src/lewsql\\\" -I/home/ta1/src/lewsql/library/src -I/home/ta1/src/lewsql/organizers/src -I/home/ta1/src/lewsql/buffer_manager/src -I/home/ta1/src/lewsql/disk_manager/src -std=gnu++17 -o CMakeFiles/driver.dir/src/run.cpp.o -c /home/ta1/src/lewsql/driver/src/run.cpp",
   "file": "/home/ta1/src/lewsql/driver/src/run.cpp",
   "output": "driver/CMakeFiles/driver.dir/src/run.cpp.o"
 }

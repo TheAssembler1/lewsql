@@ -50,8 +50,6 @@ public:
         return *this;
     }
 
-
-
     ~LoggerStream() {
         switch(logger_stream_print_opts.log_level) {
             case LogLevel::TRACE:
@@ -100,8 +98,6 @@ public:
 
         for(const auto os_stream: os_streams) {
             *os_stream << stream_buffer.str();
-
-            *os_stream << "test";
         }
 
     }

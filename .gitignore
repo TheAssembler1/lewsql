@@ -1,3 +1,6 @@
+# output logs files
+*.log
+
 # fleet files
 .fleet
 

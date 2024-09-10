@@ -10,10 +10,12 @@
 #include <types/uint32_t_type.h>
 #include <types/uint8_t_type.h>
 #include <logger.h>
-
+#include <ostream>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
+#define OUTPUT_LOG_FILE "output.log"
 #define PAGE_SIZE (512)
 #define MAX_PAGE_SIZE (PAGE_SIZE * 12)
 #define NUM_PAGES 8
@@ -21,8 +23,22 @@
 #define TEST_DISK_NAME "driver.disk"
 #define TEST_TABLE_NAME "test.table"
 
+#if defined(__win32__)
+    const char PATH_SEPARATOR = '\\';
+#elif defined(__unix__)
+    const char PATH_SEPARATOR = '/';
+#endif
+
 int main() {
-    Logger::init(OsStreams{&std::cerr});
+    // NOTE: defined in CMakeLists.txt
+    std::string project_dir{PROJECT_DIR};
+    std::string log_file_name{OUTPUT_LOG_FILE};
+    std::string output_path = project_dir + PATH_SEPARATOR + log_file_name;
+
+    auto of_stream = std::ofstream{output_path, std::ios::out};
+
+    Logger::init(OsStreams{&std::cerr,  &of_stream});
+
     LOG(LogLevel::INFO) << "successfully initialized logger" << std::endl;
 
     std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};

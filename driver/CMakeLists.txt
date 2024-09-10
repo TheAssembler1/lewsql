@@ -6,3 +6,4 @@ set(SOURCES src/run.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE library organizers buffer_manager disk_manager)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_DIR="${CMAKE_SOURCE_DIR}")
