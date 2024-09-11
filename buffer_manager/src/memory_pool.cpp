@@ -7,5 +7,5 @@ BufferPage* MemoryPool::get_page(BufferPageCursor buffer_page_cursor) const {
     assert(buffer_page_cursor < num_pages);
     assert(pool);
 
-    return reinterpret_cast<BufferPage*>(&pool[(sizeof(BufferPage) + page_size) * buffer_page_cursor]);
+    return reinterpret_cast<BufferPage*>(&pool[BufferPage::size(page_size) * buffer_page_cursor]);
 }

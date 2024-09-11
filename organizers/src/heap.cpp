@@ -18,12 +18,6 @@
 #define BITMAP_OFFSET (sizeof(int32_t) + sizeof(int32_t))
 #define FIRST_TUPLE_OFFSET(bitmap_size) (sizeof(int32_t) + sizeof(int32_t) + (bitmap_size * sizeof(uint8_t)))
 
-// FIMXE: move to buffer manager
-template<typename T>
-static T* to_ptr(uint8_t* from) {
-    return reinterpret_cast<T*>(from);
-}
-
 // NOTE: page 0 has
 Heap::Heap(std::shared_ptr<DiskManager::DiskManager> disk_manager,
 std::shared_ptr<BufferManager> buffer_manager,
@@ -45,9 +39,9 @@ unsigned int page_size)
 
     BufferPage& root_page = buffer_manager->pin(disk_id, ROOT_PAGE);
 
-    to_ptr<uint32_t>(root_page.bytes)[FIRST_PAGE_HEAP_PAGE_STAMP_OFFSET] = HEAP_PAGE_START_STAMP;
-    to_ptr<int32_t>(root_page.bytes)[FIRST_PAGE_FREE_LIST_OFFSET] = -1;
-    to_ptr<int32_t>(root_page.bytes)[FIRST_PAGE_FULL_LIST_OFFSET] = -1;
+    root_page.to_ptr<uint32_t>(FIRST_PAGE_HEAP_PAGE_STAMP_OFFSET)[0] = HEAP_PAGE_START_STAMP;
+    root_page.to_ptr<int32_t>(FIRST_PAGE_FREE_LIST_OFFSET)[0] = -1;
+    root_page.to_ptr<int32_t>(FIRST_PAGE_FULL_LIST_OFFSET)[0] = -1;
 
     buffer_manager->set_dirty(disk_id, ROOT_PAGE);
     buffer_manager->unpin(disk_id, ROOT_PAGE);
@@ -57,7 +51,7 @@ unsigned int page_size)
 //        when needing to add large amounts of tuples
 std::optional<unsigned int> Heap::find_free_page() {
     BufferPage* root_page = &buffer_manager->pin(disk_id, ROOT_PAGE);
-    int32_t free_list = to_ptr<int32_t>(root_page->bytes)[FIRST_PAGE_FREE_LIST_OFFSET];
+    int32_t free_list = root_page->to_ptr<int32_t>(FIRST_PAGE_FREE_LIST_OFFSET)[0];
     buffer_manager->unpin(disk_id, ROOT_PAGE);
 
     if(free_list == -1) {
@@ -73,21 +67,21 @@ void Heap::append_to_full_pages(DiskPageCursor disk_page_cursor) {
 
     BufferPage* cur_page = &buffer_manager->pin(disk_id, ROOT_PAGE);
 
-    if(to_ptr<int32_t>(cur_page->bytes)[FIRST_PAGE_FULL_LIST_OFFSET] == -1) {
+    if(cur_page->to_ptr<int32_t>(FIRST_PAGE_FULL_LIST_OFFSET)[0] == -1) {
         full_list_offset = FIRST_PAGE_FULL_LIST_OFFSET;
     } else {
         // NOTE: unpinning root page
-        cur_page_cursor = to_ptr<int32_t>(cur_page->bytes)[FIRST_PAGE_FULL_LIST_OFFSET];
+        cur_page_cursor = cur_page->to_ptr<int32_t>(FIRST_PAGE_FULL_LIST_OFFSET)[0];
         buffer_manager->unpin(disk_id, ROOT_PAGE);
 
         for(;;) {
             cur_page = &buffer_manager->pin(disk_id, cur_page_cursor);
 
-            if(to_ptr<int32_t>(cur_page->bytes)[FULL_LIST_OFFSET] == -1) {
+            if(cur_page->to_ptr<int32_t>(FULL_LIST_OFFSET)[0] == -1) {
                 full_list_offset = FULL_LIST_OFFSET;
                 break;
             } else {
-                DiskPageCursor next_cur_page_cursor = to_ptr<int32_t>(cur_page->bytes)[FULL_LIST_OFFSET];
+                DiskPageCursor next_cur_page_cursor = cur_page->to_ptr<int32_t>(FULL_LIST_OFFSET)[0];
                 buffer_manager->unpin(disk_id, cur_page_cursor);
                 cur_page_cursor = next_cur_page_cursor;
             }
@@ -98,7 +92,7 @@ void Heap::append_to_full_pages(DiskPageCursor disk_page_cursor) {
     //       cur_page_cursor is the last page in the full list
     //       full_list_offset is the offset of the pointer to the next full list page
     //       it should be set to -1 currently
-    to_ptr<int32_t>(cur_page->bytes)[full_list_offset] = disk_page_cursor;
+    cur_page->to_ptr<int32_t>(full_list_offset)[0] = disk_page_cursor;
     buffer_manager->set_dirty(disk_id, cur_page_cursor);
     buffer_manager->unpin(disk_id, cur_page_cursor);
 }
@@ -118,7 +112,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
         free_disk_page = disk_manager->extend(disk_id);
         BufferPage& root_page = buffer_manager->pin(disk_id, ROOT_PAGE);
 
-        to_ptr<uint32_t>(root_page.bytes)[FIRST_PAGE_FREE_LIST_OFFSET] = disk_id;
+        root_page.to_ptr<int32_t>(FIRST_PAGE_FREE_LIST_OFFSET)[0] = disk_id;
 
         buffer_manager->set_dirty(disk_id, ROOT_PAGE);
         buffer_manager->unpin(disk_id, ROOT_PAGE);
@@ -164,24 +158,3 @@ void Heap::delete_tuple() {
 
 }
 
-/*
- * std::optional<unsigned int> Heap::find_free_page() {
-    BufferPageCursor cur_page = 0;
-    BufferPage* root_page = &buffer_manager->pin(disk_id, cur_page);
-    int32_t free_list = to_ptr<int32_t>(root_page->bytes)[FIRST_PAGE_FREE_LIST_OFFSET];
-    buffer_manager->unpin(disk_id, cur_page);
-
-    if(free_list == -1) {
-        return std::nullopt;
-    }
-
-    for(;;) {
-        root_page = &buffer_manager->pin(disk_id, cur_page);
-        cur_page = to_ptr<int32_t>(root_page->bytes)[FREE_LIST_OFFSET];
-        buffer_manager->unpin(disk_id, cur_page);
-
-        if(free_list == -1) {
-            return std::nullopt;
-        }
-    }
-}*/

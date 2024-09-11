@@ -9,8 +9,7 @@ set(SOURCES
     src/buffer_page_tracker/bitmap_tracker.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES}
-    test/constants.h)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE library disk_manager)
 target_include_directories(
   ${PROJECT_NAME} 
@@ -22,6 +21,7 @@ set(TEST_SOURCES
     test/pinning_test.cpp
     test/io_test.cpp
     test/memory_pool_test.cpp
+    test/buffer_page_test.cpp
 )
 
 add_executable(${BUFFER_MANAGER_TEST_EXEC} "test/buffer_manager_test.cpp" ${TEST_SOURCES})

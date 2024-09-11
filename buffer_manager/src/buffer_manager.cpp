@@ -148,7 +148,7 @@ BufferPage& BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
             buffer_page = mem_pool.get_page(victim_page);
         }
 
-        buffer_page->init(disk_id, disk_page_cursor, buffer_page_cursor, 1, false);
+        buffer_page->init(disk_manager->get_page_size(), disk_id, disk_page_cursor, buffer_page_cursor, 1, false);
         disk_manager->read(disk_id, disk_page_cursor, buffer_page->bytes);
 
         LOG(LogLevel::INFO) << "pin resulted in pin count: " << buffer_page->pin_count << std::endl;

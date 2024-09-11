@@ -16,7 +16,7 @@ class MemoryPool {
         assert(num_pages > 0 && page_size > 0);
         LOG(LogLevel::INFO) << "creating memory pool with (num_pages, page_size) = (" << num_pages << ", " << page_size << ")" << std::endl;
         LOG(LogLevel::INFO)  << "memory pool size: " << num_pages * page_size << std::endl;
-        std::memset(static_cast<void*>(&pool[0]), 0, (sizeof(BufferPage) + page_size) * num_pages);
+        std::memset(static_cast<void*>(&pool[0]), 0, BufferPage::size(page_size) * num_pages);
     }
 
     BufferPage* get_page(BufferPageCursor buffer_page_cursor) const;
