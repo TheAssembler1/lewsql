@@ -30,6 +30,8 @@ class BufferPage {
 
     template<typename T>
     T* to_ptr(unsigned int offset) {
+        assert(initialized);
+
         if(offset >= page_size) {
             LOG(LogLevel::ERROR) << "invalid page offset: " << offset << std::endl;
             throw BufferManagerError(BufferManagerErrorCode::OUT_OF_PAGE_BOUNDS);
@@ -40,6 +42,8 @@ class BufferPage {
 
     template<typename T>
     void memcpy(unsigned int offset, const T* elements, unsigned int num_elements) {
+        assert(initialized);
+
         if(offset + (sizeof(T) * num_elements) > page_size) {
             LOG(LogLevel::ERROR) << "starting offset: " << offset << std::endl;
             LOG(LogLevel::ERROR) << "invalid offset + (sizeof(T) * num_elements): " << offset + (sizeof(T) * num_elements) << std::endl;
@@ -53,6 +57,8 @@ class BufferPage {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const BufferPage& buffer_page) {
+        assert(buffer_page.initialized);
+
         os << "(disk_id, disk_page_cursor, buffer_page_cursor, pin_count, dirty) = (";
         os << buffer_page.disk_id << ", ";
         os << buffer_page.disk_page_cursor << ", ";
