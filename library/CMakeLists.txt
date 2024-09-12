@@ -16,6 +16,7 @@ target_include_directories(${PROJECT_NAME}
 set(LIBRARY_TEST_EXEC library_test)
 set(TEST_SOURCES
     test/bitmap_test.cpp
+    test/result_test.cpp
 )
 
 add_executable(${LIBRARY_TEST_EXEC} "test/library_test.cpp" ${TEST_SOURCES})

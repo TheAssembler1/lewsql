@@ -56,6 +56,7 @@ void buffer_page_test() {
 
     buffer_page->memcpy(0, test_structs.data(), test_structs.size());
 
+    // NOTE: ensure we can read back memcpy
     for(int i = 0; i < NUM_BUFFER_PAGES; i++) {
         assert(buffer_page->to_ptr<TestStruct>(0)[i].field1 == 5);
         assert(buffer_page->to_ptr<TestStruct>(0)[i].field2 == -5);
