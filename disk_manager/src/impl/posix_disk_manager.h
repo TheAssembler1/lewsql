@@ -29,20 +29,20 @@ class PosixDiskManager final: public DiskManager {
 
     friend std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager);
 
-    virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name) override;
-    virtual Result<void, DiskManagerError> destroy(DiskId disk_id) override;
+    virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name) noexcept override;
+    virtual Result<void, DiskManagerError> destroy(DiskId disk_id) noexcept override;
 
-    virtual Result<DiskId, DiskManagerError> load(const DiskName& disk_name) override;
-    virtual Result<void, DiskManagerError> unload(DiskId disk_id) override;
-    virtual Result<DiskPageCursor, DiskManagerError> extend(DiskId disk_id) override;
+    virtual Result<DiskId, DiskManagerError> load(const DiskName& disk_name) noexcept override;
+    virtual Result<void, DiskManagerError> unload(DiskId disk_id) noexcept override;
+    virtual Result<DiskPageCursor, DiskManagerError> extend(DiskId disk_id) noexcept override;
 
-    virtual Result<unsigned int, DiskManagerError> num_loaded_disks() const override;
+    virtual Result<unsigned int, DiskManagerError> num_loaded_disks() const noexcept override;
 
-    virtual Result<void, DiskManagerError> write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
-    virtual Result<void, DiskManagerError> read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
+    virtual Result<void, DiskManagerError> write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept override;
+    virtual Result<void, DiskManagerError> read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept override;
 
-    virtual DiskName loaded_disk_name(DiskId disk_id) override;
-    virtual unsigned int disk_size(DiskId disk_id) override;
+    virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept override;
+    virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept override;
 
     private:
     std::string get_disk_path(const DiskName& disk_name) {
