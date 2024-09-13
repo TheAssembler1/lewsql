@@ -2,6 +2,7 @@
 
 #include <register_test.h>
 #include <cassert>
+#include <string>
 
 class TestClass {
 
@@ -18,7 +19,7 @@ class NoCopyTestClass {
 
 
 void result_test() {
-    Result<TestClass, std::exception> res_test_class = Result<TestClass, std::exception>{TestClass{}};
+    Result<TestClass, std::exception> res_test_class(TestClass{});
     Result<NoCopyTestClass, std::exception>{NoCopyTestClass{}};
 
     assert(!res_test_class.is_error());

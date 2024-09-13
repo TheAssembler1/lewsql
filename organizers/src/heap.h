@@ -16,11 +16,20 @@
 //       each tuple starts with whether it is the last in the heap
 class Heap final: Organizer {
     public:
+    Heap(const Heap&) = delete;
+    Heap& operator=(const Heap&) = delete;
+    Heap(const Heap&&) = delete;
+    Heap&& operator=(const Heap&&) = delete;
+
     Heap(std::shared_ptr<DiskManager::DiskManager> disk_manager,
     std::shared_ptr<BufferManager> buffer_manager,
     std::string table_name,
     TupleCols cols,
     unsigned int page_size);
+
+    ~Heap() {
+        disk_manager->unload(disk_id);
+    }
 
     virtual void get_next_tuple() const override;
     virtual void insert_tuple(const Tuple& tuple) override;
@@ -37,6 +46,9 @@ class Heap final: Organizer {
 
     // NOTE: this is the disk name on fs
     const std::string table_name;
+    // NOTE: this is the disk name on fs for bitmap
+    const std::string table_bitmap_name;
+
     DiskId disk_id;
 
     const std::shared_ptr<DiskManager::DiskManager> disk_manager;

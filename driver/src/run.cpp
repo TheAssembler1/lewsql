@@ -20,8 +20,7 @@
 #define MAX_PAGE_SIZE (PAGE_SIZE * 12)
 #define NUM_PAGES 8
 #define DISK_CURSOR 0
-#define TEST_DISK_NAME "driver.disk"
-#define TEST_TABLE_NAME "test.table"
+#define TEST_HEAP_TABLE_NAME "test"
 
 #if defined(__win32__)
     const char PATH_SEPARATOR = '\\';
@@ -32,35 +31,25 @@
 int main() {
     // NOTE: defined in CMakeLists.txt
     std::string project_dir{PROJECT_DIR};
+    // NOTE: setting up logger
     std::string log_file_name{OUTPUT_LOG_FILE};
     std::string output_path = project_dir + PATH_SEPARATOR + log_file_name;
-
     auto of_stream = std::ofstream{output_path, std::ios::out};
-
     Logger::init(OsStreams{&std::cerr,  &of_stream});
-
     LOG(LogLevel::INFO) << "successfully initialized logger" << std::endl;
 
+    // NOTE: setting up disk manager
     std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
     LOG(LogLevel::INFO) << "successfully created disk manager" << std::endl;
-    DiskId disk_id;
-
-    try {
-        disk_id = posix_dmanager->create(TEST_DISK_NAME);
-    } catch(DiskManagerError& err) {
-        assert(err.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
-        LOG(LogLevel::INFO) << "disk already exists" << std::endl;
-        disk_id = posix_dmanager->load(TEST_DISK_NAME);
-    }
-
     LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 
+    // NOTE: setting up replacmenet alg and buf manager
     std::shared_ptr<ReplacementAlg> replacment_alg{new DumbAlg};
     auto buf_manager = std::make_shared<BufferManager>(
     posix_dmanager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(PAGE_SIZE), NUM_PAGES, PAGE_SIZE);
 
     TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
-    Heap heap{posix_dmanager, buf_manager, TEST_TABLE_NAME, cols, PAGE_SIZE};
+    Heap heap{posix_dmanager, buf_manager, TEST_HEAP_TABLE_NAME, cols, PAGE_SIZE};
 
     /*for(int i = 0; i < 16; i++) {
         LOG(LogLevel::INFO) << "writing tuple" << std::endl;
@@ -88,10 +77,6 @@ int main() {
     // NOTE flushing all pages
     LOG(LogLevel::INFO) << "flushing pages which should have tuple" << std::endl;
     buf_manager->free_avail_pages();
-
-    // FIXME: maybe this should happen in the heap class itself
-    LOG(LogLevel::INFO) << "unloading disk" << std::endl;
-    posix_dmanager->unload(disk_id);
 
     LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 

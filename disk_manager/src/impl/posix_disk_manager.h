@@ -29,17 +29,17 @@ class PosixDiskManager final: public DiskManager {
 
     friend std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager);
 
-    virtual DiskId create(const DiskName& disk_name) override;
-    virtual void destroy(DiskId disk_id) override;
+    virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name) override;
+    virtual Result<void, DiskManagerError> destroy(DiskId disk_id) override;
 
-    virtual DiskId load(const DiskName& disk_name) override;
-    virtual void unload(DiskId disk_id) override;
-    virtual DiskPageCursor extend(DiskId disk_id) override;
+    virtual Result<DiskId, DiskManagerError> load(const DiskName& disk_name) override;
+    virtual Result<void, DiskManagerError> unload(DiskId disk_id) override;
+    virtual Result<DiskPageCursor, DiskManagerError> extend(DiskId disk_id) override;
 
-    virtual unsigned int num_loaded_disks() const override;
+    virtual Result<unsigned int, DiskManagerError> num_loaded_disks() const override;
 
-    virtual void write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
-    virtual void read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
+    virtual Result<void, DiskManagerError> write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
+    virtual Result<void, DiskManagerError> read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) override;
 
     virtual DiskName loaded_disk_name(DiskId disk_id) override;
     virtual unsigned int disk_size(DiskId disk_id) override;

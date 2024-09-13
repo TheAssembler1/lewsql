@@ -8,7 +8,7 @@
 
 namespace DiskManager {
 
-unsigned int PosixDiskManager::num_loaded_disks() const {
+Result<unsigned int, DiskManagerError> PosixDiskManager::num_loaded_disks() const {
     return disks.size();
 }
 
@@ -17,7 +17,7 @@ PosixDiskManager::PosixDiskManager(const std::string& dir_path, unsigned int pag
     LOG(LogLevel::INFO) << "dir path set to path: " << dir_path << std::endl;
 }
 
-DiskId PosixDiskManager::create(const DiskName& disk_name) {
+Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name) {
     std::string full_path_fname = get_disk_path(disk_name);
 
     // NOTE: check if file already exists
@@ -28,11 +28,10 @@ DiskId PosixDiskManager::create(const DiskName& disk_name) {
     if(st == -1) {
         if(errno != ENOENT) {
             LOG(LogLevel::ERROR) << "failed to access file, errno: " << std::strerror(errno) << std::endl;
-            throw DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
+            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
         }
     } else { // NOTE: file already exists
-        LOG(LogLevel::ERROR) << "file already exists" << std::endl;
-        throw DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+        return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
     }
 
     errno = 0;
@@ -41,7 +40,7 @@ DiskId PosixDiskManager::create(const DiskName& disk_name) {
     // FIXME: return more specific errors based on errno status
     if(fd == -1) {
         LOG(LogLevel::ERROR) << "failed to open file, errno: " << std::strerror(errno) << std::endl;
-        throw DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
+        return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
     } else {
         LOG(LogLevel::INFO) << "created file at path: " << full_path_fname << std::endl;
     }
@@ -51,13 +50,13 @@ DiskId PosixDiskManager::create(const DiskName& disk_name) {
 
     if(st == -1) {
         LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-        throw DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
+        return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
     }
 
     return load(disk_name);
 }
 
-void PosixDiskManager::destroy(DiskId disk_id) {
+Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) {
     auto full_path_fname = get_disk_path(loaded_disk_name(disk_id));
 
     errno = 0;
@@ -71,7 +70,7 @@ void PosixDiskManager::destroy(DiskId disk_id) {
     unload(disk_id);
 }
 
-DiskId PosixDiskManager::load(const DiskName& disk_name) {
+Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_name) {
     std::string full_path_fname = get_disk_path(disk_name);
 
     // NOTE: check if file already exists
@@ -81,7 +80,7 @@ DiskId PosixDiskManager::load(const DiskName& disk_name) {
     // NOTE: access fails ensure it was due to it not existing
     if(st == -1) {
         LOG(LogLevel::ERROR) << "disk load could not find file: " << full_path_fname << std::endl;
-        throw DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
     }
 
     DiskId ret = cur_disk_id;
@@ -91,12 +90,12 @@ DiskId PosixDiskManager::load(const DiskName& disk_name) {
     return ret;
 }
 
-void PosixDiskManager::unload(DiskId disk_id) {
+Result<void, DiskManagerError> PosixDiskManager::unload(DiskId disk_id) {
     get_disk_path(loaded_disk_name(disk_id));
     disks.erase(disk_id);
 }
 
-void PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
+Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
     std::string full_path_fname = get_disk_path(loaded_disk_name(disk_id));
 
     errno = 0;
@@ -143,7 +142,7 @@ void PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, ui
     }
 }
 
-void PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
+Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) {
     auto full_path_fname = get_disk_path(loaded_disk_name(disk_id));
 
     // FIXME: ensuring file is large enough
@@ -257,10 +256,15 @@ DiskName PosixDiskManager::loaded_disk_name(DiskId disk_id) {
     return it->second;
 };
 
-DiskPageCursor PosixDiskManager::extend(DiskId disk_id) {
+Result<DiskPageCursor, DiskManagerError> PosixDiskManager::extend(DiskId disk_id) {
     unsigned int size = disk_size(disk_id);
     assert(size % get_page_size() == 0);
-    return (size / get_page_size()) + 1;
+
+    if(size > get_max_disk_size()) {
+        return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
+    }
+
+    return static_cast<DiskPageCursor>((size / get_page_size()) + 1);
 
 }
 

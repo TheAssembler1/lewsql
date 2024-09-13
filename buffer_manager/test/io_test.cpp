@@ -19,7 +19,7 @@ void io_test() {
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->create(TEST_DISK_NAME);
+        disk_id = disk_manager->create(TEST_DISK_NAME).get_value();
         auto buf_manager = std::make_shared<BufferManager>(
         disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
 

@@ -7,6 +7,8 @@
 #include <bitmap.h>
 #include <logger.h>
 
+#define HEAP_DISK_SUFFIX ".heap"
+
 #define ROOT_PAGE (0)
 
 #define FIRST_PAGE_HEAP_PAGE_STAMP_OFFSET (0)
@@ -24,16 +26,22 @@ std::shared_ptr<BufferManager> buffer_manager,
 std::string table_name,
 TupleCols cols,
 unsigned int page_size)
-: disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name}, cols{cols}, page_size{page_size} {
+: disk_manager{disk_manager}, buffer_manager{buffer_manager}, table_name{table_name + HEAP_DISK_SUFFIX}, cols{cols}, page_size{page_size} {
     try {
-        disk_id = disk_manager->create(table_name);
-
+        disk_id = disk_manager->create(table_name).get_value();
         LOG(LogLevel::INFO) << "created table with name: " << table_name << std::endl;
     } catch(DiskManagerError& e) {
         assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+        disk_id = disk_manager->load(table_name).get_value();
+        LOG(LogLevel::INFO) << "table already existed loading table with name: " << table_name << std::endl;
+    }
 
-        disk_id = disk_manager->load(table_name);
-
+    try {
+        disk_id = disk_manager->create(table_name).get_value();
+        LOG(LogLevel::INFO) << "created table with name: " << table_name << std::endl;
+    } catch(DiskManagerError& e) {
+        assert(e.error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+        disk_id = disk_manager->load(table_name).get_value();
         LOG(LogLevel::INFO) << "table already existed loading table with name: " << table_name << std::endl;
     }
 
@@ -109,7 +117,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
 
     // NOTE: no free pages need to append to free list
     if(!free_page_opt.has_value()) {
-        free_disk_page = disk_manager->extend(disk_id);
+        free_disk_page = disk_manager->extend(disk_id).get_value();
         BufferPage& root_page = buffer_manager->pin(disk_id, ROOT_PAGE);
 
         root_page.to_ptr<int32_t>(FIRST_PAGE_FREE_LIST_OFFSET)[0] = disk_id;
