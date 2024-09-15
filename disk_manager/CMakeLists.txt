@@ -4,6 +4,7 @@ project(disk_manager VERSION 1.0 LANGUAGES CXX)
 
 set(SOURCES
     src/impl/posix_disk_manager.cpp
+    src/impl/posix_disk.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
