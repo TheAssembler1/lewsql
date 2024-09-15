@@ -151,7 +151,6 @@ Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageC
 Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
     auto full_path_fname = get_disk_path(loaded_disk_name(disk_id).get_value());
 
-    // FIXME: ensuring file is large enough
     struct stat st;
     errno = 0;
     int res = stat(full_path_fname.c_str(), &st);
@@ -176,6 +175,19 @@ Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCu
     LOG(LogLevel::INFO) << "file size found to be: " << st.st_size << std::endl;
     if(foffset > st.st_size) {
         LOG(LogLevel::INFO) << "foffset greater than file size... extending file" << std::endl;
+
+        if(foffset >= get_max_disk_size()) {
+            LOG(LogLevel::WARNING) << "foffset exceed max disk size" << std::endl;
+
+            errno = 0;
+            res = close(fd);
+            if(res == -1) {
+                LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
+                return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
+            }
+
+            return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
+        }
 
         errno = 0;
         res = lseek(fd, foffset, SEEK_SET);
