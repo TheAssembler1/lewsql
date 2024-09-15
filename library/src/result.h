@@ -2,6 +2,7 @@
 #define RESULT_H
 
 #include <optional>
+#include <functional>
 
 #include "logger.h"
 
@@ -13,11 +14,21 @@ class Result {
     using ValueType = R;
     using ErrorType = E;
 
+    Result() = delete;
+
     Result(ValueType const& res): m_value_opt(res) {}
     Result(ValueType&& res): m_value_opt(std::move(res)) {}
 
     Result(ErrorType const& error): m_error_opt(error) {}
     Result(ErrorType&& error): m_error_opt(std::move(error)){}
+
+    ValueType value_or(std::function<ValueType(ErrorType)> func) {
+        if(is_error()) {
+            return func(get_error());
+        } else {
+            return get_value();
+        }
+    }
 
     bool is_error() const {
         return m_error_opt.has_value();
@@ -51,6 +62,8 @@ class Result<void, E> {
     public:
     using ValueType = void;
     using ErrorType = E;
+
+    Result() = delete;
 
     Result(VoidValue) {}
     Result(ErrorType const& error): m_error_opt(error) {}
