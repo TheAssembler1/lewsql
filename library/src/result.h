@@ -42,12 +42,17 @@ class Result {
     std::optional<ErrorType> m_error_opt = std::nullopt;
 };
 
+enum VoidValue {
+    Ok
+};
+
 template<typename E>
 class Result<void, E> {
     public:
     using ValueType = void;
     using ErrorType = E;
 
+    Result(VoidValue) {}
     Result(ErrorType const& error): m_error_opt(error) {}
     Result(ErrorType&& error): m_error_opt(std::move(error)){}
 

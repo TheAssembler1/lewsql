@@ -19,7 +19,15 @@ void io_test() {
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->create(TEST_DISK_NAME).get_value();
+        auto disk_id_res = disk_manager->create(TEST_DISK_NAME);
+
+        if(disk_id_res.is_error()) {
+            assert(disk_id_res.get_error().error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+            disk_id = disk_manager->load(TEST_DISK_NAME).get_value();
+        } else {
+            disk_id = disk_id_res.get_value();
+        }
+
         auto buf_manager = std::make_shared<BufferManager>(
         disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
 

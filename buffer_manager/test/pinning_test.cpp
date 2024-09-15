@@ -19,11 +19,22 @@ void pinning_test() {
 
     DiskId disk_id;
     try {
-        disk_id = disk_manager->create(TEST_DISK_NAME).get_value();
+        Logger::init({&std::cerr});
 
+        LOG(LogLevel::INFO) << "creating disk with name: " << TEST_DISK_NAME << std::endl;
+
+        auto disk_id_res = disk_manager->create(TEST_DISK_NAME);
+
+        if(disk_id_res.is_error()) {
+            assert(disk_id_res.get_error().error_code == DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+            disk_id = disk_manager->load(TEST_DISK_NAME).get_value();
+        } else {
+            disk_id = disk_id_res.get_value();
+        }
+
+        LOG(LogLevel::INFO) << "creating buffer manager" << std::endl;
         auto buf_manager = std::make_shared<BufferManager>(
         disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_PAGES), NUM_PAGES, PAGE_SIZE);
-
         ASSERT(buf_manager->buffer_page_tracker->get_num_free_pages() == NUM_PAGES);
         ASSERT(buf_manager->buffer_page_tracker->get_num_taken_pages() == 0);
 

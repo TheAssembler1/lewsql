@@ -68,6 +68,8 @@ Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcep
     }
 
     unload(disk_id);
+
+    return VoidValue::Ok;
 }
 
 Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_name) noexcept {
@@ -93,6 +95,8 @@ Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_nam
 Result<void, DiskManagerError> PosixDiskManager::unload(DiskId disk_id) noexcept {
     get_disk_path(loaded_disk_name(disk_id).get_value());
     disks.erase(disk_id);
+
+    return VoidValue::Ok;
 }
 
 Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
@@ -140,6 +144,8 @@ Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageC
         LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
     }
+
+    return VoidValue::Ok;
 }
 
 Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
@@ -219,11 +225,12 @@ Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCu
 
     errno = 0;
     res = close(fd);
-
     if(res == -1) {
         LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
     }
+
+    return VoidValue::Ok;
 }
 
 std::ostream& operator<<(std::ostream& os, const PosixDiskManager& posix_disk_manager) {
