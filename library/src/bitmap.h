@@ -1,16 +1,15 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include <stdint.h>
-#include <memory>
 #include <cstring>
+#include <memory>
 #include <optional>
+#include <stdint.h>
 
 namespace Library::Bitmap {
 
-class Bitmap
-{
-public:
+class Bitmap {
+    public:
     Bitmap(unsigned int num_bits);
 
     void serialize(uint8_t* dest) const;
@@ -24,17 +23,24 @@ public:
     bool is_bit_set(unsigned int bit) const;
     void set_bit_val(unsigned int bit, bool val);
 
-    unsigned int get_num_bits() const { return num_bits; }
-    unsigned int get_num_bytes() const { return num_bytes; }
+    unsigned int get_num_bits() const {
+        return num_bits;
+    }
+    unsigned int get_num_bytes() const {
+        return num_bytes;
+    }
 
-    void clear_bits() { std::fill_n(bitmap.get(), num_bytes, 0); }
-private:
+    void clear_bits() {
+        std::fill_n(bitmap.get(), num_bytes, 0);
+    }
+
+    private:
     const unsigned int num_bits;
     unsigned int num_bytes;
     std::unique_ptr<uint8_t[]> bitmap;
 };
 
-}
+} // namespace Library::Bitmap
 
 using Bitmap = Library::Bitmap::Bitmap;
 

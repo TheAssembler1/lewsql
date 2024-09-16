@@ -4,10 +4,10 @@
 #include <disk_manager_types.h>
 #include <impl/posix_disk_manager.h>
 #include <iostream>
+#include <logger.h>
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
-#include <logger.h>
 
 #include "constants.h"
 
@@ -23,8 +23,8 @@ void io_test() {
             return static_cast<DiskId>(disk_manager->load(TEST_DISK_NAME).get_value());
         });
 
-        auto buf_manager = std::make_shared<BufferManager>(
-        disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
+        auto buf_manager = std::make_shared<BufferManager>(disk_manager, std::make_unique<DumbAlg>(),
+        std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
 
         // NOTE: pin page and write to first byte
         BufferPage* page = &buf_manager->pin(disk_id, 0);
@@ -39,7 +39,8 @@ void io_test() {
 
         for(int i = 0; i < PAGE_SIZE; i++) {
             LOG(LogLevel::INFO) << "byte index: " << i << std::endl;
-            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", "
+                                << static_cast<int>(page->bytes[i]) << ")" << std::endl;
             ASSERT(page->bytes[i] == i % 255);
         }
 
@@ -54,7 +55,8 @@ void io_test() {
 
         for(int i = 0; i < PAGE_SIZE; i++) {
             LOG(LogLevel::INFO) << "byte index: " << i << std::endl;
-            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", " << static_cast<int>(page->bytes[i]) << ")" << std::endl;
+            LOG(LogLevel::INFO) << "test (expected, received) = (" << i % 255 << ", "
+                                << static_cast<int>(page->bytes[i]) << ")" << std::endl;
             ASSERT(page->bytes[i] == i % 255);
         }
     } catch(std::exception& e) {

@@ -1,7 +1,7 @@
 #include <iostream>
+#include <logger.h>
 #include <register_test.h>
 #include <string>
-#include <logger.h>
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {

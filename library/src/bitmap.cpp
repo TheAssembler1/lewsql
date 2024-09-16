@@ -6,7 +6,7 @@ namespace Library::Bitmap {
 #define SET_BIT(byte, bit) ((byte) |= (1 << (bit)))
 #define UNSET_BIT(byte, bit) ((byte) &= ~(1 << (bit)))
 
-Bitmap::Bitmap(unsigned int num_bits): num_bytes{num_bits / 8}, num_bits{num_bits} {
+Bitmap::Bitmap(unsigned int num_bits) : num_bytes{num_bits / 8}, num_bits{num_bits} {
     if(num_bits % 2 != 0) {
         num_bytes++;
     }
@@ -53,11 +53,11 @@ bool Bitmap::is_bit_set(unsigned int bit) const {
 }
 
 void Bitmap::set_bit_val(unsigned int bit, bool val) {
-    if (val) {
+    if(val) {
         SET_BIT(bitmap[bit / 8], bit % 8);
     } else {
         UNSET_BIT(bitmap[bit / 8], bit % 8);
     }
 }
 
-}
+} // namespace Library::Bitmap

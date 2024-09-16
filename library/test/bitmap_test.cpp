@@ -1,6 +1,6 @@
 #include <bitmap.h>
-#include <register_test.h>
 #include <cassert>
+#include <register_test.h>
 
 #define NUM_BITS 512
 #define NUM_BITS_TO_MANIP 13

@@ -1,8 +1,8 @@
 #ifndef DISK_MANAGER_TYPES_H
 #define DISK_MANAGER_TYPES_H
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 using DiskName = std::string;
 

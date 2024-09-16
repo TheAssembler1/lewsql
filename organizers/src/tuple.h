@@ -10,7 +10,8 @@
 
 class Tuple {
     public:
-    Tuple(TupleVals cells) : cells{std::move(cells)} {}
+    Tuple(TupleVals cells) : cells{std::move(cells)} {
+    }
 
     unsigned int size() const;
     void serialize(uint8_t* dest) const;

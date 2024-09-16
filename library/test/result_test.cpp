@@ -1,20 +1,18 @@
 #include "result.h"
 
-#include <register_test.h>
 #include <cassert>
+#include <register_test.h>
 #include <string>
 
-class TestClass {
-
-};
+class TestClass {};
 
 class NoCopyTestClass {
     public:
-        NoCopyTestClass() = default;
-        NoCopyTestClass(NoCopyTestClass&&) = default; // Movable
-        NoCopyTestClass& operator=(NoCopyTestClass&&) = default; // Movable
-        NoCopyTestClass(const NoCopyTestClass&) = delete; // Non-copyable
-        NoCopyTestClass& operator=(const NoCopyTestClass&) = delete; // Non-copyable
+    NoCopyTestClass() = default;
+    NoCopyTestClass(NoCopyTestClass&&) = default;                // Movable
+    NoCopyTestClass& operator=(NoCopyTestClass&&) = default;     // Movable
+    NoCopyTestClass(const NoCopyTestClass&) = delete;            // Non-copyable
+    NoCopyTestClass& operator=(const NoCopyTestClass&) = delete; // Non-copyable
 };
 
 

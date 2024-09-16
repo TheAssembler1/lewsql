@@ -1,20 +1,20 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <algorithm>
 #include <buffer_manager.h>
 #include <disk_manager.h>
-#include <disk_manager_types.h>
 #include <disk_manager_error.h>
+#include <disk_manager_types.h>
 #include <memory>
+#include <optional>
 #include <organizer.h>
 #include <tuple.h>
 #include <types/tuple_types.h>
-#include <algorithm>
-#include <optional>
 
 // NOTE: (DiskId, DiskCursor) = (0, 0) bytes 0-3 are heap stage stamp
 //       each tuple starts with whether it is the last in the heap
-class Heap final: Organizer {
+class Heap final : Organizer {
     public:
     Heap(const Heap&) = delete;
     Heap& operator=(const Heap&) = delete;

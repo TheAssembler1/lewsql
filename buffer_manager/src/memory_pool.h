@@ -2,8 +2,8 @@
 #define MEMORY_POOL_H
 
 #include <cstring>
-#include <memory>
 #include <logger.h>
+#include <memory>
 
 #include "buffer_page.h"
 
@@ -14,8 +14,9 @@ class MemoryPool {
       // NOTE: allocates pages plus BufferPage memers into a mem pool
       pool{new uint8_t[(sizeof(BufferPage) + page_size) * num_pages]} {
         assert(num_pages > 0 && page_size > 0);
-        LOG(LogLevel::INFO) << "creating memory pool with (num_pages, page_size) = (" << num_pages << ", " << page_size << ")" << std::endl;
-        LOG(LogLevel::INFO)  << "memory pool size: " << num_pages * page_size << std::endl;
+        LOG(LogLevel::INFO)
+        << "creating memory pool with (num_pages, page_size) = (" << num_pages << ", " << page_size << ")" << std::endl;
+        LOG(LogLevel::INFO) << "memory pool size: " << num_pages * page_size << std::endl;
         std::memset(static_cast<void*>(&pool[0]), 0, BufferPage::size(page_size) * num_pages);
     }
 

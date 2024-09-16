@@ -4,10 +4,10 @@
 #include <disk_manager_types.h>
 #include <impl/posix_disk_manager.h>
 #include <iostream>
+#include <logger.h>
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
-#include <logger.h>
 
 #include "constants.h"
 
@@ -23,8 +23,8 @@ void memory_pool_test() {
             return static_cast<DiskId>(disk_manager->load(TEST_DISK_NAME).get_value());
         });
 
-        auto buf_manager = std::make_shared<BufferManager>(
-        disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
+        auto buf_manager = std::make_shared<BufferManager>(disk_manager, std::make_unique<DumbAlg>(),
+        std::make_unique<BitmapTracker>(NUM_BUFFER_PAGES), NUM_BUFFER_PAGES, PAGE_SIZE);
 
 
         for(int i = 0; i < NUM_BUFFER_PAGES; i++) {

@@ -1,17 +1,17 @@
 #include <buffer_manager.h>
+#include <buffer_page.h>
 #include <buffer_page_tracker/bitmap_tracker.h>
 #include <disk_manager.h>
 #include <disk_manager_types.h>
-#include <buffer_page.h>
 #include <impl/posix_disk_manager.h>
+#include <logger.h>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
-#include <logger.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-struct TestStruct{
+struct TestStruct {
     int32_t field1;
     int32_t field2;
 };
@@ -49,7 +49,7 @@ void buffer_page_test() {
     }
 
     // NOTE: check memcpy
-    for(auto& ts: test_structs) {
+    for(auto& ts : test_structs) {
         ts.field1 = 5;
         ts.field2 = -5;
     }

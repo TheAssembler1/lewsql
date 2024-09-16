@@ -2,17 +2,17 @@
 #include <buffer_page_tracker/bitmap_tracker.h>
 #include <disk_manager.h>
 #include <disk_manager_error.h>
+#include <fstream>
 #include <heap.h>
 #include <impl/posix_disk_manager.h>
+#include <iostream>
+#include <logger.h>
 #include <organizer.h>
+#include <ostream>
 #include <replacement/dumb_alg.h>
 #include <types/uint16_t_type.h>
 #include <types/uint32_t_type.h>
 #include <types/uint8_t_type.h>
-#include <logger.h>
-#include <ostream>
-#include <iostream>
-#include <fstream>
 #include <vector>
 
 #define OUTPUT_LOG_FILE "output.log"
@@ -23,9 +23,9 @@
 #define TEST_HEAP_TABLE_NAME "test"
 
 #if defined(__win32__)
-    const char PATH_SEPARATOR = '\\';
+const char PATH_SEPARATOR = '\\';
 #elif defined(__unix__)
-    const char PATH_SEPARATOR = '/';
+const char PATH_SEPARATOR = '/';
 #endif
 
 int main() {
@@ -35,11 +35,12 @@ int main() {
     std::string log_file_name{OUTPUT_LOG_FILE};
     std::string output_path = project_dir + PATH_SEPARATOR + log_file_name;
     auto of_stream = std::ofstream{output_path, std::ios::out};
-    Logger::init(OsStreams{&std::cerr,  &of_stream});
+    Logger::init(OsStreams{&std::cerr, &of_stream});
     LOG(LogLevel::INFO) << "successfully initialized logger" << std::endl;
 
     // NOTE: setting up disk manager
-    std::shared_ptr<DiskManager::DiskManager> posix_dmanager{new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
+    std::shared_ptr<DiskManager::DiskManager> posix_dmanager{
+    new DiskManager::PosixDiskManager("/home/ta1/src/test_dir", PAGE_SIZE, MAX_PAGE_SIZE)};
     LOG(LogLevel::INFO) << "successfully created disk manager" << std::endl;
     LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 

@@ -1,9 +1,9 @@
 #ifndef TUPLE_TYPES_H
 #define TUPLE_TYPES_H
 
+#include <stdint.h>
 #include <string>
 #include <vector>
-#include <stdint.h>
 
 #include "type.h"
 

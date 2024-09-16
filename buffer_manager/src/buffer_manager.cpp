@@ -52,7 +52,8 @@ void BufferManager::remove_page_mem_pool_map(BufferPageCursor victim_page_cursor
 }
 
 BufferPageCursor BufferManager::get_page_mem_pool_map(DiskId disk_id, DiskPageCursor disk_page_cursor) const {
-    LOG(LogLevel::INFO) << "getting page cursor: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
+    LOG(LogLevel::INFO)
+    << "getting page cursor: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     auto disk_iter = mem_pool_map.find(disk_id);
 
@@ -102,7 +103,8 @@ void BufferManager::free_avail_pages() {
 }
 
 void BufferManager::unpin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
-    LOG(LogLevel::INFO) << "unpinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
+    LOG(LogLevel::INFO)
+    << "unpinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     BufferPageCursor buffer_page_cursor = get_page_mem_pool_map(disk_id, disk_page_cursor);
     BufferPage* buffer_page = mem_pool.get_page(buffer_page_cursor);
@@ -115,7 +117,8 @@ void BufferManager::unpin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
 }
 
 BufferPage& BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) {
-    LOG(LogLevel::INFO) << "pinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
+    LOG(LogLevel::INFO)
+    << "pinning page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     BufferPageCursor buffer_page_cursor;
     BufferPage* buffer_page;
@@ -160,7 +163,8 @@ BufferPage& BufferManager::pin(DiskId disk_id, DiskPageCursor disk_page_cursor) 
 }
 
 void BufferManager::set_dirty(DiskId disk_id, DiskPageCursor disk_page_cursor) {
-    LOG(LogLevel::INFO) << "setting dirty page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
+    LOG(LogLevel::INFO)
+    << "setting dirty page: (disk_id, disk_page_cursor) = (" << disk_id << ", " << disk_page_cursor << ")" << std::endl;
 
     BufferPageCursor buffer_page_cursor = get_page_mem_pool_map(disk_id, disk_page_cursor);
     BufferPage* buffer_page = mem_pool.get_page(buffer_page_cursor);

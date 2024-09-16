@@ -16,8 +16,12 @@ class BufferPage {
     BufferPage(const BufferPage&) = delete;
     BufferPage& operator=(const BufferPage&) = delete;
 
-    void init(unsigned int _page_size, DiskId _disk_id, DiskPageCursor _disk_page_cursor,
-    BufferPageCursor _buffer_page_cursor, unsigned int _pin_count, bool _dirty) {
+    void init(unsigned int _page_size,
+    DiskId _disk_id,
+    DiskPageCursor _disk_page_cursor,
+    BufferPageCursor _buffer_page_cursor,
+    unsigned int _pin_count,
+    bool _dirty) {
         page_size = _page_size;
         disk_id = _disk_id;
         disk_page_cursor = _disk_page_cursor;
@@ -28,8 +32,7 @@ class BufferPage {
         initialized = true;
     }
 
-    template<typename T>
-    T* to_ptr(unsigned int offset) {
+    template <typename T> T* to_ptr(unsigned int offset) {
         assert(initialized);
 
         if(offset >= page_size) {
@@ -40,13 +43,13 @@ class BufferPage {
         return reinterpret_cast<T*>(&bytes[offset]);
     }
 
-    template<typename T>
-    void memcpy(unsigned int offset, const T* elements, unsigned int num_elements) {
+    template <typename T> void memcpy(unsigned int offset, const T* elements, unsigned int num_elements) {
         assert(initialized);
 
         if(offset + (sizeof(T) * num_elements) > page_size) {
             LOG(LogLevel::ERROR) << "starting offset: " << offset << std::endl;
-            LOG(LogLevel::ERROR) << "invalid offset + (sizeof(T) * num_elements): " << offset + (sizeof(T) * num_elements) << std::endl;
+            LOG(LogLevel::ERROR)
+            << "invalid offset + (sizeof(T) * num_elements): " << offset + (sizeof(T) * num_elements) << std::endl;
             throw BufferManagerError(BufferManagerErrorCode::OUT_OF_PAGE_BOUNDS);
         }
 

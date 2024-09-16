@@ -23,7 +23,7 @@
 
 namespace DiskManager {
 
-class PosixDiskManager final: public DiskManager {
+class PosixDiskManager final : public DiskManager {
     public:
     PosixDiskManager(const std::string& dir_path, unsigned int page_size, unsigned int max_disk_size);
 
@@ -45,14 +45,13 @@ class PosixDiskManager final: public DiskManager {
     virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept override;
 
     private:
-    std::string get_disk_path(const DiskName& disk_name) {
-        return get_dir_path() + "/" + disk_name;
-    }
+    Result<std::string, DiskManagerError> get_disk_path(DiskId disk_id);
+    std::string get_disk_path(const std::string& file_name);
     DiskId cur_disk_id = 0;
 
     std::unordered_map<DiskId, DiskName> disks{};
 };
 
-}
+} // namespace DiskManager
 
 #endif // POSIX_DISK_MANAGER_H

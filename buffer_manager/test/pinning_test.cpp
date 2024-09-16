@@ -4,10 +4,10 @@
 #include <disk_manager_types.h>
 #include <impl/posix_disk_manager.h>
 #include <iostream>
+#include <logger.h>
 #include <memory>
 #include <register_test.h>
 #include <replacement/dumb_alg.h>
-#include <logger.h>
 
 #define PAGE_SIZE (512)
 #define MAX_DISK_SIZE (PAGE_SIZE * 12)

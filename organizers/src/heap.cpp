@@ -1,11 +1,11 @@
 #include "heap.h"
 #include "constants.h"
 
+#include <bitmap.h>
 #include <buffer_manager_types.h>
 #include <cassert>
-#include <optional>
-#include <bitmap.h>
 #include <logger.h>
+#include <optional>
 
 #define HEAP_DISK_SUFFIX ".heap"
 
@@ -106,7 +106,6 @@ void Heap::append_to_full_pages(DiskPageCursor disk_page_cursor) {
 }
 
 void Heap::get_next_tuple() const {
-
 }
 
 void Heap::insert_tuple(const Tuple& tuple) {
@@ -146,7 +145,8 @@ void Heap::insert_tuple(const Tuple& tuple) {
     LOG(LogLevel::INFO) << "found free bit at: " << tuple_offset_opt.value() << std::endl;
 
     // NOTE: write tuple at found available offset
-    unsigned int tuple_offset_within_page = FIRST_TUPLE_OFFSET(bitmap.get_num_bytes()) + (tuple_offset_opt.value() * tuple.size());
+    unsigned int tuple_offset_within_page =
+    FIRST_TUPLE_OFFSET(bitmap.get_num_bytes()) + (tuple_offset_opt.value() * tuple.size());
     LOG(LogLevel::INFO) << "writing tuple to offset within page: " << tuple_offset_within_page << std::endl;
     tuple.serialize(&free_page.bytes[tuple_offset_within_page]);
 
@@ -163,6 +163,4 @@ void Heap::insert_tuple(const Tuple& tuple) {
 }
 
 void Heap::delete_tuple() {
-
 }
-

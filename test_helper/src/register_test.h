@@ -6,12 +6,12 @@
 #include <string>
 #include <unordered_map>
 
-#define ASSERT(test)                          \
-    {                                         \
-        if(!(test)) {                         \
+#define ASSERT(test)                        \
+    {                                       \
+        if(!(test)) {                       \
             disk_manager->destroy(disk_id); \
-        }                                     \
-        assert(test);                         \
+        }                                   \
+        assert(test);                       \
     }
 
 class RegisterTest {
