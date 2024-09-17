@@ -19,56 +19,24 @@ Result<unsigned int, DiskManagerError> PosixDiskManager::num_loaded_disks() cons
 }
 
 Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name) noexcept {
-    std::string full_path_fname = get_disk_path(disk_name);
-
-    // NOTE: check if file already exists
-    errno = 0;
-    int st = access(full_path_fname.c_str(), F_OK);
-
-    // NOTE: access fails ensure it was due to it not existing
-    if(st == -1) {
-        if(errno != ENOENT) {
-            LOG(LogLevel::ERROR) << "failed to access file, errno: " << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
-        }
-    } else { // NOTE: file already exists
-        return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
-    }
-
-    errno = 0;
-    int fd = open(full_path_fname.c_str(), O_CREAT, 0644);
-
-    // FIXME: return more specific errors based on errno status
-    if(fd == -1) {
-        LOG(LogLevel::ERROR) << "failed to open file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
-    } else {
-        LOG(LogLevel::INFO) << "created file at path: " << full_path_fname << std::endl;
-    }
-
-    errno = 0;
-    st = close(fd);
-
-    if(st == -1) {
-        LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
-    }
+    std::string path = get_disk_path(disk_name);
+    PosixDisk& posix_disk = UNWRAP_OR_PROP_ERROR2(PosixDisk::init(path, false));
 
     return load(disk_name);
 }
 
 Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcept {
-    // auto res = get_disk_path(UNWRAP_OR_PROP(loaded_disk_name(disk_id).get_value()));
-    // auto file_path = UNWRAP_OR_PROP(res);
-    // auto posix_disk = UNWRAP_OR_PROP(PosixDisk::init(file_path)));
+    //std::string file_path = UNWRAP_OR_PROP(get_disk_path(disk_id));
+    //auto posix_disk = UNWRAP_OR_PROP(PosixDisk::init(file_path)));
 
-    // auto res = posix_disk.destroy();
+    //auto res = posix_disk.destroy();
 
     return VoidValue::Ok;
 }
 
 Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_name) noexcept {
-    std::string full_path_fname = get_disk_path(disk_name);
+    std::string path = get_disk_path(disk_name);
+    PosixDisk& posix_disk = PosixDisk::init(path, true);
 
     // NOTE: check if file already exists
     errno = 0;

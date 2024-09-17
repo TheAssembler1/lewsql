@@ -16,7 +16,7 @@ class PosixDisk {
     PosixDisk& operator=(PosixDisk&& posix_disk) noexcept;
     ~PosixDisk() noexcept;
 
-    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path) noexcept;
+    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist) noexcept;
 
     Result<unsigned int, DiskManagerError> get_disk_size() const noexcept;
     Result<void, DiskManagerError> write() noexcept;

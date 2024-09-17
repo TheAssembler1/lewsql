@@ -41,12 +41,12 @@ template <typename R, typename E> class Result {
         return m_value_opt.has_value();
     }
 
-    decltype(auto) get_value() const {
+    decltype(auto) get_value() {
         assert(!is_error() && m_value_opt.has_value());
         return m_value_opt.value();
     }
 
-    decltype(auto) get_error() const {
+    decltype(auto) get_error() {
         assert(is_error() && m_error_opt.has_value());
         return m_error_opt.value();
     }
@@ -80,11 +80,11 @@ template <typename E> class Result<void, E> {
         return !m_error_opt.has_value();
     }
 
-    decltype(auto) get_value() const {
+    decltype(auto) get_value() {
         assert(0);
     }
 
-    decltype(auto) get_error() const {
+    decltype(auto) get_error() {
         assert(is_error() && m_error_opt.has_value());
         return m_error_opt.value();
     }

@@ -3,21 +3,37 @@
 #include <fcntl.h>
 #include <sys/errno.h>
 #include <sys/unistd.h>
+#include <sys/stat.h>
 
 using namespace DiskManager;
 
-Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path) noexcept {
+Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path, bool should_exist) noexcept {
+    errno = 0;
+    int st = access(file_path.c_str(), F_OK);
+
+    if(!should_exist) {
+        if(st != -1) {
+            return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+        } else if(st == -1 && errno != ENOENT) {
+            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
+            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
+        }
+    } else {
+        if(st == -1 && errno == ENOENT) {
+            return DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
+        } else if(st == -1) {
+            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
+            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
+        }
+    }
+
     PosixDisk posix_disk{file_path};
 
     errno = 0;
     int fd = open(file_path.c_str(), O_RDWR);
 
     if(fd == -1) {
-        if(errno == ENOENT) {
-            return DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
-        }
-
-        LOG(LogLevel::ERROR) << "failed to open file, errno: " << std::strerror(errno) << " file path: " << file_path << std::endl;
+        LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
     }
 
@@ -47,13 +63,22 @@ PosixDisk::~PosixDisk() noexcept {
         errno = 0;
 
         if(close(m_fd) == -1) {
-            LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
+            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
         }
     }
 }
 
 Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept {
-    return 0;
+    errno = 0;
+    struct stat st;
+    int res = stat(m_file_path.c_str(), &st);
+
+    if(res == -1) {
+        LOG(LogLevel::ERROR) << strerror(errno) << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::GET_DISK_SIZE_ERROR);
+    }
+
+    return st.st_size;
 }
 
 Result<void, DiskManagerError> PosixDisk::write() noexcept {
@@ -69,7 +94,7 @@ Result<void, DiskManagerError> PosixDisk::destroy() noexcept {
     int stat = unlink(m_file_path.c_str());
 
     if(stat == -1) {
-        LOG(LogLevel::ERROR) << "failed to unlink file, errno: " << std::strerror(errno) << std::endl;
+        LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::DESTROY_DISK_ERROR);
     }
 
