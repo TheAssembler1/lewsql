@@ -2,8 +2,8 @@
 
 #include <fcntl.h>
 #include <sys/errno.h>
-#include <sys/unistd.h>
 #include <sys/stat.h>
+#include <sys/unistd.h>
 
 using namespace DiskManager;
 

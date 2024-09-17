@@ -20,6 +20,7 @@ enum class DiskManagerErrorCode {
     DESTROY_DISK_ERROR,
     WRITE_DISK_ERROR,
     READ_DISK_ERROR,
+    GET_DISK_SIZE_ERROR,
 };
 
 class DiskManagerError : public std::exception {
