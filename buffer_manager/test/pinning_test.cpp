@@ -20,6 +20,7 @@ void pinning_test() {
     DiskId disk_id;
     try {
         disk_id = disk_manager->create(TEST_DISK_NAME).value_or([&](DiskManagerError error) {
+            LOG(LogLevel::WARNING) << "HERE" << error.what() << std::endl;
             return static_cast<DiskId>(disk_manager->load(TEST_DISK_NAME).get_value());
         });
 

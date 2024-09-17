@@ -21,7 +21,9 @@ class PosixDisk {
     Result<unsigned int, DiskManagerError> get_disk_size() const noexcept;
     Result<void, DiskManagerError> write() noexcept;
     Result<void, DiskManagerError> read() noexcept;
+    Result<void, DiskManagerError> extend() noexcept;
     Result<void, DiskManagerError> destroy() noexcept;
+    Result<void, DiskManagerError> close() noexcept;
 
     std::string get_file_path() const {
         return m_file_path;
@@ -31,10 +33,14 @@ class PosixDisk {
     }
 
     private:
-    PosixDisk(const std::string& file_path) : m_file_path{file_path} {};
+    PosixDisk(const std::string& file_path, int fd) : m_file_path{file_path}, m_fd{fd} {
+        LOG(LogLevel::TRACE) << "creating posix disk with file path: " << m_file_path << std::endl;
+        LOG(LogLevel::TRACE) << "creating posix disk with fd: " << m_fd << std::endl;
+    }
 
     std::string m_file_path;
     int m_fd;
+    bool should_close = true;
 };
 
 } // namespace DiskManager

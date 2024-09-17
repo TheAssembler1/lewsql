@@ -42,7 +42,10 @@ template <typename R, typename E> class Result {
     }
 
     decltype(auto) get_value() {
-        assert(!is_error() && m_value_opt.has_value());
+        if(is_error()) {
+            LOG(LogLevel::FATAL) << m_error_opt.value().what() << std::endl;
+            assert("attempt to unwrap value on error");
+        }
         return m_value_opt.value();
     }
 
@@ -81,7 +84,11 @@ template <typename E> class Result<void, E> {
     }
 
     decltype(auto) get_value() {
-        assert(0);
+        if(is_error()) {
+            LOG(LogLevel::FATAL) << m_error_opt.value().what() << std::endl;
+            assert("attempt to unwrap value on error");
+        }
+        assert("attempt to get value of VoidValue::Ok");
     }
 
     decltype(auto) get_error() {
@@ -97,19 +104,17 @@ template <typename E> class Result<void, E> {
 
 using namespace Library::Result;
 
-#define UNWRAP(result_expr)                                           \
-    ({                                                                \
-        auto _tmp = (result_expr);                                    \
-        LOG(LogLevel::ERROR) << _tmp.get_error().what() << std::endl; \
-        _tmp.get_value();                                             \
-    })
+#define PROP_IF_ERROR(result) \
+    {                                    \
+        if(result.is_error())            \
+            return result.get_error();   \
+    }
 
-#define UNWRAP_OR_PROP_ERROR(result_expr) \
-    ({                                    \
-        auto _tmp = (result_expr);        \
-        if(_tmp.is_error())               \
-            return _tmp.get_error();      \
-        _tmp.get_value();                 \
+#define UNWRAP_OR_PROP_ERROR(result)   \
+    ({                                 \
+        if(result.is_error())          \
+            return result.get_error(); \
+        result.get_value();            \
     })
 
 

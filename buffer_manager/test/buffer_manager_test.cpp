@@ -4,6 +4,8 @@
 #include <string>
 
 int main(int argc, char* argv[]) {
+    Logger::init({&std::cerr});
+
     if(argc < 2) {
         LOG(LogLevel::ERROR) << "Usage: " << argv[0] << " <test_name>\n";
         RegisterTest::instance().list_tests();

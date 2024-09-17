@@ -15,7 +15,7 @@ enum class DiskManagerErrorCode {
 
     // NOTE: general disk errors
     INIT_DISK_ERROR,
-    DEINIT_DISK_ERROR,
+    CLOSE_DISK_ERROR,
     CREATE_DISK_ERROR,
     DESTROY_DISK_ERROR,
     WRITE_DISK_ERROR,
@@ -35,7 +35,7 @@ class DiskManagerError : public std::exception {
         case DiskManagerErrorCode::DISK_ALREADY_EXISTS: return "disk manager disk already exists"; break;
         case DiskManagerErrorCode::DISK_NOT_FOUND: return "disk manager disk not found"; break;
         case DiskManagerErrorCode::INIT_DISK_ERROR: return "disk manager init disk error"; break;
-        case DiskManagerErrorCode::DEINIT_DISK_ERROR: return "disk manager deinit disk error"; break;
+        case DiskManagerErrorCode::CLOSE_DISK_ERROR: return "disk manager deinit disk error"; break;
         case DiskManagerErrorCode::CREATE_DISK_ERROR: return "disk manager create disk error"; break;
         case DiskManagerErrorCode::DESTROY_DISK_ERROR: return "disk manager destroy disk error"; break;
         case DiskManagerErrorCode::WRITE_DISK_ERROR: return "disk manager write disk error"; break;

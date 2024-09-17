@@ -10,8 +10,6 @@
 
 namespace Library::Logger {
 
-#define LOG(level) Logger::log({level, __FILE__, __func__, __LINE__, __DATE__, __TIME__})
-
 using OsStreams = std::vector<std::ostream*>;
 
 enum class LogLevel {
@@ -114,5 +112,7 @@ class Logger {
 using LogLevel = Library::Logger::LogLevel;
 using Logger = Library::Logger::Logger;
 using OsStreams = Library::Logger::OsStreams;
+
+#define LOG(level) Library::Logger::Logger::log({level, __FILE__, __func__, __LINE__, __DATE__, __TIME__})
 
 #endif // LOGGER_H
