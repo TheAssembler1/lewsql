@@ -121,9 +121,9 @@ Result<void, DiskManagerError> PosixDisk::prepare_rw(DiskPageCursor disk_page_cu
     auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
     auto foffset = disk_page_cursor * m_page_size;
 
-    if(foffset + m_page_size >= cur_byte_size) {
+    if(foffset + m_page_size - 1 >= cur_byte_size) {
         LOG(LogLevel::WARNING) << "write exceeds disk size" << std::endl;
-        extend(foffset + m_page_size);
+        extend(foffset + m_page_size - 1);
     }
 
     PROP_IF_ERROR(seek(foffset));
