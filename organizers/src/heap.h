@@ -1,7 +1,6 @@
 #ifndef HEAP_H
 #define HEAP_H
 
-#include <algorithm>
 #include <buffer_manager.h>
 #include <disk_manager.h>
 #include <disk_manager_error.h>
@@ -28,7 +27,7 @@ class Heap final : Organizer {
     unsigned int page_size);
 
     ~Heap() {
-        disk_manager->unload(disk_id);
+        m_disk_manager->unload(m_disk_id);
     }
 
     virtual void get_next_tuple() const override;
@@ -45,14 +44,14 @@ class Heap final : Organizer {
     void append_to_full_pages(DiskPageCursor disk_page_cursor);
 
     // NOTE: this is the disk name on fs
-    const std::string table_name;
+    const std::string m_table_name;
     // NOTE: this is the disk name on fs for bitmap
-    const std::string table_bitmap_name;
+    const std::string m_table_bitmap_name;
 
-    DiskId disk_id;
+    DiskId m_disk_id;
 
-    const std::shared_ptr<DiskManager::DiskManager> disk_manager;
-    const std::shared_ptr<BufferManager> buffer_manager;
+    const std::shared_ptr<DiskManager::DiskManager> m_disk_manager;
+    const std::shared_ptr<BufferManager> m_buffer_manager;
 
     // NOTE: specifies the types stored by the table
     TupleCols cols;

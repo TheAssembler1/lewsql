@@ -52,32 +52,9 @@ int main() {
     TupleCols cols = TupleCols{TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T, TypeList::UINT8_T};
     Heap heap{posix_dmanager, buf_manager, TEST_HEAP_TABLE_NAME, cols, PAGE_SIZE};
 
-    /*for(int i = 0; i < 16; i++) {
-        LOG(LogLevel::INFO) << "writing tuple" << std::endl;
-
-        TupleVals tuple_vals{};
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(1));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(2));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(3));
-        tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
-
-        Tuple tuple{std::move(tuple_vals)};
-        heap.insert_tuple(std::move(tuple));
-
-        tuple_vals.clear();
-    }*/
-
-    /*TupleVals tuple_vals{};
-    tuple_vals.emplace_back(std::make_unique<Uint8TType>(4));
-
-    Tuple tuple{std::move(tuple_vals)};
-    heap.insert_tuple(std::move(tuple));
-
-    tuple_vals.clear();*/
-
     // NOTE flushing all pages
-    LOG(LogLevel::INFO) << "flushing pages which should have tuple" << std::endl;
-    buf_manager->free_avail_pages();
+    /*LOG(LogLevel::INFO) << "flushing pages which should have tuple" << std::endl;
+    buf_manager->free_avail_pages();*/
 
     LOG(LogLevel::INFO) << *(dynamic_cast<DiskManager::PosixDiskManager*>(posix_dmanager.get())) << std::endl;
 

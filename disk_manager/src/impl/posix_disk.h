@@ -17,12 +17,11 @@ class PosixDisk {
     PosixDisk& operator=(PosixDisk&& posix_disk) noexcept;
     ~PosixDisk() noexcept;
 
-    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist) noexcept;
+    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist, unsigned int page_size) noexcept;
 
     Result<unsigned int, DiskManagerError> get_disk_size() const noexcept;
-    Result<void, DiskManagerError> write(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept;
-    Result<void, DiskManagerError> read(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept;
-    Result<void, DiskManagerError> extend(DiskPageCursor size) noexcept;
+    Result<void, DiskManagerError> write(DiskPageCursor disk_page_cursor, const uint8_t* const data) noexcept;
+    Result<void, DiskManagerError> read(DiskPageCursor disk_page_cursor, uint8_t* const data) noexcept;
     Result<void, DiskManagerError> destroy() noexcept;
     Result<void, DiskManagerError> close() noexcept;
     Result<void, DiskManagerError> sync() noexcept;
@@ -40,6 +39,10 @@ class PosixDisk {
         LOG(LogLevel::TRACE) << "creating posix disk with file path: " << m_file_path << std::endl;
         LOG(LogLevel::TRACE) << "creating posix disk with fd: " << m_fd << std::endl;
     }
+
+    Result<void, DiskManagerError> prepare_rw(DiskPageCursor disk_page_cursor) noexcept;
+    Result<void, DiskManagerError> extend(unsigned int new_byte_size) noexcept;
+    Result<void, DiskManagerError> seek(unsigned int pos) noexcept;
 
     std::string m_file_path;
     int m_fd;

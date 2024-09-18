@@ -1,6 +1,5 @@
 #include "posix_disk_manager.h"
 
-#include <algorithm>
 #include <logger.h>
 
 #include "disk_manager.h"
@@ -21,14 +20,14 @@ Result<unsigned int, DiskManagerError> PosixDiskManager::num_loaded_disks() cons
 Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name) noexcept {
     std::string path = get_disk_path(disk_name);
 
-    PROP_IF_ERROR(PosixDisk::init(path, false));
+    PROP_IF_ERROR(PosixDisk::init(path, false, get_page_size()));
 
     return load(disk_name);
 }
 
 Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcept {
     std::string file_path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
-    auto posix_disk_res = PosixDisk::init(file_path, true);
+    auto posix_disk_res = PosixDisk::init(file_path, true, get_page_size());
 
     PROP_IF_ERROR(posix_disk_res);
     PROP_IF_ERROR(posix_disk_res.get_value().destroy());
@@ -38,7 +37,7 @@ Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcep
 
 Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_name) noexcept {
     std::string path = get_disk_path(disk_name);
-    auto posix_disk_res = PosixDisk::init(path, true);
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size());
     PROP_IF_ERROR(posix_disk_res);
 
     DiskId ret = cur_disk_id;
@@ -57,150 +56,23 @@ Result<void, DiskManagerError> PosixDiskManager::unload(DiskId disk_id) noexcept
 }
 
 Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
-    std::string full_path_fname = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
+    std::string path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size());
+    PROP_IF_ERROR(posix_disk_res);
 
-    errno = 0;
-    int fd = open(full_path_fname.c_str(), O_WRONLY);
-
-    if(fd == -1) {
-        LOG(LogLevel::ERROR)
-        << "failed to open file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
-    }
-
-    // FIXME: validation on this number
-    int foffset = disk_page_cursor * get_page_size();
-
-    errno = 0;
-    int res = lseek(fd, foffset, SEEK_SET);
-
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
-    }
-
-    errno = 0;
-    LOG(LogLevel::INFO) << "writing (foffset, num_bytes) = "
-                        << "(" << foffset << ", " << get_page_size() << ")" << std::endl;
-    unsigned int num_bytes = ::write(fd, bytes, get_page_size());
-
-    if(num_bytes != get_page_size()) {
-        LOG(LogLevel::ERROR) << "failed to write num_bytes to file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
-    }
-
-    errno = 0;
-    res = fsync(fd);
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to fsync file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
-    }
-
-    errno = 0;
-    res = close(fd);
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
-    }
+    auto& posix_disk = posix_disk_res.get_value();
+    PROP_IF_ERROR(posix_disk.write(disk_page_cursor, bytes));
 
     return VoidValue::Ok;
 }
 
 Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
-    auto full_path_fname = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
+    std::string path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size());
+    PROP_IF_ERROR(posix_disk_res);
 
-    struct stat st;
-    errno = 0;
-    int res = stat(full_path_fname.c_str(), &st);
-
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to stat file at errno: " << strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
-
-    errno = 0;
-    int fd = open(full_path_fname.c_str(), O_RDWR);
-
-    if(fd == -1) {
-        LOG(LogLevel::ERROR)
-        << "failed to open file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
-
-    // NOTE: set file pointer
-    assert(st.st_size % get_page_size() == 0);
-
-    unsigned int foffset = (disk_page_cursor + 1) * get_page_size() - 1;
-    LOG(LogLevel::INFO) << "file size found to be: " << st.st_size << std::endl;
-    if(foffset > st.st_size) {
-        LOG(LogLevel::INFO) << "foffset greater than file size... extending file" << std::endl;
-
-        if(foffset >= get_max_disk_size()) {
-            LOG(LogLevel::WARNING) << "foffset exceed max disk size" << std::endl;
-
-            errno = 0;
-            res = close(fd);
-            if(res == -1) {
-                LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-                return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-            }
-
-            return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
-        }
-
-        errno = 0;
-        res = lseek(fd, foffset, SEEK_SET);
-        if(res == -1) {
-            LOG(LogLevel::ERROR) << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-        }
-
-        errno = 0;
-        int byte = 0;
-
-        LOG(LogLevel::INFO) << "extending file to offset: " << foffset << std::endl;
-        res = ::write(fd, &byte, 1);
-
-        if(res == -1) {
-            LOG(LogLevel::ERROR)
-            << "failed to write file, errno: " << std::strerror(errno) << " file path: " << full_path_fname << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-        }
-
-        errno = 0;
-        res = fsync(fd);
-        if(res == -1) {
-            LOG(LogLevel::ERROR) << "failed to fsync file, errno: " << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-        }
-    }
-
-    // NOTE: reset file pointer
-    foffset = disk_page_cursor * get_page_size();
-    errno = 0;
-    res = lseek(fd, foffset, SEEK_SET);
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to lseek file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
-
-    errno = 0;
-    LOG(LogLevel::INFO) << "reading (foffset, num_bytes) = "
-                        << "(" << foffset << ", " << get_page_size() << ")" << std::endl;
-    unsigned int num_bytes = ::read(fd, bytes, get_page_size());
-
-    if(num_bytes != get_page_size()) {
-        LOG(LogLevel::ERROR) << "failed to read num_bytes to file, errno: " << std::strerror(errno)
-                             << " num bytes: " << num_bytes << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
-
-    errno = 0;
-    res = close(fd);
-    if(res == -1) {
-        LOG(LogLevel::ERROR) << "failed to close file, errno: " << std::strerror(errno) << std::endl;
-        return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
-    }
+    auto& posix_disk = posix_disk_res.get_value();
+    PROP_IF_ERROR(posix_disk.read(disk_page_cursor, bytes));
 
     return VoidValue::Ok;
 }
@@ -257,7 +129,7 @@ Result<std::string, DiskManagerError> PosixDiskManager::get_disk_path(DiskId dis
 
 Result<unsigned int, DiskManagerError> PosixDiskManager::disk_size(DiskId disk_id) noexcept {
     auto path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
-    auto posix_disk_res = PosixDisk::init(path, true);
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size());
 
     PROP_IF_ERROR(posix_disk_res);
 
