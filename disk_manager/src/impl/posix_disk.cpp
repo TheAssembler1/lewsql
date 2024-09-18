@@ -10,14 +10,11 @@
 using namespace DiskManager;
 
 Result<void, DiskManagerError> PosixDisk::close() noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     should_close = false;
     errno = 0;
 
     assert(m_fd >= 0);
 
-    LOG(LogLevel::TRACE) << "closing file with name " << m_file_path << std::endl;
     if(::close(m_fd) == -1) {
         LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::CLOSE_DISK_ERROR);
@@ -58,7 +55,6 @@ Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path
     }
 
     errno = 0;
-    LOG(LogLevel::TRACE) << "opening file at path " << file_path << std::endl;
     int fd = open(file_path.c_str(), O_RDWR | O_CREAT , 0666);
 
     if(fd == -1) {
@@ -66,7 +62,6 @@ Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path
         return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
     }
 
-    LOG(LogLevel::TRACE) << "setting page size: " << page_size << std::endl;
     return PosixDisk(file_path, fd, page_size);
 }
 
@@ -95,8 +90,6 @@ PosixDisk::~PosixDisk() noexcept {
 }
 
 Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     errno = 0;
     struct stat st;
     int res = stat(m_file_path.c_str(), &st);
@@ -106,23 +99,17 @@ Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept
         return DiskManagerError(DiskManagerErrorCode::GET_DISK_SIZE_ERROR);
     }
 
-    LOG(LogLevel::TRACE) << "page size: " << m_page_size << std::endl;
-    LOG(LogLevel::TRACE) << "st size: " << st.st_size << std::endl;
     assert(st.st_size % m_page_size == 0);
-
-    LOG(LogLevel::TRACE) << "file size: " << st.st_size << std::endl;
 
     return st.st_size;
 }
 
 Result<void, DiskManagerError> PosixDisk::prepare_rw(DiskPageCursor disk_page_cursor) noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
     auto foffset = disk_page_cursor * m_page_size;
 
     if(foffset + m_page_size - 1 >= cur_byte_size) {
-        LOG(LogLevel::WARNING) << "write exceeds disk size" << std::endl;
+        LOG(LogLevel::WARNING) << "rw operation exceeds disk size" << std::endl;
         extend(foffset + m_page_size - 1);
     }
 
@@ -132,8 +119,6 @@ Result<void, DiskManagerError> PosixDisk::prepare_rw(DiskPageCursor disk_page_cu
 }
 
 Result<void, DiskManagerError> PosixDisk::write(DiskPageCursor disk_page_cursor, const uint8_t* const data) noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     PROP_IF_ERROR(prepare_rw(disk_page_cursor));
 
     errno = 0;
@@ -148,9 +133,6 @@ Result<void, DiskManagerError> PosixDisk::write(DiskPageCursor disk_page_cursor,
 }
 
 Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, uint8_t* const data) noexcept {
-    LOG(LogLevel::TRACE) << "disk page cursor: " << disk_page_cursor << std::endl;
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     PROP_IF_ERROR(prepare_rw(disk_page_cursor));
 
     errno = 0;
@@ -164,8 +146,6 @@ Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, 
 }
 
 Result<void, DiskManagerError> PosixDisk::extend(unsigned new_byte_size) noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     PROP_IF_ERROR(seek(new_byte_size));
 
     errno = 0;
@@ -182,8 +162,6 @@ Result<void, DiskManagerError> PosixDisk::extend(unsigned new_byte_size) noexcep
 }
 
 Result<void, DiskManagerError> PosixDisk::destroy() noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     errno = 0;
     int stat = unlink(m_file_path.c_str());
 
@@ -197,8 +175,6 @@ Result<void, DiskManagerError> PosixDisk::destroy() noexcept {
 }
 
 Result<void, DiskManagerError> PosixDisk::sync() noexcept {
-    LOG(LogLevel::TRACE) << "fd: " << m_fd << std::endl;
-
     errno = 0;
     int res = fsync(m_fd);
     if(res == -1) {
