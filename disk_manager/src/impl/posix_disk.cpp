@@ -99,7 +99,11 @@ Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept
         return DiskManagerError(DiskManagerErrorCode::GET_DISK_SIZE_ERROR);
     }
 
-    assert(st.st_size % m_page_size == 0);
+    if(st.st_size % m_page_size != 0) {
+        LOG(LogLevel::INFO) << "file size: " << st.st_size << std::endl;
+        LOG(LogLevel::FATAL) << "file size not multiple of page size" << std::endl;
+        assert(0);
+    }
 
     return st.st_size;
 }
@@ -108,9 +112,9 @@ Result<void, DiskManagerError> PosixDisk::prepare_rw(DiskPageCursor disk_page_cu
     auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
     auto foffset = disk_page_cursor * m_page_size;
 
-    if(foffset + m_page_size - 1 >= cur_byte_size) {
+    if(foffset + m_page_size >= cur_byte_size) {
         LOG(LogLevel::WARNING) << "rw operation exceeds disk size" << std::endl;
-        extend(foffset + m_page_size - 1);
+        truncate(foffset + m_page_size);
     }
 
     PROP_IF_ERROR(seek(foffset));
@@ -145,12 +149,9 @@ Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, 
     return VoidValue::Ok;
 }
 
-Result<void, DiskManagerError> PosixDisk::extend(unsigned new_byte_size) noexcept {
-    PROP_IF_ERROR(seek(new_byte_size));
-
+Result<void, DiskManagerError> PosixDisk::truncate(unsigned new_byte_size) noexcept {
     errno = 0;
-    int byte = 0;
-    int res = ::write(m_fd, &byte, 1);
+    int res = ::truncate(m_file_path.c_str(), new_byte_size);
     if(res != 1) {
         LOG(LogLevel::ERROR) << strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);

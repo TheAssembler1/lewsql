@@ -41,7 +41,7 @@ class PosixDisk {
     }
 
     Result<void, DiskManagerError> prepare_rw(DiskPageCursor disk_page_cursor) noexcept;
-    Result<void, DiskManagerError> extend(unsigned int new_byte_size) noexcept;
+    Result<void, DiskManagerError> truncate(unsigned int new_byte_size) noexcept;
     Result<void, DiskManagerError> seek(unsigned int pos) noexcept;
 
     std::string m_file_path;
