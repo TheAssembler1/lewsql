@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <sys/unistd.h>
 
+#include "disk_manager_types.h"
+
 using namespace DiskManager;
 
 Result<void, DiskManagerError> PosixDisk::close() noexcept {
@@ -92,15 +94,49 @@ Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept
     return st.st_size;
 }
 
-Result<void, DiskManagerError> PosixDisk::write() noexcept {
+Result<void, DiskManagerError> PosixDisk::write(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept {
+    auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
+    auto foffset = disk_page_cursor * m_page_size;
+
+    if(foffset + m_page_size >= cur_byte_size) {
+        LOG(LogLevel::ERROR) << "write would exceed disk size" << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+    }
+
+    errno = 0;
+    unsigned int num_bytes = ::write(m_fd, data, m_page_size);
+    if(num_bytes != m_page_size) {
+        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+    }
+
+    sync();
+
     return VoidValue::Ok;
 }
 
-Result<void, DiskManagerError> PosixDisk::read() noexcept {
+Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept {
     return VoidValue::Ok;
 }
 
-Result<void, DiskManagerError> PosixDisk::extend() noexcept {
+Result<void, DiskManagerError> PosixDisk::extend(DiskPageCursor disk_page_cursor) noexcept {
+    auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
+    assert(cur_byte_size % m_page_size == 0);
+
+    auto new_byte_size = disk_page_cursor * m_page_size;
+    if(new_byte_size <= cur_byte_size) {
+        LOG(LogLevel::WARNING) << "resize would not expand file" << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+    }
+
+    errno = 0;
+    int res = lseek(m_fd, new_byte_size, SEEK_SET);
+    if(res == -1) {
+        LOG(LogLevel::ERROR) << strerror(errno) << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+    }
+
+    sync();
+
     return VoidValue::Ok;
 }
 
@@ -115,4 +151,13 @@ Result<void, DiskManagerError> PosixDisk::destroy() noexcept {
 
     should_close = false;
     return VoidValue::Ok;
+}
+
+Result<void, DiskManagerError> PosixDisk::sync() noexcept {
+    errno = 0;
+    int res = fsync(m_fd);
+    if(res == -1) {
+        LOG(LogLevel::ERROR) << strerror(errno) << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+    }
 }

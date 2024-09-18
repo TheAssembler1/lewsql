@@ -5,6 +5,7 @@
 #include <result.h>
 
 #include "disk_manager_error.h"
+#include "disk_manager_types.h"
 
 namespace DiskManager {
 
@@ -19,11 +20,12 @@ class PosixDisk {
     static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist) noexcept;
 
     Result<unsigned int, DiskManagerError> get_disk_size() const noexcept;
-    Result<void, DiskManagerError> write() noexcept;
-    Result<void, DiskManagerError> read() noexcept;
-    Result<void, DiskManagerError> extend() noexcept;
+    Result<void, DiskManagerError> write(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept;
+    Result<void, DiskManagerError> read(DiskPageCursor disk_page_cursor, uint8_t* data) noexcept;
+    Result<void, DiskManagerError> extend(DiskPageCursor size) noexcept;
     Result<void, DiskManagerError> destroy() noexcept;
     Result<void, DiskManagerError> close() noexcept;
+    Result<void, DiskManagerError> sync() noexcept;
 
     std::string get_file_path() const {
         return m_file_path;
@@ -33,13 +35,15 @@ class PosixDisk {
     }
 
     private:
-    PosixDisk(const std::string& file_path, int fd) : m_file_path{file_path}, m_fd{fd} {
+    PosixDisk(const std::string& file_path, int fd, unsigned int page_size):
+      m_file_path{file_path}, m_fd{fd}, m_page_size{page_size} {
         LOG(LogLevel::TRACE) << "creating posix disk with file path: " << m_file_path << std::endl;
         LOG(LogLevel::TRACE) << "creating posix disk with fd: " << m_fd << std::endl;
     }
 
     std::string m_file_path;
     int m_fd;
+    unsigned int m_page_size;
     bool should_close = true;
 };
 
