@@ -23,7 +23,6 @@ void pinning_test() {
             return static_cast<DiskId>(disk_manager->load(TEST_DISK_NAME).get_value());
         });
 
-        LOG(LogLevel::INFO) << "creating buffer manager" << std::endl;
         auto buf_manager = std::make_shared<BufferManager>(
         disk_manager, std::make_unique<DumbAlg>(), std::make_unique<BitmapTracker>(NUM_PAGES), NUM_PAGES, PAGE_SIZE);
         ASSERT(buf_manager->buffer_page_tracker->get_num_free_pages() == NUM_PAGES);
@@ -50,7 +49,6 @@ void pinning_test() {
 
         disk_manager->destroy(disk_id);
     } catch(std::exception& e) {
-        LOG(LogLevel::ERROR) << e.what() << std::endl;
         disk_manager->destroy(disk_id);
         throw e;
     }

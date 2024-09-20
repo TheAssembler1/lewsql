@@ -12,7 +12,7 @@ set(SOURCES
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE library test_helper buffer_manager disk_manager)
+target_link_libraries(${PROJECT_NAME} PRIVATE library buffer_manager disk_manager)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC src

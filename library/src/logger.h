@@ -31,24 +31,24 @@ struct LoggerStreamPrintOpts {
 
 class LoggerStream {
     public:
-    LoggerStream(OsStreams os_streams, LoggerStreamPrintOpts&& logger_stream_print_opts)
-    : os_streams{os_streams}, logger_stream_print_opts{std::move(logger_stream_print_opts)} {
+    LoggerStream(OsStreams os_streams, LoggerStreamPrintOpts logger_stream_print_opts)
+    : os_streams{os_streams}, logger_stream_print_opts{logger_stream_print_opts} {
     }
-    std::ostringstream stream_buffer;
+    //std::ostringstream stream_buffer;
 
     template <typename T> LoggerStream& operator<<(T&& message) {
-        stream_buffer << std::forward<T>(message);
+        //stream_buffer << std::forward<T>(message);
 
         return *this;
     }
 
     LoggerStream& operator<<(std::ostream& (*manip)(std::ostream&)) {
-        manip(stream_buffer);
+        //manip(stream_buffer);
         return *this;
     }
 
     ~LoggerStream() {
-        switch(logger_stream_print_opts.log_level) {
+        /*switch(logger_stream_print_opts.log_level) {
         case LogLevel::TRACE: stream_buffer << "[TRACE]-"; break;
         case LogLevel::INFO: stream_buffer << "[INFO]--"; break;
         case LogLevel::WARNING: stream_buffer << "[WARN]--"; break;
@@ -83,28 +83,32 @@ class LoggerStream {
         stream_buffer << last_slash << "+" << logger_stream_print_opts.func << "+" << logger_stream_print_opts.line << "]"
                       << "> ";
 
-        for(const auto os_stream : os_streams) {
+        for(const auto& os_stream : os_streams) {
             *os_stream << stream_buffer.str();
-        }
+        }*/
     }
 
     private:
     LoggerStreamPrintOpts logger_stream_print_opts;
-    const OsStreams os_streams;
+    OsStreams os_streams;
 };
 
 class Logger {
     public:
     static void init(OsStreams _os_streams) {
+        /*for(auto os_stream: os_streams) {
+            os_streams.push_back(os_stream);
+        }*/
+
         os_streams = _os_streams;
     }
 
-    static LoggerStream log(LoggerStreamPrintOpts&& logger_stream_print_opts) {
-        return LoggerStream(os_streams, std::move(logger_stream_print_opts));
+    static LoggerStream log(LoggerStreamPrintOpts logger_stream_print_opts) {
+        return LoggerStream(os_streams, logger_stream_print_opts);
     }
 
     private:
-    static inline OsStreams os_streams;
+    static inline OsStreams os_streams{};
 };
 
 } // namespace Library::Logger
