@@ -36,10 +36,9 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(google_test
     disk_manager/test/google_test.cpp
-    disk_manager/test/google1_test.cpp
-    #disk_manager/test/posix_disk_test.cpp
+    disk_manager/test/posix_disk_test.cpp
 )
-target_link_libraries(google_test GTest::gtest_main library)
+target_link_libraries(google_test GTest::gtest_main library disk_manager)
 
 include(GoogleTest)
 gtest_discover_tests(google_test)

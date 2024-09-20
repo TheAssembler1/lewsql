@@ -1,17 +1,13 @@
 #ifndef BUFFER_MANAGER_H
 #define BUFFER_MANAGER_H
 
-#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <disk_manager.h>
 #include <disk_manager_types.h>
-#include <functional>
 #include <iostream>
 #include <memory>
-#include <queue>
 #include <utility>
-#include <vector>
 
 #include "buffer_manager_types.h"
 #include "buffer_page.h"
