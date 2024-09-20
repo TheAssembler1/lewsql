@@ -15,13 +15,15 @@ class Bitmap {
     void serialize(uint8_t* dest) const;
     void deserialize(uint8_t* src);
 
-    unsigned int num_free_bits() const;
-    unsigned int num_taken_bits() const;
+    unsigned int get_num_free_bits() const;
+    unsigned int get_num_taken_bits() const;
 
     std::optional<unsigned int> get_first_free_bit() const;
 
-    bool is_bit_set(unsigned int bit) const;
+    bool get_bit_val(unsigned int bit) const;
     void set_bit_val(unsigned int bit, bool val);
+
+    friend std::ostream& operator<<(std::ostream& os, const Bitmap& bitmap);
 
     unsigned int get_num_bits() const {
         return num_bits;

@@ -22,9 +22,5 @@
 int main() {
     Logger::init({&std::cerr});
 
-    LOG(LogLevel::INFO) << "test" << std::endl;
-
-    LOG(LogLevel::ERROR) << "test" << std::endl;
-
     return 0;
 }

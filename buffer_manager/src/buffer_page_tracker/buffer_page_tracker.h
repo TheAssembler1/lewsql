@@ -13,7 +13,7 @@ class BufferPageTracker {
 
     virtual BufferPageCursor get_next_free_page() const = 0;
 
-    virtual void set_page_status(BufferPageCursor buffer_page_cursor, bool taken) = 0;
+    virtual void set_page_status(BufferPageCursor buffer_page_cursor, bool val) = 0;
     virtual bool get_page_status(BufferPageCursor buffer_page_cursor) const = 0;
 
     virtual unsigned int get_num_free_pages() const = 0;

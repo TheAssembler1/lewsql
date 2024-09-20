@@ -122,7 +122,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
 
     Bitmap bitmap{bitmap_size};
     bitmap.deserialize(&free_page.bytes[BITMAP_OFFSET]);
-    assert(bitmap.num_free_bits() > 0);
+    assert(bitmap.get_num_free_bits() > 0);
     std::optional<unsigned int> tuple_offset_opt = bitmap.get_first_free_bit();
     assert(tuple_offset_opt.has_value());
     bitmap.set_bit_val(tuple_offset_opt.value(), true);
@@ -137,7 +137,7 @@ void Heap::insert_tuple(const Tuple& tuple) {
     tuple.serialize(&free_page.bytes[tuple_offset_within_page]);
 
     // NOTE: checking if this is no longer a free page
-    if(bitmap.num_free_bits() == 0) {
+    if(bitmap.get_num_free_bits() == 0) {
         LOG(LogLevel::INFO) << "no free bits in bitmap adding to full list" << std::endl;
         append_to_full_pages(free_disk_page);
     }

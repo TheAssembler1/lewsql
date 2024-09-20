@@ -1,7 +1,8 @@
 #ifndef BITMAP_TRACKER_H
 #define BITMAP_TRACKER_H
 
-#include "buffer_manager_error.h"
+#include <bitmap.h>
+
 #include "buffer_manager_types.h"
 #include "buffer_page_tracker.h"
 
@@ -11,7 +12,7 @@ class BitmapTracker final : public BufferPageTracker {
 
     virtual BufferPageCursor get_next_free_page() const override;
 
-    virtual void set_page_status(BufferPageCursor buffer_page_cursor, bool taken) override;
+    virtual void set_page_status(BufferPageCursor buffer_page_cursor, bool val) override;
     virtual bool get_page_status(BufferPageCursor buffer_page_cursor) const override;
 
     virtual unsigned int get_num_free_pages() const override;
@@ -21,7 +22,7 @@ class BitmapTracker final : public BufferPageTracker {
 
     private:
     // NOTE: tracks allocated pages
-    std::vector<bool> bitmap;
+    Bitmap bitmap;
 };
 
 #endif // BITMAP_TRACKER_H

@@ -1,8 +1,0 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
-
-#define PAGE_SIZE 512
-#define MAX_DISK_SIZE (PAGE_SIZE * 12)
-#define NUM_BUFFER_PAGES 8
-
-#endif // CONSTANTS_H

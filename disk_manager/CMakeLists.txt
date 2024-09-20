@@ -7,7 +7,8 @@ set(SOURCES
     src/impl/posix_disk.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES}
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE library)
 
 target_include_directories(
