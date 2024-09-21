@@ -22,5 +22,7 @@
 int main() {
     Logger::init({&std::cerr});
 
+    LOG(LogLevel::INFO) << "Hello World" << std::endl;
+
     return 0;
 }

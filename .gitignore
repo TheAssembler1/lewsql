@@ -9,6 +9,7 @@
 
 # cmake build files
 build
+*.swp
 
 # qt files
 *.pro

@@ -9,7 +9,7 @@
 
 namespace DiskManager {
 
-class PosixDisk {
+class PosixDisk final {
     public:
     PosixDisk(const PosixDisk&) = delete;
     PosixDisk& operator=(const PosixDisk&) = delete;

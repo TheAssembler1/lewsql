@@ -16,6 +16,7 @@ add_subdirectory(disk_manager)
 add_subdirectory(buffer_manager)
 add_subdirectory(organizers)
 add_subdirectory(driver)
+add_subdirectory(tests)
 
 add_custom_target(run
     COMMAND driver
