@@ -39,15 +39,22 @@ class DiskManager {
     const std::string& get_dir_path() {
         return dir_path;
     }
+
+    const std::string get_disk_suffix() {
+        return disk_suffix;
+    }
+
     unsigned int get_page_size() {
         return page_size;
     }
+
     unsigned int get_max_disk_size() {
         return max_disk_size;
     }
 
     private:
     const std::string dir_path;
+    const std::string disk_suffix{".disk"};
     const unsigned int page_size;
     const unsigned int max_disk_size;
 };

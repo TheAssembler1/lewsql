@@ -36,9 +36,44 @@ class LoggerStream {
     }
     std::ostringstream stream_buffer;
 
+    void flush() {
+        if(!printed_tag) {
+            switch(logger_stream_print_opts.log_level) {
+            case LogLevel::TRACE: stream_buffer << "[TRACE]-"; break;
+            case LogLevel::INFO: stream_buffer << "[INFO]--"; break;
+            case LogLevel::WARNING: stream_buffer << "[WARN]--"; break;
+            case LogLevel::ERROR: stream_buffer << "[ERROR]-"; break;
+            case LogLevel::FATAL: stream_buffer << "[FATAL]-"; break;
+            default: assert(0); break;
+            }
+
+            stream_buffer << "[" << logger_stream_print_opts.time << "]-"
+                          << "[";
+
+            const char* last_slash = nullptr;
+            while(*logger_stream_print_opts.file != static_cast<char>(NULL)) {
+                if(*logger_stream_print_opts.file == '/') {
+                    last_slash = logger_stream_print_opts.file + 1;
+                }
+                logger_stream_print_opts.file++;
+            }
+
+            assert(last_slash != nullptr);
+            stream_buffer << last_slash << "+" << logger_stream_print_opts.func << "+" << logger_stream_print_opts.line << "]"
+                          << "> ";
+
+            printed_tag = true;
+        }
+
+        for(const auto& os_stream : os_streams) {
+            *os_stream << stream_buffer.str();
+
+            stream_buffer.clear();
+        }
+    }
+
     template <typename T> LoggerStream& operator<<(T&& message) {
         stream_buffer << std::forward<T>(message);
-
         return *this;
     }
 
@@ -48,49 +83,13 @@ class LoggerStream {
     }
 
     ~LoggerStream() {
-        switch(logger_stream_print_opts.log_level) {
-        case LogLevel::TRACE: stream_buffer << "[TRACE]-"; break;
-        case LogLevel::INFO: stream_buffer << "[INFO]--"; break;
-        case LogLevel::WARNING: stream_buffer << "[WARN]--"; break;
-        case LogLevel::ERROR: stream_buffer << "[ERROR]-"; break;
-        case LogLevel::FATAL: stream_buffer << "[FATAL]-"; break;
-        default: assert(0); break;
-        }
-
-
-        // FIXME: make these configurable
-        stream_buffer << "[" << logger_stream_print_opts.time << "]-"
-                      << "[";
-
-        const char* last_slash = nullptr;
-        while(*logger_stream_print_opts.file != static_cast<char>(NULL)) {
-#ifdef __unix__
-            if(*logger_stream_print_opts.file == '/') {
-                last_slash = logger_stream_print_opts.file + 1;
-            }
-#elif __win32__
-            if(*file == '\\') {
-                last_slash = file + 1;
-            }
-#else
-#error "system not recognized as __win32 or __unix"
-#endif
-
-            logger_stream_print_opts.file++;
-        }
-
-        assert(last_slash != nullptr);
-        stream_buffer << last_slash << "+" << logger_stream_print_opts.func << "+" << logger_stream_print_opts.line << "]"
-                      << "> ";
-
-        for(const auto& os_stream : os_streams) {
-            *os_stream << stream_buffer.str();
-        }
+        flush();
     }
 
     private:
     LoggerStreamPrintOpts logger_stream_print_opts;
     OsStreams os_streams;
+    bool printed_tag{false};
 };
 
 class Logger {

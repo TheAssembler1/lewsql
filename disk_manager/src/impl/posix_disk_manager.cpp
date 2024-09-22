@@ -17,16 +17,20 @@ Result<unsigned int, DiskManagerError> PosixDiskManager::num_loaded_disks() cons
     return disks.size();
 }
 
-Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name) noexcept {
+Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name_prefix) noexcept {
+    auto disk_name = disk_name_prefix + get_disk_suffix();
     std::string path = get_disk_path(disk_name);
 
     PROP_IF_ERROR(PosixDisk::init(path, false, get_page_size()));
+
+    LOG(LogLevel::INFO) << "disk created... now loading" << std::endl;
 
     return load(disk_name);
 }
 
 Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcept {
     std::string file_path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
+
     auto posix_disk_res = PosixDisk::init(file_path, true, get_page_size());
 
     PROP_IF_ERROR(posix_disk_res);

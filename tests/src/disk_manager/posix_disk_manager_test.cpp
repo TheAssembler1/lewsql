@@ -7,10 +7,22 @@
 
 using namespace Tests;
 
-TEST(posix_disk_manager_creation) {
+TEST(posix_disk_manager_create) {
     test_begin();
 
     DiskManager::PosixDiskManager posix_disk{Tests::DiskManagerOpts::temp_storage_dir_path,
                                 Tests::DiskManagerOpts::page_size,
                                 Tests::DiskManagerOpts::max_disk_size};
+}
+
+TEST(posix_disk_manager_create_disk) {
+    test_begin();
+
+    DiskManager::PosixDiskManager posix_disk{Tests::DiskManagerOpts::temp_storage_dir_path,
+                                Tests::DiskManagerOpts::page_size,
+                                Tests::DiskManagerOpts::max_disk_size};
+
+    auto disk_id_res = posix_disk.create(Tests::get_next_random_string(Tests::DiskManagerOpts::disk_prefix));
+    std::cerr << disk_id_res.get_error().what() << std::endl;
+    ASSERT_TRUE(disk_id_res.is_value());
 }
