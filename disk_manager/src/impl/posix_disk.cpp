@@ -39,14 +39,20 @@ Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path
     int st = access(file_path.c_str(), F_OK);
 
     if(!should_exist) {
+        LOG(LogLevel::TRACE) << "initializing posix disk which should not exist" << std::endl;
+
         if(st == -1 && errno != ENOENT) {
             LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
             return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
         } else if(st != -1) {
+            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
             return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
         }
     } else {
+        LOG(LogLevel::TRACE) << "initializing posix disk which should exist" << std::endl;
+
         if(st == -1 && errno == ENOENT) {
+            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
             return DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
         } else if(st == -1) {
             LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;

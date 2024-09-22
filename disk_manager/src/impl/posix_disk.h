@@ -36,8 +36,6 @@ class PosixDisk final {
     private:
     PosixDisk(const std::string& file_path, int fd, unsigned int page_size):
       m_file_path{file_path}, m_fd{fd}, m_page_size{page_size} {
-        LOG(LogLevel::TRACE) << "creating posix disk with file path: " << m_file_path << std::endl;
-        LOG(LogLevel::TRACE) << "creating posix disk with fd: " << m_fd << std::endl;
     }
 
     Result<void, DiskManagerError> prepare_rw(DiskPageCursor disk_page_cursor) noexcept;

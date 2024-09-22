@@ -10,8 +10,7 @@ void Tests::test_begin() {
     std::lock_guard<std::mutex> lock(init_lock);
 
     if(!init) {
-        std::ostream* fstream = new std::ofstream(Tests::test_output_path);
-        Logger::init({fstream});
+        Logger::init({&std::cerr});
 
         init = true;
     }

@@ -46,4 +46,4 @@ jobs:
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ./tests/tests
+      run: sh ../run_tests.sh

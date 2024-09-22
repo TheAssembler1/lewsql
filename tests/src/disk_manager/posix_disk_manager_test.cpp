@@ -23,6 +23,5 @@ TEST(posix_disk_manager_create_disk) {
                                 Tests::DiskManagerOpts::max_disk_size};
 
     auto disk_id_res = posix_disk.create(Tests::get_next_random_string(Tests::DiskManagerOpts::disk_prefix));
-    std::cerr << disk_id_res.get_error().what() << std::endl;
     ASSERT_TRUE(disk_id_res.is_value());
 }
