@@ -23,6 +23,22 @@ Result<void, DiskManagerError> PosixDisk::close() noexcept {
     return VoidValue::Ok;
 }
 
+Result<bool, DiskManagerError> PosixDisk::exists(const std::string& file_path) noexcept {
+    errno = 0;
+    int st = access(file_path.c_str(), F_OK);
+
+    if(st == 0) {
+        return true;
+    }
+
+    if(errno == ENOENT) {
+        return false;
+    }
+
+    LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
+    return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
+}
+
 Result<void, DiskManagerError> PosixDisk::seek(unsigned int pos) noexcept {
     errno = 0;
     int res = lseek(m_fd, pos, SEEK_SET);
@@ -35,29 +51,14 @@ Result<void, DiskManagerError> PosixDisk::seek(unsigned int pos) noexcept {
 }
 
 Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path, bool should_exist, unsigned int page_size) noexcept {
-    errno = 0;
-    int st = access(file_path.c_str(), F_OK);
+    auto exist = UNWRAP_OR_PROP_ERROR(PosixDisk::exists(file_path));
 
-    if(!should_exist) {
-        LOG(LogLevel::TRACE) << "initializing posix disk which should not exist" << std::endl;
+    if(!should_exist && exist) {
+        return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
+    }
 
-        if(st == -1 && errno != ENOENT) {
-            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
-        } else if(st != -1) {
-            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::DISK_ALREADY_EXISTS);
-        }
-    } else {
-        LOG(LogLevel::TRACE) << "initializing posix disk which should exist" << std::endl;
-
-        if(st == -1 && errno == ENOENT) {
-            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
-        } else if(st == -1) {
-            LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
-            return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
-        }
+    if(should_exist && !exist) {
+        return DiskManagerError(DiskManagerErrorCode::DISK_NOT_FOUND);
     }
 
     errno = 0;
