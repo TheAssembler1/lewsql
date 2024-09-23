@@ -26,6 +26,8 @@ class PosixDisk final {
     Result<void, DiskManagerError> close() noexcept;
     Result<void, DiskManagerError> sync() noexcept;
 
+    static Result<bool, DiskManagerError> exists(const std::string& file_path) noexcept;
+
     std::string get_file_path() const {
         return m_file_path;
     }

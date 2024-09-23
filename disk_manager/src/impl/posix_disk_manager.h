@@ -44,6 +44,8 @@ class PosixDiskManager final : public DiskManager {
     virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept override;
     virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept override;
 
+    virtual Result<bool, DiskManagerError> exists(const std::string& file_path) noexcept override;
+
     private:
     Result<std::string, DiskManagerError> get_disk_path(DiskId disk_id);
     std::string get_disk_path(const std::string& file_name);

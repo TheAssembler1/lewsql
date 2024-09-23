@@ -36,6 +36,8 @@ class DiskManager {
     virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept = 0;
     virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept = 0;
 
+    virtual Result<bool, DiskManagerError> exists(const std::string& file_path) noexcept = 0;
+
     const std::string& get_dir_path() {
         return dir_path;
     }

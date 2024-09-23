@@ -28,6 +28,10 @@ Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_n
     return load(disk_name);
 }
 
+Result<bool, DiskManagerError> exists(const std::string& file_path) noexcept {
+    return PosixDisk::exists(file_path);
+}
+
 Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcept {
     std::string file_path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
 
