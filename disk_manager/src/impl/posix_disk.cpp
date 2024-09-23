@@ -98,7 +98,7 @@ PosixDisk::~PosixDisk() noexcept {
     if(should_close) { close(); }
 }
 
-Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept {
+Result<unsigned int, DiskManagerError> PosixDisk::get_disk_byte_size() const noexcept {
     errno = 0;
     struct stat st;
     int res = stat(m_file_path.c_str(), &st);
@@ -118,12 +118,20 @@ Result<unsigned int, DiskManagerError> PosixDisk::get_disk_size() const noexcept
 }
 
 Result<void, DiskManagerError> PosixDisk::prepare_rw(DiskPageCursor disk_page_cursor) noexcept {
-    auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_size());
+    auto cur_byte_size = UNWRAP_OR_PROP_ERROR(get_disk_byte_size());
     auto foffset = disk_page_cursor * m_page_size;
+    auto new_byte_size = foffset + m_page_size;
 
-    if(foffset + m_page_size >= cur_byte_size) {
-        LOG(LogLevel::WARNING) << "rw operation exceeds disk size" << std::endl;
-        truncate(foffset + m_page_size);
+    if(new_byte_size >= m_max_disk_size) {
+        LOG(LogLevel::ERROR) << "rw operation would exceed max disk size" << std::endl;
+        LOG(LogLevel::ERROR) << "new byte size: " << new_byte_size << std::endl;
+        LOG(LogLevel::ERROR) << "max disk byte size: " << m_max_disk_size << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
+    }
+
+    if(new_byte_size > cur_byte_size) {
+        LOG(LogLevel::WARNING) << "rw operation exceeds current disk size... truncating" << std::endl;
+        truncate(new_byte_size);
     }
 
     PROP_IF_ERROR(seek(foffset));
@@ -137,14 +145,11 @@ Result<void, DiskManagerError> PosixDisk::write(DiskPageCursor disk_page_cursor,
     errno = 0;
     unsigned int num_bytes = ::write(m_fd, data, m_page_size);
 
-    LOG(LogLevel::INFO) << "resulting file size would be: " << num_bytes << std::endl;
+    LOG(LogLevel::ERROR) << "num bytes written: " << num_bytes << std::endl;
 
     if(num_bytes != m_page_size) {
-        if(num_bytes >= m_max_disk_size) {
-            return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
-        }
-
-        return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
+        LOG(LogLevel::ERROR) << std::strerror(errno) << std::endl;
+        return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
     }
 
     PROP_IF_ERROR(sync());
@@ -160,7 +165,6 @@ Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, 
     if(num_bytes != m_page_size) {
         return DiskManagerError(DiskManagerErrorCode::READ_DISK_ERROR);
     }
-
 
     return VoidValue::Ok;
 }

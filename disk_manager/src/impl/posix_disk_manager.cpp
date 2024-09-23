@@ -24,7 +24,7 @@ std::string PosixDiskManager::get_disk_full_name(const std::string& disk_name_pr
 Result<DiskId, DiskManagerError> PosixDiskManager::create(const DiskName& disk_name_prefix) noexcept {
     std::string path = get_disk_path(get_disk_full_name(disk_name_prefix));
 
-    PROP_IF_ERROR(PosixDisk::init(path, false, get_page_size(), get_max_disk_size()));
+    PROP_IF_ERROR(PosixDisk::init(path, false, get_page_size(), get_max_disk_byte_size()));
 
     LOG(LogLevel::INFO) << "disk created... now loading" << std::endl;
 
@@ -44,7 +44,7 @@ Result<bool, DiskManagerError> PosixDiskManager::is_loaded(DiskId disk_id) noexc
 Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcept {
     std::string path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
 
-    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_size());
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_byte_size());
 
     PROP_IF_ERROR(posix_disk_res);
     PROP_IF_ERROR(posix_disk_res.get_value().destroy());
@@ -55,7 +55,7 @@ Result<void, DiskManagerError> PosixDiskManager::destroy(DiskId disk_id) noexcep
 
 Result<DiskId, DiskManagerError> PosixDiskManager::load(const DiskName& disk_name_prefix) noexcept {
     std::string path = get_disk_path(get_disk_full_name(disk_name_prefix));
-    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_size());
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_byte_size());
     PROP_IF_ERROR(posix_disk_res);
 
     DiskId ret = cur_disk_id;
@@ -75,7 +75,7 @@ Result<void, DiskManagerError> PosixDiskManager::unload(DiskId disk_id) noexcept
 
 Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
     std::string path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
-    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_size());
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_byte_size());
     PROP_IF_ERROR(posix_disk_res);
 
     auto& posix_disk = posix_disk_res.get_value();
@@ -86,7 +86,7 @@ Result<void, DiskManagerError> PosixDiskManager::write(DiskId disk_id, DiskPageC
 
 Result<void, DiskManagerError> PosixDiskManager::read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept {
     std::string path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
-    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_size());
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_byte_size());
     PROP_IF_ERROR(posix_disk_res);
 
     auto& posix_disk = posix_disk_res.get_value();
@@ -126,14 +126,14 @@ Result<DiskName, DiskManagerError> PosixDiskManager::loaded_disk_name(DiskId dis
 };
 
 Result<DiskPageCursor, DiskManagerError> PosixDiskManager::extend(DiskId disk_id) noexcept {
-    unsigned int size = UNWRAP_OR_PROP_ERROR(disk_size(disk_id));
-    assert(size % get_page_size() == 0);
+    unsigned int byte_size = UNWRAP_OR_PROP_ERROR(disk_byte_size(disk_id));
+    assert(byte_size % get_page_size() == 0);
 
-    if(size > get_max_disk_size()) {
+    if(byte_size > get_max_disk_byte_size()) {
         return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
     }
 
-    return static_cast<DiskPageCursor>((size / get_page_size()) + 1);
+    return static_cast<DiskPageCursor>((byte_size / get_page_size()) + 1);
 }
 
 std::string PosixDiskManager::get_disk_path(const std::string& file_name) {
@@ -145,14 +145,14 @@ Result<std::string, DiskManagerError> PosixDiskManager::get_disk_path(DiskId dis
     return get_disk_path(res);
 }
 
-Result<unsigned int, DiskManagerError> PosixDiskManager::disk_size(DiskId disk_id) noexcept {
+Result<unsigned int, DiskManagerError> PosixDiskManager::disk_byte_size(DiskId disk_id) noexcept {
     auto path = UNWRAP_OR_PROP_ERROR(get_disk_path(disk_id));
-    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_size());
+    auto posix_disk_res = PosixDisk::init(path, true, get_page_size(), get_max_disk_byte_size());
 
     PROP_IF_ERROR(posix_disk_res);
 
     const auto& posix_disk = posix_disk_res.get_value();
-    return posix_disk.get_disk_size();
+    return posix_disk.get_disk_byte_size();
 }
 
 } // namespace DiskManager

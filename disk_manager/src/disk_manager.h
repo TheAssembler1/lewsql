@@ -2,13 +2,8 @@
 #define DISK_MANAGER_H
 
 #include <cassert>
-#include <exception>
-#include <memory>
 #include <result.h>
 #include <string>
-#include <utility>
-#include <variant>
-#include <vector>
 
 #include "disk_manager_error.h"
 #include "disk_manager_types.h"
@@ -17,8 +12,8 @@ namespace DiskManager {
 
 class DiskManager {
     public:
-    DiskManager(const std::string& dir_path, unsigned int page_size, unsigned int max_disk_size)
-    : dir_path{dir_path}, page_size{page_size}, max_disk_size{max_disk_size} {
+    DiskManager(const std::string& dir_path, unsigned int page_size, unsigned int max_disk_byte_size)
+    : dir_path{dir_path}, page_size{page_size}, max_disk_byte_size{max_disk_byte_size} {
     }
 
     virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name_prefix) noexcept = 0;
@@ -34,7 +29,7 @@ class DiskManager {
     virtual Result<DiskPageCursor, DiskManagerError> extend(DiskId disk_id) noexcept = 0;
 
     virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept = 0;
-    virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept = 0;
+    virtual Result<unsigned int, DiskManagerError> disk_byte_size(DiskId disk_id) noexcept = 0;
 
     virtual Result<bool, DiskManagerError> exists(const std::string& disk_name_prefix) noexcept = 0;
     virtual Result<bool, DiskManagerError> is_loaded(DiskId disk_id) noexcept = 0;
@@ -53,15 +48,15 @@ class DiskManager {
         return page_size;
     }
 
-    unsigned int get_max_disk_size() const {
-        return max_disk_size;
+    unsigned int get_max_disk_byte_size() const {
+        return max_disk_byte_size;
     }
 
     private:
     const std::string dir_path;
     const std::string disk_suffix{".disk"};
     const unsigned int page_size;
-    const unsigned int max_disk_size;
+    const unsigned int max_disk_byte_size;
 };
 
 } // namespace DiskManager

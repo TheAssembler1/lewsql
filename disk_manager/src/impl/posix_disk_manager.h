@@ -42,7 +42,7 @@ class PosixDiskManager final : public DiskManager {
     virtual Result<void, DiskManagerError> read(DiskId disk_id, DiskPageCursor disk_page_cursor, uint8_t* bytes) noexcept override;
 
     virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept override;
-    virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept override;
+    virtual Result<unsigned int, DiskManagerError> disk_byte_size(DiskId disk_id) noexcept override;
 
     virtual Result<bool, DiskManagerError> exists(const std::string& disk_name_prefix) noexcept override;
     virtual Result<bool, DiskManagerError> is_loaded(DiskId disk_id) noexcept override;

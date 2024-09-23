@@ -3,7 +3,6 @@
 
 #include <mutex>
 #include <string>
-#include <atomic>
 
 namespace Tests {
 
@@ -19,8 +18,9 @@ std::string get_next_random_string(const std::string& prefix);
 namespace DiskManagerOpts {
     inline const std::string temp_storage_dir_path{"/tmp"};
     inline const std::string disk_prefix{"disk_manager_test_"};
-    inline constexpr unsigned int page_size{512};
-    inline constexpr unsigned int max_disk_size{page_size * 4};
+    inline constexpr unsigned int page_byte_size{512};
+    inline constexpr unsigned int max_disk_num_pages{4};
+    inline constexpr unsigned int max_disk_byte_size{page_byte_size * max_disk_num_pages};
 };
 
 }
