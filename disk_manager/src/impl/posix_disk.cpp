@@ -50,7 +50,7 @@ Result<void, DiskManagerError> PosixDisk::seek(unsigned int pos) noexcept {
     return VoidValue::Ok;
 }
 
-Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path, bool should_exist, unsigned int page_size) noexcept {
+Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path, bool should_exist, unsigned int page_size, unsigned int max_disk_size) noexcept {
     auto exist = UNWRAP_OR_PROP_ERROR(PosixDisk::exists(file_path));
 
     if(!should_exist && exist) {
@@ -69,13 +69,14 @@ Result<PosixDisk, DiskManagerError> PosixDisk::init(const std::string& file_path
         return DiskManagerError(DiskManagerErrorCode::CREATE_DISK_ERROR);
     }
 
-    return PosixDisk(file_path, fd, page_size);
+    return PosixDisk(file_path, fd, page_size, max_disk_size);
 }
 
 PosixDisk::PosixDisk(PosixDisk&& posix_disk) noexcept {
     m_fd = posix_disk.m_fd;
     m_file_path = posix_disk.m_file_path;
     m_page_size = posix_disk.m_page_size;
+    m_max_disk_size = posix_disk.m_max_disk_size;
 
     posix_disk.should_close = false;
 }
@@ -85,6 +86,7 @@ PosixDisk& PosixDisk::operator=(PosixDisk&& posix_disk) noexcept {
         m_fd = posix_disk.m_fd;
         m_file_path = posix_disk.m_file_path;
         m_page_size = posix_disk.m_page_size;
+        m_max_disk_size = posix_disk.m_max_disk_size;
 
         posix_disk.should_close = false;
     }
@@ -134,7 +136,14 @@ Result<void, DiskManagerError> PosixDisk::write(DiskPageCursor disk_page_cursor,
 
     errno = 0;
     unsigned int num_bytes = ::write(m_fd, data, m_page_size);
+
+    LOG(LogLevel::INFO) << "resulting file size would be: " << num_bytes << std::endl;
+
     if(num_bytes != m_page_size) {
+        if(num_bytes >= m_max_disk_size) {
+            return DiskManagerError(DiskManagerErrorCode::DISK_EXCEEDS_MAX_SIZE);
+        }
+
         return DiskManagerError(DiskManagerErrorCode::WRITE_DISK_ERROR);
     }
 
@@ -159,7 +168,7 @@ Result<void, DiskManagerError> PosixDisk::read(DiskPageCursor disk_page_cursor, 
 Result<void, DiskManagerError> PosixDisk::truncate(unsigned new_byte_size) noexcept {
     errno = 0;
     int res = ::truncate(m_file_path.c_str(), new_byte_size);
-    if(res != 1) {
+    if(res == -1) {
         LOG(LogLevel::ERROR) << strerror(errno) << std::endl;
         return DiskManagerError(DiskManagerErrorCode::UNKOWN_ERROR);
     }

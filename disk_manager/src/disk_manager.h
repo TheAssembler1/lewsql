@@ -21,10 +21,10 @@ class DiskManager {
     : dir_path{dir_path}, page_size{page_size}, max_disk_size{max_disk_size} {
     }
 
-    virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name) noexcept = 0;
+    virtual Result<DiskId, DiskManagerError> create(const DiskName& disk_name_prefix) noexcept = 0;
     virtual Result<void, DiskManagerError> destroy(DiskId disk_id) noexcept = 0;
 
-    virtual Result<DiskId, DiskManagerError> load(const DiskName& disk_name) noexcept = 0;
+    virtual Result<DiskId, DiskManagerError> load(const DiskName& disk_name_prefix) noexcept = 0;
     virtual Result<void, DiskManagerError> unload(DiskId disk_id) noexcept = 0;
 
     virtual Result<unsigned int, DiskManagerError> num_loaded_disks() const noexcept = 0;
@@ -36,21 +36,24 @@ class DiskManager {
     virtual Result<DiskName, DiskManagerError> loaded_disk_name(DiskId disk_id) noexcept = 0;
     virtual Result<unsigned int, DiskManagerError> disk_size(DiskId disk_id) noexcept = 0;
 
-    virtual Result<bool, DiskManagerError> exists(const std::string& file_path) noexcept = 0;
+    virtual Result<bool, DiskManagerError> exists(const std::string& disk_name_prefix) noexcept = 0;
+    virtual Result<bool, DiskManagerError> is_loaded(DiskId disk_id) noexcept = 0;
+
+    virtual std::string get_disk_full_name(const std::string& disk_name_prefix) const noexcept = 0;
 
     const std::string& get_dir_path() {
         return dir_path;
     }
 
-    const std::string get_disk_suffix() {
+    const std::string get_disk_suffix() const {
         return disk_suffix;
     }
 
-    unsigned int get_page_size() {
+    unsigned int get_page_size() const {
         return page_size;
     }
 
-    unsigned int get_max_disk_size() {
+    unsigned int get_max_disk_size() const {
         return max_disk_size;
     }
 

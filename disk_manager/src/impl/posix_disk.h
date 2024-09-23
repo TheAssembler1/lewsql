@@ -17,7 +17,7 @@ class PosixDisk final {
     PosixDisk& operator=(PosixDisk&& posix_disk) noexcept;
     ~PosixDisk() noexcept;
 
-    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist, unsigned int page_size) noexcept;
+    static Result<PosixDisk, DiskManagerError> init(const std::string& file_path, bool should_exist, unsigned int page_size, unsigned int max_disk_size) noexcept;
 
     Result<unsigned int, DiskManagerError> get_disk_size() const noexcept;
     Result<void, DiskManagerError> write(DiskPageCursor disk_page_cursor, const uint8_t* const data) noexcept;
@@ -36,8 +36,8 @@ class PosixDisk final {
     }
 
     private:
-    PosixDisk(const std::string& file_path, int fd, unsigned int page_size):
-      m_file_path{file_path}, m_fd{fd}, m_page_size{page_size} {
+    PosixDisk(const std::string& file_path, int fd, unsigned int page_size, unsigned int max_disk_size):
+      m_file_path{file_path}, m_fd{fd}, m_page_size{page_size}, m_max_disk_size{max_disk_size} {
     }
 
     Result<void, DiskManagerError> prepare_rw(DiskPageCursor disk_page_cursor) noexcept;
@@ -47,6 +47,7 @@ class PosixDisk final {
     std::string m_file_path;
     int m_fd;
     unsigned int m_page_size;
+    unsigned int m_max_disk_size;
     bool should_close = true;
 };
 
