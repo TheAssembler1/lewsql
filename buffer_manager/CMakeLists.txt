@@ -7,6 +7,7 @@ set(SOURCES
     src/replacement/dumb_alg.cpp
     src/memory_pool.cpp
     src/buffer_page_tracker/bitmap_tracker.cpp
+    src/mem/buffer_page_allocator.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

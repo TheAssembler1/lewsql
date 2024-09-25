@@ -32,6 +32,14 @@ class BufferPage {
         initialized = true;
     }
 
+    static void* operator new(std::size_t) {
+        return nullptr;
+    }
+
+    static void operator delete(void* buffer_page) {
+
+    }
+
     template <typename T> T* to_ptr(unsigned int offset) {
         assert(initialized);
 

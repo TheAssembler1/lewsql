@@ -11,6 +11,7 @@
 #include <types/uint16_t_type.h>
 #include <types/uint32_t_type.h>
 #include <types/uint8_t_type.h>
+%:include <mem/buffer_page_allocator.h>
 
 #define OUTPUT_LOG_FILE "output.log"
 #define PAGE_SIZE (512)
