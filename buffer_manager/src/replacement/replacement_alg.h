@@ -7,7 +7,6 @@
 
 #include "buffer_manager_types.h"
 #include "buffer_page_tracker/buffer_page_tracker.h"
-#include "memory_pool.h"
 
 class ReplacementAlg {
     public:

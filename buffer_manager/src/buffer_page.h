@@ -8,15 +8,14 @@
 
 #include "buffer_manager_error.h"
 #include "buffer_manager_types.h"
+#include "mem/buffer_page_allocator.h"
 
 class BufferPage {
     public:
-    BufferPage() = delete;
-    ~BufferPage() = delete;
     BufferPage(const BufferPage&) = delete;
     BufferPage& operator=(const BufferPage&) = delete;
 
-    void init(unsigned int _page_size,
+    BufferPage(unsigned int _page_size,
     DiskId _disk_id,
     DiskPageCursor _disk_page_cursor,
     BufferPageCursor _buffer_page_cursor,
@@ -32,12 +31,12 @@ class BufferPage {
         initialized = true;
     }
 
-    static void* operator new(std::size_t) {
-        return nullptr;
+    static void* operator new(std::size_t num_buf_pages) {
+        BufferPageAllocator::allocate(num_buf_pages);
     }
 
     static void operator delete(void* buffer_page) {
-
+        BufferPageAllocator::deallocate(buffer_page);
     }
 
     template <typename T> T* to_ptr(unsigned int offset) {

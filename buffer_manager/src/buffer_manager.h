@@ -12,7 +12,6 @@
 #include "buffer_manager_types.h"
 #include "buffer_page.h"
 #include "buffer_page_tracker/buffer_page_tracker.h"
-#include "memory_pool.h"
 #include "replacement/replacement_alg.h"
 
 class BufferManager final {
