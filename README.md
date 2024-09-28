@@ -11,7 +11,7 @@ management system. This way the amount learned from the project is maximized.
 
 ## TODO Components
 
-- Lexer
+- Lexer - gonna start on thus
 - Parser
 - Bytecode Generator
 - Virtual Machine
