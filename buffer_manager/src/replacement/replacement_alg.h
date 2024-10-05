@@ -12,7 +12,7 @@ class ReplacementAlg {
     public:
     virtual void on_pin(BufferPageCursor page_cursor) = 0;
     virtual void on_unpin(BufferPageCursor page_cursor) = 0;
-    virtual BufferPageCursor get_victim(const BufferPageTracker& buffer_page_tracker, const MemoryPool& mem_pool) = 0;
+    virtual BufferPageCursor get_victim(const BufferPageTracker& buffer_page_tracker) = 0;
 };
 
 #endif // REPLACEMENT_ALG_H

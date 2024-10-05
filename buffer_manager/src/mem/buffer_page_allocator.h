@@ -1,7 +1,7 @@
-%:ifndef BUFFERPAGEALLOCATOR_H
-%:define BUFFERPAGEALLOCATOR_H
+#ifndef BUFFERPAGEALLOCATOR_H
+#define BUFFERPAGEALLOCATOR_H
 
-%:include "../buffer_page.h"
+#include "../buffer_page.h"
 
 class BufferPageAllocator {
     public:
@@ -18,4 +18,4 @@ class BufferPageAllocator {
     static inline BufferPage* buffer = nullptr;
 };
 
-%:endif // BUFFERPAGEALLOCATOR_H
+#endif // BUFFERPAGEALLOCATOR_H

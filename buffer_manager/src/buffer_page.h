@@ -3,12 +3,10 @@
 
 #include <cstdint>
 #include <disk_manager.h>
-#include <iostream>
 #include <logger.h>
 
 #include "buffer_manager_error.h"
 #include "buffer_manager_types.h"
-#include "mem/buffer_page_allocator.h"
 
 class BufferPage {
     public:
@@ -29,14 +27,6 @@ class BufferPage {
         dirty = _dirty;
 
         initialized = true;
-    }
-
-    static void* operator new(std::size_t num_buf_pages) {
-        BufferPageAllocator::allocate(num_buf_pages);
-    }
-
-    static void operator delete(void* buffer_page) {
-        BufferPageAllocator::deallocate(buffer_page);
     }
 
     template <typename T> T* to_ptr(unsigned int offset) {

@@ -15,6 +15,7 @@ add_subdirectory(library)
 add_subdirectory(disk_manager)
 add_subdirectory(buffer_manager)
 add_subdirectory(organizers)
+add_subdirectory(compiler)
 add_subdirectory(driver)
 add_subdirectory(tests)
 

@@ -9,6 +9,7 @@
 
 # cmake build files
 build
+cmake-build-debug
 *.swp
 
 # qt files

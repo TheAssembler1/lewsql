@@ -22,7 +22,7 @@ class BufferManager final {
     unsigned int num_pages,
     unsigned int page_size)
     : disk_manager{disk_manager}, replacement_alg{std::move(replacement_alg)},
-      buffer_page_tracker{std::move(buffer_page_tracker)}, mem_pool{num_pages, disk_manager->get_page_size()} {
+      buffer_page_tracker{std::move(buffer_page_tracker)} {
     }
 
     BufferPage& pin(DiskId disk_id, DiskPageCursor disk_page_cursor);
@@ -39,7 +39,6 @@ class BufferManager final {
 
     // NOTE: maps disk pages to mem pool pages
     MemPoolMapType mem_pool_map;
-    MemoryPool mem_pool;
 
     const std::shared_ptr<DiskManager::DiskManager> disk_manager;
     const std::unique_ptr<ReplacementAlg> replacement_alg;
