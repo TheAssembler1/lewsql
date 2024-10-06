@@ -9,6 +9,21 @@
 #include <optional>
 #include <cassert>
 
+struct CharStreamPosition {
+    unsigned int m_cur_line{0};
+    unsigned int m_cur_col{0};
+    unsigned int m_cur_pos{0};
+
+    friend std::ostream& operator<<(std::ostream& os, const CharStreamPosition& char_stream_position) {
+        os << "{" << std::endl;
+        os << "cur_line: " << char_stream_position.m_cur_line << std::endl;
+        os << "cur_col: " << char_stream_position.m_cur_col << std::endl;
+        os << "m_cur_pos: " << char_stream_position.m_cur_pos << std::endl;
+        os << "}";
+        return os;
+    }
+};
+
 namespace Compiler {
 class CharStream final {
     public:
@@ -27,15 +42,10 @@ class CharStream final {
     void put_back_char(char c);
     bool is_end_of_stream() const;
 
-    unsigned int get_cur_line() const { return m_cur_line; }
-    unsigned int get_cur_col() const { return m_cur_col; }
-    unsigned int get_cur_pos() const { return m_cur_pos; }
+    CharStreamPosition get_position() const { return m_char_stream_position; }
 
     private:
-    unsigned int m_cur_line{0};
-    unsigned int m_cur_col{0};
-    unsigned int m_cur_pos{0};
-
+    CharStreamPosition m_char_stream_position{0, 0, 0};
     std::istream* const m_stream{nullptr};
 };
 }

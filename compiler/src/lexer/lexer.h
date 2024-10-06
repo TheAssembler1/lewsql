@@ -21,6 +21,7 @@ class Lexer final {
   bool has_next_token();
   std::optional<Token> get_next_token();
   void skip_whitespace();
+  CharStreamPosition get_position() const { return m_char_stream.get_position(); }
 
   private:
   static bool char_is_whitespace(char c) ;

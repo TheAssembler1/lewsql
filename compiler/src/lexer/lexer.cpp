@@ -1,4 +1,5 @@
 #include <lexer/lexer.h>
+#include <logger.h>
 
 using namespace Compiler;
 
@@ -9,10 +10,6 @@ bool Lexer::has_next_token() {
 
 std::optional<Lexer::Token> Lexer::get_next_token() {
     skip_whitespace();
-
-    if(m_char_stream.is_end_of_stream()) {
-        return {};
-    }
 
     Token token;
     while(!m_char_stream.is_end_of_stream() && !char_is_whitespace(m_char_stream.peek_next_char().value())) {

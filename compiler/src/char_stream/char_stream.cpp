@@ -18,11 +18,11 @@ std::optional<char> CharStream::get_next_char() {
         }
 
         if(c == '\n') {
-            m_cur_line++;
-            m_cur_col = 0;
+            m_char_stream_position.m_cur_line++;
+            m_char_stream_position.m_cur_col = 0;
         }
 
-        m_cur_pos++;
+        m_char_stream_position.m_cur_pos++;
 
         return c;
     } catch (const std::exception &e) {
@@ -54,9 +54,11 @@ void CharStream::put_back_char(const char c) {
     }
 }
 
+// NOTE: need to peek because you have to attempt to read past the buffer boundary for eof bit
+//       to be set
 bool CharStream::is_end_of_stream() const {
     try {
-        return m_stream->eof();
+        return m_stream->peek() && m_stream->eof();
     } catch (const std::exception &e) {
         LOG(LogLevel::ERROR) << e.what() << std::endl;
     }
